@@ -1,1 +1,150 @@
-<h1>This is the first step</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule Checker</title>
+<style>
+    @font-face {
+        font-family: "CFont";
+        src: url("font.woff") format("woff");
+    }
+    *{
+        font-family: "CFont", Arial, Helvetica, sans-serif;
+        -webkit-tap-highlight-color: transparent;
+    }
+    body{
+        margin: 0;
+        padding: 0;
+    }
+    .input{
+        position: relative;
+        width: min(95%, 355px);
+        font-size: 1.3rem;
+        margin: 1rem 0;
+        padding: 0;
+    }
+    input{
+        width: min(95%, 425px);
+        border: 2px solid #dadce0;
+        border-radius: 3rem;
+        outline: none;
+        aspect-ratio: 5/1;
+        padding: 0 1rem;
+        font-size: 1.3rem;
+        box-sizing: border-box;
+    }
+    input:focus{
+        border: 2px solid #1a73e8;
+    }
+    label{
+        position: absolute;
+        top: 50%;
+        left: 1.7rem;
+        padding: .2rem;
+        transform: translateY(-50%);
+        color: #5f6368;
+        background-color: white;
+        transition: transform 0.2s ease, top 0.2s ease, font-size 0.2s ease, color 0.2s ease;
+    }
+    input:focus ~ label, input:not(:placeholder-shown) ~ label{
+        top: 0;
+        font-size: 1rem;
+        font-weight: bold;
+        color: #1a73e8;
+    }
+    input:not(:placeholder-shown):not(:focus) ~ label {
+      color: #5f6368;
+    }
+    button{
+        position: relative;
+    border:none;
+            border-radius: 3rem;
+            padding: 1rem 2rem;
+    font-weight:bold;
+    font-size: 1.1rem;
+            color: #ffffff;
+            cursor: pointer;
+            background-color: rgb(0, 100, 224);
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+    }
+    button .ripple-wave {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.35); /* Translucent overlay for the highlight contrast */
+            transform: scale(0);
+            pointer-events: none; /* Prevents the ripple from blocking consecutive click events */
+            animation: expand-ripple 0.6s linear;
+        }
+@keyframes expand-ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+    @media (min-width: 425px){
+        body{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        center{
+            box-shadow:0 10px 30px rgba(0,0,0,.08);
+            padding: 2rem 0;
+            border-radius: 3rem;
+            width: 425px;
+        }
+    }
+</style>
+</head>
+<body>
+<center>
+    <h1>Employee Login</h1>
+    <div class="input">
+        <input type="text" placeholder="">
+        <label>Arcos ID</label>
+    </div>
+    <div class="input">
+        <input type="text" placeholder="">
+        <label>Name</label>
+    </div>
+    <br>
+    <button>Submit</button>
+</center>
+<script>
+        // Target all buttons sharing the metallic configuration class
+        const buttons = document.querySelectorAll('button');
+
+        buttons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                // Calculate the exact mouse pointer placement relative to the button wrapper
+                const rect = this.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                // Determine required circle diameter based on the largest dimension 
+                const size = Math.max(rect.width, rect.height);
+
+                // Build out the inline DOM span representing the dynamic wave node
+                const ripple = document.createElement('span');
+                ripple.className = 'ripple-wave';
+                
+                // Style dimension rules natively centered to the mouse pointer axis
+                ripple.style.width = ripple.style.height = `${size}px`;
+                ripple.style.left = `${x - size / 2}px`;
+                ripple.style.top = `${y - size / 2}px`;
+
+                // Wipe existing waves cleanly to avoid duplicate element compounding overhead
+                const existingRipple = this.querySelector('.ripple-wave');
+                if (existingRipple) {
+                    existingRipple.remove();
+                }
+
+                // Append node child tree into view context triggering active CSS keyframe sequence
+                this.appendChild(ripple);
+            });
+        });
+    </script>
+</body>
+</html>
