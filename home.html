@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Home</title>
+</head>
+<body>
+
+<h1>Welcome</h1>
+
+<script>
+
+if(
+    !document.cookie
+      .split('; ')
+      .find(c=>c.startsWith('loggedin=yes'))
+){
+    location.href='/';
+}
+
+</script>
+
+</body>
+</html>
