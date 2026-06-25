@@ -54,7 +54,7 @@ export async function onRequestPost(context) {
                 "Content-Type":"application/json",
 
                 "Set-Cookie":
-                `loggedin=yes; Path=/; Max-Age=604800; SameSite=Lax`
+`userid=${encodeURIComponent(id)}; Path=/; Max-Age=604800; SameSite=Lax`
             }
         }
     );
