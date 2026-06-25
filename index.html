@@ -108,21 +108,22 @@
 </style>
 </head>
 <body>
-<center>
+<center><form id="loginForm">
     <h1>Employee Login</h1>
+    <div id="warning" class="warning"></div>
     <img src="image.avif" alt="logo" width="150"><br>
     <h3>Enter your Arcos ID and Name</h3><br>
     <div class="input">
-        <input type="text" placeholder="">
+        <input type="text" placeholder="" name="id" required>
         <label>Arcos ID</label>
     </div>
     <div class="input">
-        <input type="text" placeholder="">
+        <input type="text" placeholder="" name="name" required>
         <label>Name</label>
     </div>
     <br>
-    <button>Submit</button>
-</center>
+    <button type="submit">Login</button>
+</form></center>
 <script>
         // Target all buttons sharing the metallic configuration class
         const buttons = document.querySelectorAll('button');
@@ -157,5 +158,31 @@
             });
         });
     </script>
+    <script>
+
+document.getElementById('loginForm')
+.addEventListener('submit', async (e)=>{
+
+    e.preventDefault();
+
+    const formData = new FormData(e.target);
+
+    const res = await fetch('/login', {
+        method:'POST',
+        body:formData
+    });
+
+    const data = await res.json();
+
+    if(data.success){
+        location.href='home.html';
+    }else{
+        document.getElementById('warning').textContent =
+        'Enter correct ID and Name';
+    }
+
+});
+
+</script>
 </body>
 </html>
