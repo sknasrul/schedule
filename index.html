@@ -108,6 +108,15 @@
 </style>
 </head>
 <body>
+    <script>
+if (
+    document.cookie
+        .split('; ')
+        .find(c => c.startsWith('loggedin=yes'))
+) {
+    location.href = '/home.html';
+}
+</script>
 <center><form id="loginForm">
     <h1>Employee Login</h1>
     <div id="warning" class="warning"></div>
