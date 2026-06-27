@@ -7,24 +7,20 @@ export async function onRequest(context) {
   const res = await fetch(url);
   const text = await res.text();
 
-  // Strip JSONP wrapper
   const json = text
     .replace(/^[^(]+\(/, "")
     .replace(/\);?\s*$/, "");
 
   const data = JSON.parse(json);
 
-  // Build clean row objects from headers
   const cols = data.table.cols.map(c => c.label);
   const rows = data.table.rows.map(row => {
     const obj = {};
     row.c.forEach((cell, i) => {
       let val = cell ? cell.v : null;
-      // Handle gviz date format: Date(2025,5,12) → readable string
       if (typeof val === "string" && val.startsWith("Date(")) {
         const parts = val.match(/\d+/g).map(Number);
-        const d = new Date(parts[0], parts[1], parts[2]);
-        val = d.toLocaleDateString("en-IN"); // e.g. 12/6/2025
+        val = new Date(parts[0], parts[1], parts[2]).toLocaleDateString("en-IN");
       }
       obj[cols[i]] = val;
     });
