@@ -1,61 +1,49 @@
 export async function onRequestPost(context) {
 
-    const formData = await context.request.formData();
+    const form = await context.request.formData();
 
-    const id = String(formData.get("id") || "")
-        .trim()
-        .toUpperCase();
+    const arcos = (form.get("arcos") || "").trim();
+    const name = (form.get("name") || "").trim().toLowerCase();
 
-    const name = String(formData.get("name") || "")
-        .trim()
-        .toUpperCase();
+    // Read CSV from your project
+    const csv = await fetch(new URL("/users.csv", context.request.url))
+        .then(r => r.text());
 
-    const csvUrl = new URL(
-        "/employees.csv",
-        context.request.url
-    );
+    const lines = csv.split(/\r?\n/);
 
-    const csvText = await fetch(csvUrl).then(r => r.text());
+    // Skip header row
+    let valid = false;
 
-    const lines = csvText.split(/\r?\n/);
+    for (let i = 1; i < lines.length; i++) {
 
-    let found = false;
+        if (!lines[i].trim()) continue;
 
-    for(let i=1;i<lines.length;i++){
+        const [csvArcos, csvName] = lines[i].split(",");
 
-        const cols = lines[i].split(",");
-
-        if(cols.length < 2) continue;
-
-        const csvId = cols[0]
-            .trim()
-            .toUpperCase();
-
-        const csvName = cols[1]
-            .trim()
-            .toUpperCase();
-
-        if(csvId === id && csvName === name){
-            found = true;
+        if (
+            csvArcos.trim() === arcos &&
+            csvName.trim().toLowerCase() === name
+        ) {
+            valid = true;
             break;
         }
     }
 
-    if(!found){
-        return Response.json({
-            success:false
+    if (!valid) {
+        return new Response("Invalid Arcos ID or Name", {
+            status: 401
         });
     }
 
-    return new Response(
-        JSON.stringify({success:true}),
-        {
-            headers:{
-                "Content-Type":"application/json",
+    // Login successful
+    const home = await fetch(new URL("/home.html", context.request.url));
 
-                "Set-Cookie":
-`userid=${encodeURIComponent(id)}; Path=/; Max-Age=604800; SameSite=Lax`
+        return new Response(home.body, {
+            headers: {
+                "Content-Type": "text/html",
+                "Set-Cookie": "user=12345; Path=/; HttpOnly; SameSite=Lax"
             }
-        }
-    );
+        });
+    }
+
 }
