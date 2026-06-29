@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Arcos Portal — Sign In</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0A0F1E;
+      --surface:  rgba(255,255,255,0.04);
+      --border:   rgba(255,255,255,0.08);
+      --blue:     #3B82F6;
+      --blue-dim: rgba(59,130,246,0.15);
+      --text:     #F0F4FF;
+      --muted:    rgba(240,244,255,0.45);
+      --error-bg: rgba(239,68,68,0.12);
+      --error:    #FCA5A5;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+    }
+
+    /* ── Mesh background ── */
+    .mesh {
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(59,130,246,0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(99,102,241,0.14) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 40% at 60% 30%, rgba(16,185,129,0.07) 0%, transparent 50%);
+      animation: meshPulse 8s ease-in-out infinite alternate;
+    }
+    @keyframes meshPulse {
+      0%   { opacity: 0.7; }
+      100% { opacity: 1; }
+    }
+
+    /* ── Grid overlay ── */
+    .grid-overlay {
+      position: fixed; inset: 0; z-index: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    /* ── Wrapper ── */
+    .wrapper {
+      position: relative; z-index: 1;
+      height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      padding: 1.5rem;
+    }
+
+    /* ── Card ── */
+    .card {
+      width: 100%; max-width: 400px;
+      background: rgba(255,255,255,0.045);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2.5rem;
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      box-shadow: 0 24px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08);
+      animation: cardIn 0.55s cubic-bezier(0.16,1,0.3,1) both;
+    }
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(28px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0)    scale(1); }
+    }
+
+    /* ── Brand ── */
+    .brand {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 2rem;
+    }
+    .brand-icon {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--blue), #6366F1);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px;
+    }
+    .brand-name {
+      font-size: 15px; font-weight: 600; letter-spacing: 0.02em;
+    }
+    .brand-name span { color: var(--muted); font-weight: 400; }
+
+    /* ── Heading ── */
+    .heading { margin-bottom: 1.75rem; }
+    .heading h1 { font-size: 22px; font-weight: 600; line-height: 1.2; }
+    .heading p  { font-size: 13px; color: var(--muted); margin-top: 5px; }
+
+    /* ── Alert ── */
+    .alert {
+      display: flex; align-items: flex-start; gap: 9px;
+      background: var(--error-bg);
+      border: 1px solid rgba(239,68,68,0.25);
+      border-radius: 10px;
+      padding: 11px 13px;
+      font-size: 13px; color: var(--error);
+      margin-bottom: 1.25rem;
+      animation: alertIn 0.25s ease both;
+    }
+    @keyframes alertIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .alert.hidden { display: none; }
+    .alert-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+
+    /* ── Field ── */
+    .field { margin-bottom: 1rem; }
+    .field label {
+      display: block;
+      font-size: 11.5px; font-weight: 500;
+      color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.07em;
+      margin-bottom: 7px;
+    }
+    .input-wrap { position: relative; }
+    .input-icon {
+      position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
+      font-size: 15px; opacity: 0.4; pointer-events: none;
+    }
+    input {
+      width: 100%; height: 42px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0 12px 0 38px;
+      font-size: 14px; font-family: inherit;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+    }
+    input::placeholder { color: rgba(240,244,255,0.2); }
+    input:focus {
+      border-color: var(--blue);
+      background: rgba(59,130,246,0.07);
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+    }
+    input.error { border-color: rgba(239,68,68,0.5); }
+
+    /* ── Button ── */
+    .btn {
+      width: 100%; height: 42px;
+      background: linear-gradient(135deg, #3B82F6, #6366F1);
+      border: none; border-radius: 10px;
+      font-size: 14px; font-weight: 500; font-family: inherit;
+      color: #fff; cursor: pointer;
+      margin-top: 1.5rem;
+      position: relative; overflow: hidden;
+      transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(59,130,246,0.35);
+    }
+    .btn::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.12), transparent);
+      opacity: 0; transition: opacity 0.2s;
+    }
+    .btn:hover:not(:disabled)::after { opacity: 1; }
+    .btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 28px rgba(59,130,246,0.45); }
+    .btn:active:not(:disabled) { transform: translateY(0); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .btn-inner {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .spinner {
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .btn.loading .spinner { display: block; }
+    .btn.loading .btn-text::after { content: 'Signing in…'; }
+    .btn:not(.loading) .btn-text::after { content: 'Sign in'; }
+
+    /* ── Footer ── */
+    .footer {
+      margin-top: 1.75rem;
+      text-align: center;
+      font-size: 12px; color: var(--muted);
+    }
+
+    @media (max-width: 440px) {
+      .card { padding: 1.75rem 1.5rem; border-radius: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="mesh"></div>
+<div class="grid-overlay"></div>
+
+<div class="wrapper">
+  <div class="card">
+
+    <div class="brand">
+      <div class="brand-icon">🔷</div>
+      <div class="brand-name">Arcos <span>Portal</span></div>
+    </div>
+
+    <div class="heading">
+      <h1>Welcome back</h1>
+      <p>Sign in to view your shift schedule</p>
+    </div>
+
+    <div class="alert hidden" id="alert">
+      <span class="alert-icon">⚠</span>
+      <span id="alert-msg">Invalid Arcos ID or name. Please try again.</span>
+    </div>
+
+    <div class="field">
+      <label>Arcos ID</label>
+      <div class="input-wrap">
+        <span class="input-icon">🪪</span>
+        <input type="text" id="arcosId" placeholder="e.g. ARL33455" autocomplete="username" spellcheck="false"/>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Full name</label>
+      <div class="input-wrap">
+        <span class="input-icon">👤</span>
+        <input type="text" id="name" placeholder="As listed in the roster" autocomplete="name"/>
+      </div>
+    </div>
+
+    <button class="btn" id="loginBtn" onclick="doLogin()">
+      <div class="btn-inner">
+        <div class="spinner"></div>
+        <span class="btn-text"></span>
+      </div>
+    </button>
+
+    <div class="footer">Secure • Read-only access to your schedule</div>
+
+  </div>
+</div>
+
+<script>
+  async function checkSession() {
+    try {
+      const res = await fetch('/me');
+      const d = await res.json();
+      if (d.loggedIn) window.location.replace('/home.html');
+    } catch {}
+  }
+
+  function showAlert(msg) {
+    const el = document.getElementById('alert');
+    document.getElementById('alert-msg').textContent = msg;
+    el.classList.remove('hidden');
+    document.getElementById('arcosId').classList.add('error');
+    document.getElementById('name').classList.add('error');
+  }
+
+  function hideAlert() {
+    document.getElementById('alert').classList.add('hidden');
+    document.getElementById('arcosId').classList.remove('error');
+    document.getElementById('name').classList.remove('error');
+  }
+
+  async function doLogin() {
+    const arcosId = document.getElementById('arcosId').value.trim();
+    const name    = document.getElementById('name').value.trim();
+    const btn     = document.getElementById('loginBtn');
+
+    hideAlert();
+
+    if (!arcosId || !name) {
+      showAlert('Please enter both Arcos ID and name.');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.classList.add('loading');
+
+    try {
+      const res  = await fetch('/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ arcosId, name }),
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        window.location.replace('/home.html');
+      } else {
+        showAlert(data.message || 'Invalid credentials.');
+        btn.disabled = false;
+        btn.classList.remove('loading');
+      }
+    } catch {
+      showAlert('Network error. Please try again.');
+      btn.disabled = false;
+      btn.classList.remove('loading');
+    }
+  }
+
+  document.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+  checkSession();
+</script>
+</body>
+</html>

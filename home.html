@@ -1,96 +1,452 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Home</title>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Arcos Portal — Dashboard</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
 
-<style>
-@font-face {
-    font-family: "CFont";
-    src: url("font.woff") format("woff");
-}
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-*{
-    font-family: "CFont", Arial, Helvetica, sans-serif;
-    -webkit-tap-highlight-color: transparent;
-    box-sizing: border-box;
-}
-
-body{
-    margin:20px;
-}
-
-h1{
-    margin-bottom:0;
-}
-
-span{
-    color:#666;
-}
-
-button{
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    cursor:pointer;
-    background:#fff;
-    border:2px solid #dadce0;
-    border-radius:3rem;
-    padding:1rem;
-    margin-top:30px;
-    width:220px;
-}
-
-button:active{
-    background:whitesmoke;
-}
-
-img{
-    height:150px;
-}
-
-button:active{
-    scale:.97;
-}
-</style>
-</head>
-
-<body>
-
-<h1 id="name">Loading...</h1>
-<span id="id"></span>
-
-<a href="schedule.html">
-    <button>
-        <img src="schedule.png" alt="Schedule">
-        My Schedule
-    </button>
-</a>
-
-<script>
-
-async function loadUser(){
-
-    const res = await fetch('/user');
-    const json = await res.json();
-
-    if(!json.success){
-        location.href='/';
-        return;
+    :root {
+      --bg:        #0A0F1E;
+      --surface:   rgba(255,255,255,0.04);
+      --border:    rgba(255,255,255,0.08);
+      --blue:      #3B82F6;
+      --blue-dim:  rgba(59,130,246,0.15);
+      --indigo:    #6366F1;
+      --green:     #10B981;
+      --green-dim: rgba(16,185,129,0.12);
+      --amber:     #F59E0B;
+      --amber-dim: rgba(245,158,11,0.12);
+      --purple:    #8B5CF6;
+      --purple-dim:rgba(139,92,246,0.12);
+      --text:      #F0F4FF;
+      --muted:     rgba(240,244,255,0.45);
+      --muted2:    rgba(240,244,255,0.25);
     }
 
-    document.getElementById('name').textContent =
-        'Hi, ' + json.data["Name"];
+    html { scroll-behavior: smooth; }
 
-    document.getElementById('id').textContent =
-        json.data["Arcos ID"];
-}
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
 
-loadUser();
+    /* ── Mesh ── */
+    .mesh {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 70% 50% at 15% 5%,  rgba(59,130,246,0.15) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 40% at 85% 85%, rgba(99,102,241,0.12) 0%, transparent 50%),
+        radial-gradient(ellipse 40% 35% at 55% 25%, rgba(16,185,129,0.06) 0%, transparent 45%);
+      animation: meshPulse 9s ease-in-out infinite alternate;
+    }
+    @keyframes meshPulse {
+      0%   { opacity: 0.65; }
+      100% { opacity: 1; }
+    }
 
+    .grid-overlay {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    /* ── Layout ── */
+    .page {
+      position: relative; z-index: 1;
+      max-width: 560px;
+      margin: 0 auto;
+      padding: 0 1.25rem 4rem;
+    }
+
+    /* ── Topbar ── */
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.25rem 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 2rem;
+      animation: fadeDown 0.4s ease both;
+    }
+    .topbar-brand {
+      display: flex; align-items: center; gap: 9px;
+    }
+    .brand-icon {
+      width: 30px; height: 30px;
+      background: linear-gradient(135deg, var(--blue), var(--indigo));
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+    }
+    .brand-name { font-size: 14px; font-weight: 600; }
+    .topbar-right { display: flex; align-items: center; gap: 10px; }
+    .user-id {
+      font-size: 12px; color: var(--muted);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 4px 10px;
+    }
+    .logout-btn {
+      font-size: 12px; font-weight: 500;
+      color: var(--muted);
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 5px 12px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: color 0.2s, border-color 0.2s, background 0.2s;
+    }
+    .logout-btn:hover {
+      color: var(--text);
+      border-color: rgba(255,255,255,0.2);
+      background: var(--surface);
+    }
+
+    /* ── Greeting ── */
+    .greeting {
+      margin-bottom: 2rem;
+      animation: fadeUp 0.5s 0.05s ease both;
+    }
+    .greeting-eyebrow {
+      font-size: 11px; font-weight: 500; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--blue);
+      margin-bottom: 6px;
+    }
+    .greeting h1 {
+      font-size: 26px; font-weight: 600; line-height: 1.2;
+    }
+    .greeting p { font-size: 13px; color: var(--muted); margin-top: 5px; }
+
+    /* ── Today card ── */
+    .today-card {
+      position: relative; overflow: hidden;
+      background: linear-gradient(135deg, rgba(59,130,246,0.18), rgba(99,102,241,0.12));
+      border: 1px solid rgba(59,130,246,0.25);
+      border-radius: 18px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      animation: fadeUp 0.5s 0.1s ease both;
+    }
+    .today-card::before {
+      content: '';
+      position: absolute; top: -40px; right: -40px;
+      width: 120px; height: 120px;
+      background: radial-gradient(circle, rgba(59,130,246,0.25), transparent 70%);
+      border-radius: 50%;
+    }
+    .card-eyebrow {
+      font-size: 10.5px; font-weight: 500; letter-spacing: 0.09em;
+      text-transform: uppercase; color: var(--muted);
+      margin-bottom: 1rem;
+    }
+    .shift-display {
+      display: flex; align-items: center; gap: 14px;
+    }
+    .shift-badge {
+      width: 52px; height: 52px; flex-shrink: 0;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+    }
+    .shift-badge.day    { background: rgba(245,158,11,0.2); }
+    .shift-badge.night  { background: rgba(99,102,241,0.2); }
+    .shift-badge.off    { background: rgba(16,185,129,0.2); }
+    .shift-badge.other  { background: rgba(139,92,246,0.2); }
+    .shift-badge.none   { background: rgba(255,255,255,0.06); }
+
+    .shift-info {}
+    .shift-name {
+      font-size: 20px; font-weight: 600; line-height: 1.2;
+    }
+    .shift-date { font-size: 13px; color: var(--muted); margin-top: 3px; }
+
+    .no-shift-msg { font-size: 15px; color: var(--muted); }
+
+    /* ── My schedule btn ── */
+    .sched-toggle {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 18px;
+      display: flex; align-items: center; justify-content: space-between;
+      cursor: pointer; font-family: inherit;
+      color: var(--text);
+      font-size: 14px; font-weight: 500;
+      transition: background 0.2s, border-color 0.2s;
+      animation: fadeUp 0.5s 0.15s ease both;
+      margin-bottom: 1rem;
+    }
+    .sched-toggle:hover {
+      background: rgba(255,255,255,0.07);
+      border-color: rgba(255,255,255,0.14);
+    }
+    .sched-toggle-left { display: flex; align-items: center; gap: 10px; }
+    .sched-icon {
+      width: 32px; height: 32px;
+      background: var(--blue-dim);
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px;
+    }
+    .chevron {
+      font-size: 13px; color: var(--muted);
+      transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+    .chevron.open { transform: rotate(180deg); }
+
+    /* ── Schedule panel ── */
+    .schedule-panel {
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.45s cubic-bezier(0.4,0,0.2,1);
+      animation: fadeUp 0.5s 0.2s ease both;
+    }
+    .schedule-panel.open { max-height: 2000px; }
+
+    .schedule-inner {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+
+    .sched-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      font-size: 11px; font-weight: 500; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--muted);
+    }
+
+    .sched-row {
+      display: flex; align-items: center;
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      gap: 12px;
+      transition: background 0.15s;
+    }
+    .sched-row:last-child { border-bottom: none; }
+    .sched-row:hover { background: rgba(255,255,255,0.03); }
+    .sched-row.is-today {
+      background: rgba(59,130,246,0.07);
+      border-left: 2px solid var(--blue);
+    }
+
+    .sched-dot {
+      width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+    }
+    .dot-day    { background: var(--amber); }
+    .dot-night  { background: var(--indigo); }
+    .dot-off    { background: var(--green); }
+    .dot-other  { background: var(--purple); }
+    .dot-none   { background: rgba(255,255,255,0.2); }
+
+    .sched-date {
+      font-size: 13px; color: var(--muted);
+      flex: 1;
+    }
+    .sched-date.today-label {
+      color: var(--text); font-weight: 500;
+    }
+    .today-tag {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--blue);
+      background: var(--blue-dim);
+      padding: 2px 7px; border-radius: 4px;
+      margin-left: 7px;
+    }
+
+    .pill {
+      font-size: 11.5px; font-weight: 500;
+      padding: 3px 11px; border-radius: 20px;
+      white-space: nowrap;
+    }
+    .pill-day    { background: var(--amber-dim);  color: #FDE68A; }
+    .pill-night  { background: var(--blue-dim);   color: #93C5FD; }
+    .pill-off    { background: var(--green-dim);  color: #6EE7B7; }
+    .pill-other  { background: var(--purple-dim); color: #C4B5FD; }
+    .pill-none   { background: rgba(255,255,255,0.05); color: var(--muted2); }
+
+    /* ── Loading skeleton ── */
+    .skeleton {
+      background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.09) 50%, rgba(255,255,255,0.05) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: 8px;
+    }
+    @keyframes shimmer {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    .loading-wrap {
+      padding: 3rem 0; text-align: center;
+    }
+    .loading-wrap p { font-size: 14px; color: var(--muted); }
+
+    /* ── Animations ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 480px) {
+      .greeting h1 { font-size: 22px; }
+      .shift-name  { font-size: 17px; }
+      .today-card  { padding: 1.25rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="mesh"></div>
+<div class="grid-overlay"></div>
+
+<div class="page">
+
+  <div class="topbar">
+    <div class="topbar-brand">
+      <div class="brand-icon">🔷</div>
+      <div class="brand-name">Arcos Portal</div>
+    </div>
+    <div class="topbar-right">
+      <div class="user-id" id="topUserId">—</div>
+      <button class="logout-btn" onclick="doLogout()">Sign out</button>
+    </div>
+  </div>
+
+  <div id="main">
+    <div class="loading-wrap">
+      <p>Loading your schedule…</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  let scheduleOpen = false;
+
+  function classifyShift(shift) {
+    if (!shift) return 'none';
+    const s = shift.toLowerCase();
+    if (s.includes('day'))   return 'day';
+    if (s.includes('night')) return 'night';
+    if (s.includes('off'))   return 'off';
+    return 'other';
+  }
+
+  function shiftEmoji(type) {
+    return { day: '☀️', night: '🌙', off: '🏖️', other: '📋', none: '—' }[type];
+  }
+
+  function todayKey() {
+    const d = new Date();
+    return `${d.getDate()}-${d.toLocaleString('en-US', { month: 'short' })}`;
+  }
+
+  function render(data) {
+    document.getElementById('topUserId').textContent = data.arcosId;
+
+    const today      = todayKey();
+    const todayEntry = data.schedule.find(s => s.date === today);
+    const shiftType  = classifyShift(todayEntry?.shift);
+
+    const todayBlock = todayEntry?.shift
+      ? `<div class="shift-display">
+           <div class="shift-badge ${shiftType}">${shiftEmoji(shiftType)}</div>
+           <div class="shift-info">
+             <div class="shift-name">${todayEntry.shift}</div>
+             <div class="shift-date">${todayEntry.date}</div>
+           </div>
+         </div>`
+      : `<div class="shift-display">
+           <div class="shift-badge none">📅</div>
+           <div class="no-shift-msg">No shift assigned for today<br><span style="font-size:12px;color:var(--muted2)">${today}</span></div>
+         </div>`;
+
+    const scheduleRows = data.schedule.map(s => {
+      const isToday = s.date === today;
+      const type    = classifyShift(s.shift);
+      return `
+        <div class="sched-row ${isToday ? 'is-today' : ''}">
+          <div class="sched-dot dot-${type}"></div>
+          <div class="sched-date ${isToday ? 'today-label' : ''}">
+            ${s.date}${isToday ? '<span class="today-tag">Today</span>' : ''}
+          </div>
+          <span class="pill pill-${type}">${s.shift || 'No shift'}</span>
+        </div>`;
+    }).join('');
+
+    document.getElementById('main').innerHTML = `
+      <div class="greeting">
+        <div class="greeting-eyebrow">Dashboard</div>
+        <h1>Hello, ${data.name}</h1>
+        <p>Here's your shift information for today</p>
+      </div>
+
+      <div class="today-card">
+        <div class="card-eyebrow">Today's shift</div>
+        ${todayBlock}
+      </div>
+
+      <button class="sched-toggle" onclick="toggleSchedule()">
+        <div class="sched-toggle-left">
+          <div class="sched-icon">📆</div>
+          <span>My schedule</span>
+        </div>
+        <span class="chevron" id="chevron">▾</span>
+      </button>
+
+      <div class="schedule-panel" id="schedPanel">
+        <div class="schedule-inner">
+          <div class="sched-header">Full schedule — ${data.schedule.length} days</div>
+          ${scheduleRows}
+        </div>
+      </div>
+    `;
+  }
+
+  function toggleSchedule() {
+    scheduleOpen = !scheduleOpen;
+    document.getElementById('schedPanel').classList.toggle('open', scheduleOpen);
+    document.getElementById('chevron').classList.toggle('open', scheduleOpen);
+  }
+
+  async function doLogout() {
+    await fetch('/logout');
+    window.location.replace('/');
+  }
+
+  async function init() {
+    try {
+      const res  = await fetch('/me');
+      const data = await res.json();
+      if (!data.loggedIn) { window.location.replace('/'); return; }
+      render(data);
+    } catch {
+      window.location.replace('/');
+    }
+  }
+
+  init();
 </script>
-
 </body>
 </html>
