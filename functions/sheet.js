@@ -1,11 +1,11 @@
 export async function onRequest(context) {
-  const SHEET_ID = "1OyX6V_7SGFBbTzL6vTpq4gj3PQ0Q5euPUsAYraxyY94";
+  const SHEET_ID   = "1OyX6V_7SGFBbTzL6vTpq4gj3PQ0Q5euPUsAYraxyY94";
   const SHEET_NAME = "Sheet1";
 
   const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tq=select%20*&sheet=${encodeURIComponent(SHEET_NAME)}`;
 
   try {
-    const res = await fetch(url);
+    const res  = await fetch(url);
     const text = await res.text();
 
     const json = text
@@ -17,14 +17,7 @@ export async function onRequest(context) {
 
     const rows = data.table.rows.map(row => {
       const obj = {};
-      row.c.forEach((cell, i) => {
-        let val = cell ? cell.v : null;
-        if (typeof val === "string" && val.startsWith("Date(")) {
-          const parts = val.match(/\d+/g).map(Number);
-          val = new Date(parts[0], parts[1], parts[2]).toLocaleDateString("en-IN");
-        }
-        obj[cols[i]] = val;
-      });
+      row.c.forEach((cell, i) => { obj[cols[i]] = cell ? cell.v : null; });
       return obj;
     });
 
