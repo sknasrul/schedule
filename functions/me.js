@@ -14,7 +14,7 @@ export async function onRequest(context) {
 
     const user = JSON.parse(decodeURIComponent(match[1]));
 
-    const url  = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tq=select%20*&sheet=${encodeURIComponent(SHEET_NAME)}`;
+    const url  = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tq=select%20*&sheet=${encodeURIComponent(SHEET_NAME)}&headers=2`;
     const res  = await fetch(url);
     const text = await res.text();
 
