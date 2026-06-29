@@ -2,8 +2,7 @@ export async function onRequest(context) {
   const SHEET_ID   = "1OyX6V_7SGFBbTzL6vTpq4gj3PQ0Q5euPUsAYraxyY94";
   const SHEET_NAME = "Sheet1";
 
-  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tq=select%20*&sheet=${encodeURIComponent(SHEET_NAME)}`;
-
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tq=select%20*&sheet=${encodeURIComponent(SHEET_NAME)}&headers=2`;
   try {
     const res  = await fetch(url);
     const text = await res.text();
