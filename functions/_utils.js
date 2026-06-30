@@ -3,7 +3,7 @@
 
 // ---- Configure these two values for your sheet ----
 // Open your sheet, copy the long ID from the URL between /d/ and /edit
-const DEFAULT_SHEET_ID = "YOUR_GOOGLE_SHEET_ID";
+const DEFAULT_SHEET_ID = "1OyX6V_7SGFBbTzL6vTpq4gj3PQ0Q5euPUsAYraxyY94";
 // The gid is the number after "gid=" in the URL when you're on the right tab (0 = first tab)
 const DEFAULT_GID = "0";
 // -----------------------------------------------------
