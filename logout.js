@@ -1,8 +1,9 @@
-export async function onRequest(context) {
+export async function onRequestPost() {
   return new Response(JSON.stringify({ success: true }), {
+    status: 200,
     headers: {
       "Content-Type": "application/json",
-      "Set-Cookie": "arcos_user=; Path=/; Max-Age=0; HttpOnly; SameSite=Lax",
+      "Set-Cookie": "session=; HttpOnly; Secure; Path=/; SameSite=Lax; Max-Age=0",
     },
   });
 }

@@ -1,67 +1,35 @@
-export async function onRequest(context) {
-  if (context.request.method !== "POST") {
-    return new Response("Method not allowed", { status: 405 });
+import { getSheetData, findUser, json } from "../_utils.js";
+
+export async function onRequestPost(context) {
+  const { request, env } = context;
+
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return json({ success: false, message: "Could not read the form. Please try again." }, 400);
   }
 
-  const SHEET_ID   = "1OyX6V_7SGFBbTzL6vTpq4gj3PQ0Q5euPUsAYraxyY94";
-  const SHEET_NAME = "Sheet1";
+  const arcosId = (body.arcosId || "").toString().trim();
+  const name = (body.name || "").toString().trim();
+
+  if (!arcosId || !name) {
+    return json({ success: false, message: "Enter both your Arcos ID and your name." }, 400);
+  }
 
   try {
-    const { arcosId, name } = await context.request.json();
-
-    if (!arcosId || !name) {
-      return new Response(JSON.stringify({ success: false, message: "Missing fields" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
-
-    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tq=select%20*&sheet=${encodeURIComponent(SHEET_NAME)}`;
-    const res  = await fetch(url);
-    const text = await res.text();
-
-    const json = text
-      .replace(/^[^(]+\(/, "")
-      .replace(/\);?\s*$/, "");
-
-    const data = JSON.parse(json);
-    const cols = data.table.cols.map(c => c.label);
-
-    const rows = data.table.rows.map(row => {
-      const obj = {};
-      row.c.forEach((cell, i) => { obj[cols[i]] = cell ? cell.v : null; });
-      return obj;
-    });
-
-    const user = rows.find(r =>
-      r["Arcos ID"]?.toString().trim().toLowerCase() === arcosId.trim().toLowerCase() &&
-      r["Name"]?.toString().trim().toLowerCase()     === name.trim().toLowerCase()
-    );
+    const { headers, rows } = await getSheetData(env);
+    const user = findUser(rows, headers, arcosId, name);
 
     if (!user) {
-      return new Response(JSON.stringify({ success: false, message: "Invalid Arcos ID or Name. Please check and try again." }), {
-        status: 401,
-        headers: { "Content-Type": "application/json" },
-      });
+      return json({ success: false, message: "Arcos ID or name doesn't match our records." }, 401);
     }
 
-    const cookieValue = encodeURIComponent(JSON.stringify({
-      arcosId: user["Arcos ID"],
-      name:    user["Name"],
-    }));
+    const token = btoa(JSON.stringify({ arcosId: user.arcosId, name: user.name }));
+    const cookie = `session=${token}; HttpOnly; Secure; Path=/; SameSite=Lax; Max-Age=2592000`;
 
-    return new Response(JSON.stringify({ success: true, name: user["Name"] }), {
-      headers: {
-        "Content-Type": "application/json",
-        // 30 days cookie
-        "Set-Cookie": `arcos_user=${cookieValue}; Path=/; Max-Age=2592000; HttpOnly; SameSite=Lax`,
-      },
-    });
-
-  } catch (e) {
-    return new Response(JSON.stringify({ success: false, message: "Server error. Try again later." }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    return json({ success: true, name: user.name }, 200, { "Set-Cookie": cookie });
+  } catch (err) {
+    return json({ success: false, message: "Couldn't reach the schedule sheet. Try again shortly." }, 502);
   }
 }
