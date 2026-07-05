@@ -25,8 +25,15 @@ export async function onRequestPost(context) {
     }
 
     return new Response(
-        `Not Match
-Stored: "${normalize(storedName)}"
-Entered: "${normalize(name)}"`
+        return new Response(JSON.stringify({
+    stored: storedName,
+    entered: name,
+    storedNormalized: normalize(storedName),
+    enteredNormalized: normalize(name)
+}, null, 2), {
+    headers: {
+        "Content-Type": "application/json"
+    }
+});
     );
 }
