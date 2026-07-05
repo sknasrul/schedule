@@ -28,26 +28,42 @@ export async function onRequestPost(context) {
             .toLowerCase();
     }
 
-    const normalizedStored = normalize(storedName);
-    const normalizedEntered = normalize(name);
-
-    // Login successful
-    if (normalizedStored === normalizedEntered) {
-
-        return new Response(null, {
-            status: 302,
-            headers: {
-                "Location": "/home.html",
-                "Set-Cookie": `${encodeURIComponent(name)}=${encodeURIComponent(id)}; Path=/; Max-Age=31536000; SameSite=Lax; Secure`
-            }
-        });
-
+    if (normalize(storedName) !== normalize(name)) {
+        return Response.redirect(
+            new URL("/index.html", context.request.url),
+            302
+        );
     }
 
-    // Login failed
-    return Response.redirect(
-        new URL("/index.html", context.request.url),
-        302
+    // Delete all existing cookies sent by the browser
+    const cookieHeader = context.request.headers.get("Cookie") || "";
+    const cookies = cookieHeader
+        .split(";")
+        .map(c => c.trim())
+        .filter(Boolean);
+
+    const headers = new Headers();
+
+    // Expire every existing cookie
+    for (const cookie of cookies) {
+        const cookieName = cookie.split("=")[0];
+        headers.append(
+            "Set-Cookie",
+            `${cookieName}=; Path=/; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT`
+        );
+    }
+
+    // Set the new login cookie (name=id)
+    headers.append(
+        "Set-Cookie",
+        `${encodeURIComponent(name)}=${encodeURIComponent(id)}; Path=/; Max-Age=31536000; SameSite=Lax; Secure`
     );
+
+    headers.set("Location", "/home.html");
+
+    return new Response(null, {
+        status: 302,
+        headers
+    });
 
 }
