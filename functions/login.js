@@ -5,26 +5,29 @@ export async function onRequestPost(context) {
     const id = (form.get("id") || "").trim();
     const name = (form.get("name") || "").trim();
 
-    // Get the name stored for this ID
     const storedName = await context.env.EMPLOYEE_DB.get(id);
 
-    // ID not found
-    if (storedName === null) {
+    if (!storedName) {
         return Response.redirect(
             new URL("/index.html", context.request.url),
             302
         );
     }
 
-    // Compare names (case-insensitive)
-    if (storedName.toLowerCase() !== name.toLowerCase()) {
+    // Normalize names
+    const normalize = str =>
+        str
+            .trim()                  // Remove leading/trailing spaces
+            .replace(/\s+/g, " ")    // Multiple spaces → single space
+            .toLowerCase();          // Ignore case
+
+    if (normalize(storedName) !== normalize(name)) {
         return Response.redirect(
             new URL("/index.html", context.request.url),
             302
         );
     }
 
-    // Login successful
     return Response.redirect(
         new URL("/home.html", context.request.url),
         302
