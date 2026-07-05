@@ -2,34 +2,31 @@ export async function onRequestPost(context) {
 
     const form = await context.request.formData();
 
-    const arcos = form.get("arcos");
-    const name = form.get("name");
+    const id = (form.get("id") || "").trim();
+    const name = (form.get("name") || "").trim();
 
-    const response = await fetch(
-        "https://script.google.com/macros/s/AKfycbyDfnNPFSlqyXySGI5L3fFwcDawvsf31hc2ISgl0bZCNj15v1RoI5SetTBNesaPfmXg/exec",
-        {
-            method: "POST",
-            body: new URLSearchParams({
-                arcos,
-                name
-            })
-        }
-    );
+    // Get the name stored for this ID
+    const storedName = await context.env.EMPLOYEE_DB.get(id);
 
-    const result = await response.json();
-
-    if(result.success){
-
+    // ID not found
+    if (storedName === null) {
         return Response.redirect(
-            new URL("/home.html", context.request.url),
+            new URL("/index.html", context.request.url),
             302
         );
-
     }
 
+    // Compare names (case-insensitive)
+    if (storedName.toLowerCase() !== name.toLowerCase()) {
+        return Response.redirect(
+            new URL("/index.html", context.request.url),
+            302
+        );
+    }
+
+    // Login successful
     return Response.redirect(
-        new URL("/index.html", context.request.url),
+        new URL("/home.html", context.request.url),
         302
     );
-
 }
