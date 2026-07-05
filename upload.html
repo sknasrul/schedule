@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Upload CSV</title>
+
+<style>
+body{
+    font-family:Arial,sans-serif;
+    max-width:420px;
+    margin:50px auto;
+    padding:20px;
+}
+
+input,button{
+    width:100%;
+    padding:12px;
+    margin:10px 0;
+    box-sizing:border-box;
+}
+
+button{
+    cursor:pointer;
+}
+
+#msg{
+    margin-top:15px;
+    white-space:pre-wrap;
+}
+</style>
+</head>
+<body>
+
+<h2>Upload Users CSV</h2>
+
+<input
+    type="password"
+    id="password"
+    placeholder="Admin Password">
+
+<input
+    type="file"
+    id="csv"
+    accept=".csv">
+
+<button onclick="upload()">
+Upload
+</button>
+
+<div id="msg"></div>
+
+<script>
+async function upload(){
+
+    const file=document.getElementById("csv").files[0];
+
+    if(!file){
+        alert("Choose CSV");
+        return;
+    }
+
+    const password=document.getElementById("password").value;
+
+    const form=new FormData();
+
+    form.append("password",password);
+    form.append("file",file);
+
+    const r=await fetch("https://kv-upload.prime-nasruls.workers.dev/",{
+        method:"POST",
+        body:form
+    });
+
+    document.getElementById("msg").textContent=await r.text();
+}
+</script>
+
+</body>
+</html>
