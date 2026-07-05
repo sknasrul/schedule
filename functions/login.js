@@ -2,13 +2,11 @@ export async function onRequestPost(context) {
 
     const form = await context.request.formData();
 
-    // Normalize ID for KV lookup
+    // Get form values
     const id = (form.get("id") || "").trim().toUpperCase();
-
-    // Original name (used for cookie)
     const name = (form.get("name") || "").trim();
 
-    // Get stored name from KV
+    // Lookup ID in KV
     const storedName = await context.env.EMPLOYEE_DB.get(id);
 
     // ID not found
@@ -28,6 +26,7 @@ export async function onRequestPost(context) {
             .toLowerCase();
     }
 
+    // Name doesn't match
     if (normalize(storedName) !== normalize(name)) {
         return Response.redirect(
             new URL("/index.html", context.request.url),
@@ -35,30 +34,34 @@ export async function onRequestPost(context) {
         );
     }
 
-    // Delete all existing cookies sent by the browser
-    const cookieHeader = context.request.headers.get("Cookie") || "";
-    const cookies = cookieHeader
-        .split(";")
-        .map(c => c.trim())
-        .filter(Boolean);
-
+    // Prepare response headers
     const headers = new Headers();
 
-    // Expire every existing cookie
-    for (const cookie of cookies) {
-        const cookieName = cookie.split("=")[0];
-        headers.append(
-            "Set-Cookie",
-            `${cookieName}=; Path=/; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT`
-        );
-    }
+    // Delete existing cookies
+    const cookieHeader = context.request.headers.get("Cookie") || "";
 
-    // Set the new login cookie (name=id)
+    cookieHeader.split(";").forEach(cookie => {
+        const cookieName = cookie.split("=")[0]?.trim();
+        if (cookieName) {
+            headers.append(
+                "Set-Cookie",
+                `${cookieName}=; Path=/; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT`
+            );
+        }
+    });
+
+    // Set login cookies
     headers.append(
         "Set-Cookie",
-        `${encodeURIComponent(name)}=${encodeURIComponent(id)}; Path=/; Max-Age=31536000; SameSite=Lax; Secure`
+        `id=${encodeURIComponent(id)}; Path=/; Max-Age=31536000; SameSite=Lax; Secure`
     );
 
+    headers.append(
+        "Set-Cookie",
+        `name=${encodeURIComponent(storedName)}; Path=/; Max-Age=31536000; SameSite=Lax; Secure`
+    );
+
+    // Redirect after login
     headers.set("Location", "/home.html");
 
     return new Response(null, {
