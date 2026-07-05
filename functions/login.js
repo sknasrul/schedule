@@ -1,6 +1,8 @@
 export async function onRequestPost(context) {
     const form = await context.request.formData();
-    const id = (form.get("id") || "").trim();
+
+    // Normalize ID for lookup: trim + uppercase (assuming your keys are stored uppercase)
+    const id = (form.get("id") || "").trim().toUpperCase();
     const name = (form.get("name") || "").trim();
 
     const storedName = await context.env.EMPLOYEE_DB.get(id);
@@ -11,8 +13,8 @@ export async function onRequestPost(context) {
     function normalize(str) {
         return String(str)
             .trim()
-            .replace(/\s+/g, " ")   // collapse multiple spaces
-            .replace(/[\r\n]/g, "") // strip line breaks
+            .replace(/\s+/g, " ")
+            .replace(/[\r\n]/g, "")
             .toLowerCase();
     }
 
@@ -23,15 +25,12 @@ export async function onRequestPost(context) {
         return new Response("Login Success");
     }
 
-    // Debug response for mismatches
     return new Response(JSON.stringify({
         stored: storedName,
         entered: name,
         storedNormalized: normalizedStored,
         enteredNormalized: normalizedEntered
     }, null, 2), {
-        headers: {
-            "Content-Type": "application/json"
-        }
+        headers: { "Content-Type": "application/json" }
     });
 }
