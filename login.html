@@ -1,10 +1,132 @@
-<form method="POST" action="/login">
-
-    <input name="id" id="id" placeholder="Arcos ID" required>
-
-    <input name="name" id="name" placeholder="Name" required>
-
-    <button type="submit">Submit</button>
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no">
+    <title>Login</title>
+<style>
+    *{
+        -webkit-tap-highlight-color: transparent;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    form{
+        display: grid;
+        place-items: center;
+    }
+    h4{font-weight: normal;}
+    .input{
+        position: relative;
+        width: min(95%, 355px);
+        font-size: 1.3rem;
+        margin: .5rem 0;
+        padding: 0;
+    }
+    input{
+        width: 100%;
+        border: 2px solid #dadce0;
+        border-radius: 3rem;
+        outline: none;
+        aspect-ratio: 5/1;
+        padding: 0 1rem;
+        font-size: 1.3rem;
+        box-sizing: border-box;
+    }
+    label{
+        position: absolute;
+        pointer-events: none;
+        top: 50%;
+        left: 1.7rem;
+        padding: .2rem;
+        transform: translateY(-50%);
+        color: #5f6368;
+        background-color: white;
+        transition: transform 0.2s ease, top 0.2s ease, font-size 0.2s ease, color 0.2s ease;
+    }
+    input:focus{
+        border: 2px solid #1a73e8;
+    }
+    input:focus ~ label, input:not(:placeholder-shown) ~ label{
+        top: 0;
+        font-size: 1rem;
+        font-weight: bold;
+        color: #5f6368;
+    }
+    input:focus ~ label{
+        color: #1a73e8;
+    }
+    button{
+        position: relative;
+        font-size: 1.1rem;
+        font-weight:bold;
+        padding: 1rem 2rem;
+        border:none;
+        border-radius: 3rem;
+        cursor: pointer;
+        color: #ffffff;
+        background-color: rgb(0, 100, 224);
+        transition: transform 0.1s ease, box-shadow 0.1s ease;
+    }
+    button .ripple-wave {
+        position: absolute;
+        border-radius: 50%;
+        transform: scale(0);
+        background: rgba(255, 255, 255, 0.35); /* Translucent overlay for the highlight contrast */
+        pointer-events: none; /* Prevents the ripple from blocking consecutive click events */
+        animation: expand-ripple 0.6s linear;
+    }
+    @keyframes expand-ripple {
+        to {
+            transform: scale(4);
+            opacity: 0;
+        }
+    }
+    @media (min-width: 426px){
+        body{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        form{
+            box-shadow:0 10px 30px rgba(0,0,0,.08);
+            padding: 2rem 0;
+            border-radius: 3rem;
+            width: 425px;
+        }
+    }
+</style>
+</head>
+<body>
+<form method="post" action="/login">
+    <h1>Employee Login</h1>
+    <img src="person.avif" height="150px">
+    <h4>Enter your Arcos ID and Name</h4>
+    <div class="input">
+        <input type="text" placeholder="" required>
+        <label>Arcos ID</label>
+    </div>
+    <div class="input">
+        <input type="text" placeholder="" required>
+        <label>Name</label>
+    </div>
+    <br><button>Submit</button>
 </form>
-this is login page
+<script>
+document.querySelector('button').addEventListener('click', function(e) {
+    const rect = this.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+
+    this.querySelector('.ripple-wave')?.remove();
+
+    const ripple = document.createElement('span');
+    ripple.className = 'ripple-wave';
+    ripple.style.cssText = `
+        width:${size}px; height:${size}px;
+        left:${e.clientX - rect.left - size / 2}px;
+        top:${e.clientY - rect.top - size / 2}px;
+    `;
+    this.appendChild(ripple);
+});
+</script>
+</body>
+</html>
