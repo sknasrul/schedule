@@ -62,7 +62,7 @@ export async function onRequestPost(context) {
     );
 
     // Redirect after login
-    headers.set("Location", "/home.html");
+    headers.set("Location", "/index.html");
 
     return new Response(null, {
         status: 302,
