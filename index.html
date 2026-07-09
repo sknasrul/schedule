@@ -1,1 +1,807 @@
-hi user,
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Shift Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+  :root{
+    --grad: linear-gradient(160deg, #b388e8 0%, #ec6fc7 35%, #ff8fb0 60%, #ffb08a 100%);
+    --card-bg: linear-gradient(160deg,#fdeedd,#fbe0cf);
+    --ink: #2c2440;
+    --muted: #6f6580;
+    --glass: rgba(255,255,255,0.22);
+    --glass-border: rgba(255,255,255,0.55);
+    --glow: rgba(255,255,255,0.55);
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+
+  html,body{
+    height:100%;
+    width:100%;
+    overflow:hidden;
+    font-family:'Inter', system-ui, -apple-system, sans-serif;
+    background:var(--grad);
+    color:var(--ink);
+  }
+
+  body{
+    display:flex;
+    flex-direction:column;
+    height:100vh;
+    padding:18px;
+    gap:16px;
+  }
+
+  .page{
+    display:flex;
+    flex-direction:column;
+    height:100%;
+    width:100%;
+    max-width:1100px;
+    margin:0 auto;
+    gap:16px;
+  }
+
+  /* ---------- HEADER ---------- */
+  header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:10px 18px;
+    border-radius:24px;
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);
+    box-shadow:0 0 22px rgba(255,255,255,0.28), 0 10px 30px rgba(90,30,60,0.15);
+    flex-shrink:0;
+  }
+
+  .user-info{
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+
+  .avatar{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    background:rgba(255,255,255,0.55);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:700;
+    font-size:14px;
+    color:var(--ink);
+    flex-shrink:0;
+  }
+
+  .user-text{ display:flex; flex-direction:column; gap:2px; }
+
+  .user-id{
+    font-size:10.5px;
+    font-weight:600;
+    letter-spacing:0.03em;
+    color:var(--muted);
+    background:rgba(255,255,255,0.5);
+    padding:2px 10px;
+    border-radius:999px;
+    width:fit-content;
+  }
+
+  .user-name{
+    font-size:16px;
+    font-weight:700;
+  }
+
+  .logout-btn{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:40px;
+    height:40px;
+    background:rgba(255,255,255,0.55);
+    border:none;
+    border-radius:50%;
+    color:var(--ink);
+    cursor:pointer;
+    flex-shrink:0;
+    transition:transform .25s ease, background .25s ease, box-shadow .25s ease;
+  }
+  .logout-btn svg{ width:18px; height:18px; }
+  .logout-btn:hover{
+    background:#fff;
+    transform:translateY(-1px);
+    box-shadow:0 0 14px rgba(255,255,255,0.6), 0 6px 16px rgba(80,20,80,0.18);
+  }
+  .logout-btn:active{ transform:translateY(0); }
+
+  /* ---------- CARD STACK ---------- */
+  .stack-wrap{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    min-height:0;
+    position:relative;
+  }
+
+  .card-stack{
+    position:relative;
+    width:min(320px, 78vw);
+    height:min(280px, 32vh);
+    touch-action:none;
+  }
+
+  .shift-card{
+    position:absolute;
+    inset:0;
+    border-radius:28px;
+    background:var(--card-bg);
+    border:1.5px solid rgba(255,255,255,0.6);
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.12),
+      0 0 32px 2px rgba(255,255,255,0.4),
+      0 20px 45px rgba(90,30,60,0.22);
+    padding:22px 24px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    will-change:transform, opacity, filter;
+    user-select:none;
+    cursor:grab;
+  }
+  .shift-card:active{ cursor:grabbing; }
+
+  .vibe-orb{
+    position:absolute;
+    top:14px;
+    right:52px;
+    width:34px;
+    height:34px;
+    pointer-events:none;
+  }
+
+  .card-top{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+  }
+
+  .card-day-label{
+    font-size:11.5px;
+    font-weight:700;
+    letter-spacing:0.12em;
+    color:var(--muted);
+  }
+
+  .card-date{
+    font-size:15.5px;
+    font-weight:600;
+    color:var(--ink);
+    margin-top:4px;
+  }
+
+  .card-arrows{
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+    color:var(--muted);
+    opacity:.6;
+  }
+  .card-arrows svg{ width:15px; height:15px; }
+
+  .card-bottom{
+    display:flex;
+    align-items:center;
+    gap:14px;
+  }
+
+  .shift-icon{
+    width:58px;
+    height:58px;
+    border-radius:16px;
+    background:rgba(255,214,120,0.5);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+    position:relative;
+    overflow:hidden;
+  }
+  .shift-icon.night{ background:rgba(150,160,255,0.35); }
+  .icon-lottie{ width:78%; height:78%; }
+  .icon-fallback{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
+  .icon-fallback svg{ width:28px; height:28px; }
+
+  .shift-name{
+    font-size:24px;
+    font-weight:800;
+    line-height:1.1;
+  }
+  .shift-time{
+    font-size:13.5px;
+    color:var(--muted);
+    font-weight:500;
+    margin-top:2px;
+  }
+
+  .swipe-hint{
+    margin-top:12px;
+    display:flex;
+    gap:24px;
+    font-size:12.5px;
+    font-weight:600;
+    color:rgba(60,40,70,0.75);
+    align-items:center;
+    flex-shrink:0;
+  }
+  .swipe-hint span{ display:flex; align-items:center; gap:4px; cursor:pointer; }
+  .swipe-hint svg{ width:13px; height:13px; }
+
+  /* ---------- ACTION BUTTONS ---------- */
+  .actions{
+    display:flex;
+    justify-content:center;
+    gap:14px;
+    flex-shrink:0;
+    padding-bottom:2px;
+  }
+
+  .action-btn{
+    position:relative;
+    width:86px;
+    height:82px;
+    border-radius:20px;
+    background:rgba(255,255,255,0.28);
+    border:1px solid rgba(255,255,255,0.4);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    cursor:pointer;
+    overflow:hidden;
+    color:var(--ink);
+    font-family:inherit;
+    transition:transform .3s ease, box-shadow .3s ease, background .3s ease;
+  }
+
+  .action-btn:hover{
+    transform:translateY(-3px) scale(1.04);
+    box-shadow:0 0 20px rgba(255,255,255,0.45), 0 12px 26px rgba(90,30,60,0.2);
+  }
+  .action-btn:active{ transform:translateY(-1px) scale(1.01); }
+
+  .action-btn .glow{
+    position:absolute;
+    width:140px;
+    height:140px;
+    border-radius:50%;
+    background:radial-gradient(circle, rgba(255,255,255,0.65) 0%, rgba(255,255,255,0) 70%);
+    left:var(--x, 50%);
+    top:var(--y, 50%);
+    transform:translate(-50%,-50%);
+    opacity:0;
+    transition:opacity .3s ease;
+    pointer-events:none;
+  }
+  .action-btn:hover .glow{ opacity:1; }
+
+  .action-btn svg{
+    width:22px;
+    height:22px;
+    z-index:1;
+    position:relative;
+  }
+  .action-btn .label{
+    font-size:12px;
+    font-weight:700;
+    z-index:1;
+    position:relative;
+  }
+
+  @media (min-width:700px){
+    .card-stack{ width:340px; height:300px; }
+    .action-btn{ width:96px; height:92px; }
+    .action-btn .label{ font-size:13px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition:none !important; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="page">
+    <header>
+      <div class="user-info">
+        <div class="avatar" id="avatarInitials">--</div>
+        <div class="user-text">
+          <span class="user-id" id="userId">-------</span>
+          <span class="user-name" id="userName">Guest User</span>
+        </div>
+      </div>
+      <button class="logout-btn" id="logoutBtn" title="Logout" aria-label="Logout" onclick="window.location.href='/login'">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+      </button>
+    </header>
+
+    <div class="stack-wrap">
+      <div class="card-stack" id="cardStack"></div>
+      <div class="swipe-hint">
+        <span id="hintDown">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          Yesterday
+        </span>
+        <span id="hintUp">
+          Tomorrow
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+        </span>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="action-btn" data-action="schedules" onclick="window.location.href='/schedules'">
+        <div class="glow"></div>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="3"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        <span class="label">Schedules</span>
+      </button>
+      <button class="action-btn" data-action="presence" onclick="window.location.href='/presents'">
+        <div class="glow"></div>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/>
+        </svg>
+        <span class="label">Presence</span>
+      </button>
+      <button class="action-btn" data-action="forms" onclick="window.location.href='/forms'">
+        <div class="glow"></div>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+        </svg>
+        <span class="label">Forms</span>
+      </button>
+    </div>
+  </div>
+
+<script>
+  /* ================= Cookie helpers ================= */
+  function getCookie(name){
+    const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+    return match ? decodeURIComponent(match[2]) : null;
+  }
+  function deleteCookie(name){
+    document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/`;
+  }
+
+  const userId = getCookie('id') || 'ARL19786';
+  const userName = getCookie('name') || 'Maidul Mir';
+
+  document.getElementById('userId').textContent = userId;
+  document.getElementById('userName').textContent = userName;
+  document.getElementById('avatarInitials').textContent = userName
+    .split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+
+  // Logout button just redirects to /login (see inline onclick on the button itself)
+
+  /* ================= Lottie animation data (embedded, no external asset) ================= */
+  const sunLottie = {
+    v:"5.9.0", fr:30, ip:0, op:90, w:100, h:100, nm:"sun", ddd:0, assets:[],
+    layers:[
+      {
+        ddd:0, ind:1, ty:4, nm:"rays", sr:1,
+        ks:{
+          o:{a:0,k:100},
+          r:{a:1,k:[{t:0,s:[0]},{t:90,s:[360]}]},
+          p:{a:0,k:[50,50,0]},
+          a:{a:0,k:[0,0,0]},
+          s:{a:1,k:[{t:0,s:[92,92,100]},{t:45,s:[104,104,100]},{t:90,s:[92,92,100]}]}
+        },
+        shapes:[
+          { ty:"gr", it:[
+            { ty:"sr", sy:1, pt:{a:0,k:8}, p:{a:0,k:[0,0]}, r:{a:0,k:0}, ir:{a:0,k:16}, or:{a:0,k:38}, is:{a:0,k:0}, os:{a:0,k:0} },
+            { ty:"fl", c:{a:0,k:[0.93,0.58,0.16,1]}, o:{a:0,k:90} },
+            { ty:"tr", p:{a:0,k:[0,0]}, a:{a:0,k:[0,0]}, s:{a:0,k:[100,100]}, r:{a:0,k:0}, o:{a:0,k:100} }
+          ]},
+          { ty:"gr", it:[
+            { ty:"el", p:{a:0,k:[0,0]}, s:{a:0,k:[36,36]} },
+            { ty:"fl", c:{a:0,k:[0.97,0.72,0.32,1]}, o:{a:0,k:100} },
+            { ty:"tr", p:{a:0,k:[0,0]}, a:{a:0,k:[0,0]}, s:{a:0,k:[100,100]}, r:{a:0,k:0}, o:{a:0,k:100} }
+          ]}
+        ],
+        ip:0, op:90, st:0
+      }
+    ]
+  };
+
+  const moonLottie = {
+    v:"5.9.0", fr:30, ip:0, op:120, w:100, h:100, nm:"moon", ddd:0, assets:[],
+    layers:[
+      { ddd:0, ind:1, ty:4, nm:"star1", sr:1,
+        ks:{
+          o:{a:1,k:[{t:0,s:[20]},{t:30,s:[90]},{t:60,s:[20]},{t:90,s:[90]},{t:120,s:[20]}]},
+          r:{a:0,k:0}, p:{a:0,k:[74,26,0]}, a:{a:0,k:[0,0,0]}, s:{a:0,k:[100,100,100]}
+        },
+        shapes:[{ ty:"gr", it:[
+          { ty:"sr", sy:1, pt:{a:0,k:4}, p:{a:0,k:[0,0]}, r:{a:0,k:0}, ir:{a:0,k:1.5}, or:{a:0,k:5}, is:{a:0,k:0}, os:{a:0,k:0} },
+          { ty:"fl", c:{a:0,k:[1,1,0.92,1]}, o:{a:0,k:100} },
+          { ty:"tr", p:{a:0,k:[0,0]}, a:{a:0,k:[0,0]}, s:{a:0,k:[100,100]}, r:{a:0,k:0}, o:{a:0,k:100} }
+        ]}], ip:0, op:120, st:0
+      },
+      { ddd:0, ind:2, ty:4, nm:"star2", sr:1,
+        ks:{
+          o:{a:1,k:[{t:0,s:[90]},{t:30,s:[20]},{t:60,s:[90]},{t:90,s:[20]},{t:120,s:[90]}]},
+          r:{a:0,k:0}, p:{a:0,k:[22,70,0]}, a:{a:0,k:[0,0,0]}, s:{a:0,k:[100,100,100]}
+        },
+        shapes:[{ ty:"gr", it:[
+          { ty:"sr", sy:1, pt:{a:0,k:4}, p:{a:0,k:[0,0]}, r:{a:0,k:0}, ir:{a:0,k:1.2}, or:{a:0,k:4}, is:{a:0,k:0}, os:{a:0,k:0} },
+          { ty:"fl", c:{a:0,k:[1,1,0.92,1]}, o:{a:0,k:100} },
+          { ty:"tr", p:{a:0,k:[0,0]}, a:{a:0,k:[0,0]}, s:{a:0,k:[100,100]}, r:{a:0,k:0}, o:{a:0,k:100} }
+        ]}], ip:0, op:120, st:0
+      },
+      { ddd:0, ind:3, ty:4, nm:"moonbody", sr:1,
+        ks:{
+          o:{a:0,k:100}, r:{a:0,k:0}, p:{a:0,k:[46,52,0]}, a:{a:0,k:[0,0,0]},
+          s:{a:1,k:[{t:0,s:[100,100,100]},{t:60,s:[106,106,100]},{t:120,s:[100,100,100]}]}
+        },
+        shapes:[{ ty:"gr", it:[
+          { ty:"el", p:{a:0,k:[0,0]}, s:{a:0,k:[52,52]} },
+          { ty:"fl", c:{a:0,k:[0.36,0.4,0.75,1]}, o:{a:0,k:95} },
+          { ty:"tr", p:{a:0,k:[0,0]}, a:{a:0,k:[0,0]}, s:{a:0,k:[100,100]}, r:{a:0,k:0}, o:{a:0,k:100} }
+        ]}], ip:0, op:120, st:0
+      }
+    ]
+  };
+
+  function mountLottie(container, data){
+    const fallback = container.querySelector('.icon-fallback');
+    if(typeof lottie === 'undefined'){ return; }
+    try{
+      const target = container.querySelector('.icon-lottie');
+      lottie.loadAnimation({ container: target, renderer:'svg', loop:true, autoplay:true, animationData:data });
+      if(fallback) fallback.style.display = 'none';
+    }catch(e){ /* keep static fallback visible */ }
+  }
+
+  /* ================= Shift data ================= */
+  const sunFallback = `<svg viewBox="0 0 24 24" fill="none" stroke="#e08a2b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
+  const moonFallback = `<svg viewBox="0 0 24 24" fill="none" stroke="#5b62c9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
+
+  function formatDate(offset){
+    const d = new Date();
+    d.setDate(d.getDate() + offset);
+    return d.toLocaleDateString('en-US', { weekday:'long', month:'short', day:'numeric' });
+  }
+
+  function getShift(offset){
+    const isDay = ((offset % 2) + 2) % 2 === 0;
+    return isDay
+      ? { label:'Day Shift', time:'08:00 — 16:00', fallback:sunFallback, data:sunLottie, night:false }
+      : { label:'Night Shift', time:'20:00 — 04:00', fallback:moonFallback, data:moonLottie, night:true };
+  }
+
+  // Infinite behaviour: labels are always relative to whichever card is in front —
+  // depth 0 is always "TODAY", depth 1 (next) is always "TOMORROW", depth 2 (prev) is always "YESTERDAY".
+  // This never runs out, no matter how many times the user swipes in either direction.
+  const DEPTH_LABEL = { 0:'TODAY', 1:'TOMORROW', 2:'YESTERDAY' };
+  const DEPTH_VIBE   = { 0:'today', 1:'tomorrow', 2:'yesterday' };
+
+  /* ================= Emotion "vibe" animations =================
+     Each day's mood is conveyed through motion, not words:
+       today     -> lively / energetic pulse  ("vibing")
+       tomorrow  -> gentle rising / anticipation  ("upcoming")
+       yesterday -> soft fading / settling  ("already ended")
+
+     Drop a hosted Lottie JSON URL below to use your own animation instead
+     of the built-in fallback (e.g. from LottieFiles). Leave empty to keep
+     the built-in ambient animation.
+  */
+  const VIBE_LOTTIE_URLS = {
+    today:     '', // 👉 paste a "lively / energetic" Lottie JSON URL here
+    tomorrow:  '', // 👉 paste an "upcoming / anticipation" Lottie JSON URL here
+    yesterday: ''  // 👉 paste a "faded / completed" Lottie JSON URL here
+  };
+
+  const vibeLottieFallback = {
+    today: {
+      v:"5.9.0", fr:30, ip:0, op:60, w:60, h:60, nm:"vibe-today", ddd:0, assets:[],
+      layers:[
+        { ddd:0, ind:1, ty:4, nm:"pulse", sr:1,
+          ks:{
+            o:{a:1,k:[{t:0,s:[70]},{t:15,s:[15]},{t:30,s:[70]},{t:45,s:[15]},{t:60,s:[70]}]},
+            r:{a:0,k:0}, p:{a:0,k:[30,30,0]}, a:{a:0,k:[0,0,0]},
+            s:{a:1,k:[{t:0,s:[80,80,100]},{t:15,s:[130,130,100]},{t:30,s:[80,80,100]},{t:45,s:[130,130,100]},{t:60,s:[80,80,100]}]}
+          },
+          shapes:[{ ty:"gr", it:[
+            { ty:"el", p:{a:0,k:[0,0]}, s:{a:0,k:[26,26]} },
+            { ty:"fl", c:{a:0,k:[1,0.55,0.4,1]}, o:{a:0,k:80} },
+            { ty:"tr", p:{a:0,k:[0,0]}, a:{a:0,k:[0,0]}, s:{a:0,k:[100,100]}, r:{a:0,k:0}, o:{a:0,k:100} }
+          ]}], ip:0, op:60, st:0
+        }
+      ]
+    },
+    tomorrow: {
+      v:"5.9.0", fr:30, ip:0, op:75, w:60, h:60, nm:"vibe-tomorrow", ddd:0, assets:[],
+      layers:[
+        { ddd:0, ind:1, ty:4, nm:"rise", sr:1,
+          ks:{
+            o:{a:1,k:[{t:0,s:[0]},{t:20,s:[85]},{t:55,s:[85]},{t:75,s:[0]}]},
+            r:{a:0,k:0},
+            p:{a:1,k:[{t:0,s:[30,44,0]},{t:75,s:[30,14,0]}]},
+            a:{a:0,k:[0,0,0]}, s:{a:0,k:[100,100,100]}
+          },
+          shapes:[{ ty:"gr", it:[
+            { ty:"sr", sy:1, pt:{a:0,k:3}, p:{a:0,k:[0,0]}, r:{a:0,k:180}, ir:{a:0,k:5}, or:{a:0,k:11}, is:{a:0,k:0}, os:{a:0,k:0} },
+            { ty:"fl", c:{a:0,k:[0.55,0.68,1,1]}, o:{a:0,k:85} },
+            { ty:"tr", p:{a:0,k:[0,0]}, a:{a:0,k:[0,0]}, s:{a:0,k:[100,100]}, r:{a:0,k:0}, o:{a:0,k:100} }
+          ]}], ip:0, op:75, st:0
+        }
+      ]
+    },
+    yesterday: {
+      v:"5.9.0", fr:30, ip:0, op:90, w:60, h:60, nm:"vibe-yesterday", ddd:0, assets:[],
+      layers:[
+        { ddd:0, ind:1, ty:4, nm:"fade", sr:1,
+          ks:{
+            o:{a:1,k:[{t:0,s:[55]},{t:45,s:[15]},{t:90,s:[55]}]},
+            r:{a:0,k:0}, p:{a:0,k:[30,30,0]}, a:{a:0,k:[0,0,0]},
+            s:{a:1,k:[{t:0,s:[100,100,100]},{t:45,s:[88,88,100]},{t:90,s:[100,100,100]}]}
+          },
+          shapes:[{ ty:"gr", it:[
+            { ty:"el", p:{a:0,k:[0,0]}, s:{a:0,k:[24,24]} },
+            { ty:"fl", c:{a:0,k:[0.6,0.58,0.66,1]}, o:{a:0,k:60} },
+            { ty:"tr", p:{a:0,k:[0,0]}, a:{a:0,k:[0,0]}, s:{a:0,k:[100,100]}, r:{a:0,k:0}, o:{a:0,k:100} }
+          ]}], ip:0, op:90, st:0
+        }
+      ]
+    }
+  };
+
+  function mountVibe(container, key){
+    if(typeof lottie === 'undefined') return;
+    const url = VIBE_LOTTIE_URLS[key];
+    try{
+      if(url){
+        lottie.loadAnimation({ container, renderer:'svg', loop:true, autoplay:true, path:url });
+      } else {
+        lottie.loadAnimation({ container, renderer:'svg', loop:true, autoplay:true, animationData:vibeLottieFallback[key] });
+      }
+    }catch(e){ /* silently keep the space empty if animation fails to load */ }
+  }
+
+  const stackEl = document.getElementById('cardStack');
+
+  // Only 3 real cards ever exist: Yesterday, Today, Tomorrow — relative to the
+  // actual current date, fixed once when the page loads. Swiping is infinite
+  // because it just loops around this same set of 3 forever, e.g.
+  // Today -> Tomorrow -> Yesterday -> Today -> Tomorrow -> ...
+  const CYCLE = [-1, 0, 1]; // [Yesterday, Today, Tomorrow]
+  let currentIndex = 1;      // start on "Today"
+  let isAnimating = false;
+
+  function cycleIndex(steps){
+    return ((currentIndex + steps) % 3 + 3) % 3;
+  }
+
+  const REST = {
+    0:{ y:0,   scale:1,    opacity:1,   blur:0 },
+    1:{ y:14,  scale:0.94, opacity:0.6, blur:1.5 },
+    2:{ y:26,  scale:0.88, opacity:0.32,blur:3   }
+  };
+
+  function styleFor(el, depth){
+    const r = REST[depth];
+    el.style.transform = `translateY(${r.y}px) scale(${r.scale})`;
+    el.style.opacity = r.opacity;
+    el.style.filter = `blur(${r.blur}px)`;
+    el.style.zIndex = 10 - depth;
+  }
+
+  function buildCard(offset, depth){
+    const shift = getShift(offset);
+    const vibeKey = DEPTH_VIBE[depth];
+    const card = document.createElement('div');
+    card.className = 'shift-card';
+    card.dataset.depth = depth;
+    card.dataset.offset = offset;
+    card.innerHTML = `
+      <div class="vibe-orb" aria-hidden="true"></div>
+      <div class="card-top">
+        <div>
+          <div class="card-day-label">${DEPTH_LABEL[depth]}</div>
+          <div class="card-date">${formatDate(offset)}</div>
+        </div>
+        <div class="card-arrows">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+      </div>
+      <div class="card-bottom">
+        <div class="shift-icon ${shift.night ? 'night' : ''}">
+          <div class="icon-fallback">${shift.fallback}</div>
+          <div class="icon-lottie"></div>
+        </div>
+        <div>
+          <div class="shift-name">${shift.label}</div>
+          <div class="shift-time">${shift.time}</div>
+        </div>
+      </div>
+    `;
+    styleFor(card, depth);
+    mountLottie(card.querySelector('.shift-icon'), shift.data);
+    mountVibe(card.querySelector('.vibe-orb'), vibeKey);
+    return card;
+  }
+
+  function render(){
+    stackEl.innerHTML = '';
+    const back2 = buildCard(CYCLE[cycleIndex(-1)], 2);
+    const back1 = buildCard(CYCLE[cycleIndex(1)], 1);
+    const front = buildCard(CYCLE[cycleIndex(0)], 0);
+    stackEl.appendChild(back2);
+    stackEl.appendChild(back1);
+    stackEl.appendChild(front);
+    attachDrag(front);
+  }
+
+  render();
+
+  /* ================= Swipe / drag mechanics (one complete step at a time) ================= */
+  const FLY_DURATION = 420;   // ms
+  const COMMIT_THRESHOLD = 70; // px
+
+  function withTransition(el, on){
+    el.style.transition = on
+      ? `transform ${FLY_DURATION}ms cubic-bezier(.22,.85,.32,1), opacity ${FLY_DURATION}ms ease, filter ${FLY_DURATION}ms ease`
+      : 'none';
+  }
+
+  function commitSwipe(direction, fromDrag){
+    if(isAnimating) return;
+    isAnimating = true;
+
+    const front = stackEl.querySelector('[data-depth="0"]');
+    const back1 = stackEl.querySelector('[data-depth="1"]');
+    const back2 = stackEl.querySelector('[data-depth="2"]');
+
+    withTransition(front, true);
+    withTransition(back1, true);
+    withTransition(back2, true);
+
+    // front flies off in the swipe direction
+    const flyY = direction === 1 ? -220 : 220;
+    const rot = direction === 1 ? -8 : 8;
+    front.style.transform = `translateY(${flyY}%) rotate(${rot}deg) scale(0.98)`;
+    front.style.opacity = '0';
+
+    // whichever card is "next" moves up to become the new front
+    if(direction === 1){
+      styleFor(back1, 0); // back1 becomes front
+      back2.style.opacity = 0; // old back2 fades, will be replaced
+    } else {
+      styleFor(back2, 0); // back2 becomes front
+      back1.style.opacity = 0;
+    }
+
+    setTimeout(() => {
+      currentIndex = cycleIndex(direction);
+      render();
+      isAnimating = false;
+    }, FLY_DURATION);
+  }
+
+  function cancelDrag(front, back1, back2){
+    withTransition(front, true);
+    withTransition(back1, true);
+    withTransition(back2, true);
+    styleFor(front, 0);
+    styleFor(back1, 1);
+    styleFor(back2, 2);
+  }
+
+  function attachDrag(front){
+    let startY = null;
+    let dragging = false;
+    let back1, back2;
+
+    function start(y){
+      if(isAnimating) return;
+      startY = y;
+      dragging = true;
+      back1 = stackEl.querySelector('[data-depth="1"]');
+      back2 = stackEl.querySelector('[data-depth="2"]');
+      withTransition(front, false);
+      withTransition(back1, false);
+      withTransition(back2, false);
+    }
+
+    function move(y){
+      if(!dragging || startY === null) return;
+      const delta = y - startY;
+      const progress = Math.min(Math.abs(delta) / 160, 1);
+      front.style.transform = `translateY(${delta * 0.85}px) rotate(${delta * 0.02}deg) scale(1)`;
+
+      if(delta < 0){ // dragging up -> preview back1 rising
+        const s = 0.94 + 0.06 * progress;
+        const y2 = 14 - 14 * progress;
+        back1.style.transform = `translateY(${y2}px) scale(${s})`;
+        back1.style.opacity = 0.6 + 0.4 * progress;
+        back1.style.filter = `blur(${1.5 - 1.5*progress}px)`;
+      } else if(delta > 0){
+        const s = 0.88 + 0.12 * progress;
+        const y2 = 26 - 26 * progress;
+        back2.style.transform = `translateY(${y2}px) scale(${s})`;
+        back2.style.opacity = 0.32 + 0.68 * progress;
+        back2.style.filter = `blur(${3 - 3*progress}px)`;
+      }
+    }
+
+    function end(y){
+      if(!dragging || startY === null) return;
+      const delta = y - startY;
+      dragging = false;
+      startY = null;
+      if(Math.abs(delta) > COMMIT_THRESHOLD){
+        commitSwipe(delta < 0 ? 1 : -1, true);
+      } else {
+        cancelDrag(front, back1, back2);
+      }
+    }
+
+    front.addEventListener('mousedown', e => start(e.clientY));
+    window.addEventListener('mousemove', e => move(e.clientY));
+    window.addEventListener('mouseup', e => end(e.clientY));
+    front.addEventListener('touchstart', e => start(e.touches[0].clientY), {passive:true});
+    front.addEventListener('touchmove', e => move(e.touches[0].clientY), {passive:true});
+    front.addEventListener('touchend', e => end(e.changedTouches[0].clientY));
+  }
+
+  // wheel (desktop "scroll to see next/previous day"), one step per gesture
+  let wheelLock = false;
+  document.querySelector('.stack-wrap').addEventListener('wheel', e => {
+    if(isAnimating || wheelLock) return;
+    if(Math.abs(e.deltaY) < 25) return;
+    wheelLock = true;
+    commitSwipe(e.deltaY > 0 ? 1 : -1, false);
+    setTimeout(() => wheelLock = false, FLY_DURATION + 120);
+  }, {passive:true});
+
+  // keyboard arrows for desktop convenience
+  document.addEventListener('keydown', e => {
+    if(e.key === 'ArrowUp') commitSwipe(1, false);
+    if(e.key === 'ArrowDown') commitSwipe(-1, false);
+  });
+
+  // click hints
+  document.getElementById('hintDown').addEventListener('click', () => commitSwipe(-1, false));
+  document.getElementById('hintUp').addEventListener('click', () => commitSwipe(1, false));
+
+  /* ================= Button glow follow ================= */
+  document.querySelectorAll('.action-btn').forEach(btn => {
+    btn.addEventListener('mousemove', e => {
+      const rect = btn.getBoundingClientRect();
+      btn.style.setProperty('--x', `${e.clientX - rect.left}px`);
+      btn.style.setProperty('--y', `${e.clientY - rect.top}px`);
+    });
+    btn.addEventListener('click', () => {
+      console.log('Navigate to:', btn.dataset.action);
+    });
+  });
+</script>
+
+</body>
+</html>
