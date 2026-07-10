@@ -22,13 +22,18 @@
 
   *{ box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
 
-  html{ height:100%; overflow:hidden; }
+  html{
+    height:100%;
+    overflow:hidden;
+    overscroll-behavior-y:auto; /* keeps Android's native pull-to-refresh working */
+  }
 
   body{
     height:100vh;
     height:var(--app-height);
     width:100%;
     overflow:hidden;
+    overscroll-behavior-y:auto; /* don't block Android's native pull-to-refresh gesture */
     font-family:'Inter', system-ui, -apple-system, sans-serif;
     color:var(--ink);
     display:flex;
@@ -63,7 +68,7 @@
     display:flex;
     align-items:center;
     justify-content:space-between;
-    padding:9px 16px;
+    padding:10px 16px;
     border-radius:22px;
     background:var(--glass);
     border:1px solid var(--glass-border);
@@ -76,10 +81,10 @@
   .user-info{ display:flex; align-items:center; gap:11px; min-width:0; }
 
   .avatar{
-    width:38px; height:38px; border-radius:50%;
+    width:40px; height:40px; border-radius:50%;
     background:rgba(255,255,255,0.6);
     display:flex; align-items:center; justify-content:center;
-    font-weight:700; font-size:13px; color:var(--ink); flex-shrink:0;
+    font-weight:700; font-size:14px; color:var(--ink); flex-shrink:0;
   }
 
   .user-text{ display:flex; flex-direction:column; gap:2px; min-width:0; }
@@ -87,7 +92,7 @@
     font-size:10px; font-weight:600; letter-spacing:0.03em; color:var(--muted);
     background:rgba(255,255,255,0.55); padding:2px 9px; border-radius:999px; width:fit-content;
   }
-  .user-name{ font-size:15px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .user-name{ font-size:15.5px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 
   .logout-btn{
     display:flex; align-items:center; justify-content:center;
@@ -107,8 +112,9 @@
 
   .card-stack{
     position:relative;
-    width:min(310px, 76vw);
-    height:min(240px, 28vh);
+    width:90vw;
+    max-width:400px;
+    height:min(215px, 25vh);
     perspective:1200px;
     touch-action:none;
   }
@@ -198,17 +204,19 @@
   .action-btn .label{ font-size:13px; font-weight:700; z-index:1; position:relative; }
 
   @media (min-width:700px) and (min-height:700px){
-    .card-stack{ width:340px; height:280px; }
+    .card-stack{ width:340px; max-width:340px; height:214px; } /* credit-card ratio ~1.586:1 */
     .action-btn{ width:118px; height:110px; }
     .action-btn svg{ width:28px; height:28px; }
     .action-btn .label{ font-size:14px; }
   }
 
   @media (max-height:640px){
-    .card-stack{ height:min(210px, 26vh); }
+    .card-stack{ height:min(180px, 22vh); }
     .actions{ gap:12px; }
-    .action-btn{ width:92px; height:86px; }
+    .action-btn{ width:88px; height:82px; }
     .action-btn svg{ width:22px; height:22px; }
+    header{ min-height:70px; padding:14px 20px; }
+    .avatar{ width:44px; height:44px; font-size:15px; }
   }
 
   @media (prefers-reduced-motion: reduce){
