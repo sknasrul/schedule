@@ -481,23 +481,33 @@
   }
 
   /* ================= Fixed content for Today / Tomorrow ================= */
-  function formatDate(offset){
-    const d = new Date();
-    d.setDate(d.getDate() + offset);
-    return d.toLocaleDateString('en-US', { weekday:'long', month:'short', day:'numeric' });
-  }
-  function getShift(offset){
-    const isDay = ((offset % 2) + 2) % 2 === 0;
-    return isDay
-      ? { label:'Day Shift', time:'08:00 — 16:00', fallback:sunFallback, data:sunLottie, night:false }
-      : { label:'Night Shift', time:'20:00 — 04:00', fallback:moonFallback, data:moonLottie, night:true };
-  }
+document.getElementById("date-today").textContent = formatDate(0);
+document.getElementById("date-tomorrow").textContent = formatDate(1);
 
-  const DAY_OFFSETS = { today:0, tomorrow:1 };
+(async () => {
+    const res = await fetch("/shift");
+    const shifts = await res.json();
 
-  Object.keys(DAY_OFFSETS).forEach(key => {
-    const offset = DAY_OFFSETS[key];
-    const shift = getShift(offset);
+    ["today", "tomorrow"].forEach(key => {
+        const isDay = shifts[key] === "Day Shift";
+
+        document.getElementById(`name-${key}`).textContent = shifts[key];
+        document.getElementById(`time-${key}`).textContent =
+            isDay ? "08:00 — 16:00" : "20:00 — 04:00";
+
+        document.getElementById(`icon-${key}`).classList.toggle("night", !isDay);
+
+        document.getElementById(`icon-fallback-${key}`).innerHTML =
+            isDay ? sunFallback : moonFallback;
+
+        mountLottie(
+            document.querySelector(`#icon-${key} .icon-lottie`),
+            isDay ? sunLottie : moonLottie
+        );
+
+        mountVibe(document.getElementById(`vibe-${key}`), key);
+    });
+})();
     document.getElementById(`date-${key}`).textContent = formatDate(offset);
     document.getElementById(`name-${key}`).textContent = shift.label;
     document.getElementById(`time-${key}`).textContent = shift.time;
