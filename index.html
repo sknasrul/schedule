@@ -9,34 +9,36 @@
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
   :root{
-    --grad: linear-gradient(160deg, #b388e8 0%, #ec6fc7 35%, #ff8fb0 60%, #ffb08a 100%);
+    /* 👉 Replace this URL with your own background photo */
+    --bg-image: url('https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1400&q=60');
+    --grad-overlay: linear-gradient(160deg, rgba(179,136,232,0.88) 0%, rgba(236,111,199,0.82) 35%, rgba(255,143,176,0.78) 60%, rgba(255,176,138,0.82) 100%);
     --card-bg: linear-gradient(160deg,#fdeedd,#fbe0cf);
     --ink: #2c2440;
     --muted: #6f6580;
-    --glass: rgba(255,255,255,0.22);
+    --glass: rgba(255,255,255,0.24);
     --glass-border: rgba(255,255,255,0.55);
-    --app-height: 100vh; /* JS overrides this with the real visible height on mobile */
+    --app-height: 100vh;
   }
 
   *{ box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
 
-  html{
-    height:100%;
-    overflow:hidden;
-  }
+  html{ height:100%; overflow:hidden; }
 
   body{
-    height:100vh;              /* fallback for browsers without JS/dvh */
-    height:var(--app-height);  /* actual visible height, set by JS, fixes Android URL-bar overflow */
+    height:100vh;
+    height:var(--app-height);
     width:100%;
     overflow:hidden;
     font-family:'Inter', system-ui, -apple-system, sans-serif;
-    background:var(--grad);
     color:var(--ink);
     display:flex;
     flex-direction:column;
     padding:14px;
     gap:12px;
+    background: var(--grad-overlay), var(--bg-image);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
   }
 
   .page{
@@ -46,8 +48,14 @@
     width:100%;
     max-width:1100px;
     margin:0 auto;
-    gap:12px;
+    gap:14px;
     min-height:0;
+    animation: fadeUp .6s ease both;
+  }
+
+  @keyframes fadeUp{
+    from{ opacity:0; transform:translateY(10px); }
+    to{ opacity:1; transform:translateY(0); }
   }
 
   /* ---------- HEADER ---------- */
@@ -61,93 +69,70 @@
     border:1px solid var(--glass-border);
     backdrop-filter:blur(18px);
     -webkit-backdrop-filter:blur(18px);
-    box-shadow:0 0 22px rgba(255,255,255,0.28), 0 10px 30px rgba(90,30,60,0.15);
+    box-shadow:0 0 22px rgba(255,255,255,0.28), 0 10px 30px rgba(40,10,50,0.2);
     flex-shrink:0;
   }
 
   .user-info{ display:flex; align-items:center; gap:11px; min-width:0; }
 
   .avatar{
-    width:38px; height:38px;
-    border-radius:50%;
-    background:rgba(255,255,255,0.55);
+    width:38px; height:38px; border-radius:50%;
+    background:rgba(255,255,255,0.6);
     display:flex; align-items:center; justify-content:center;
-    font-weight:700; font-size:13px; color:var(--ink);
-    flex-shrink:0;
+    font-weight:700; font-size:13px; color:var(--ink); flex-shrink:0;
   }
 
   .user-text{ display:flex; flex-direction:column; gap:2px; min-width:0; }
-
   .user-id{
     font-size:10px; font-weight:600; letter-spacing:0.03em; color:var(--muted);
-    background:rgba(255,255,255,0.5); padding:2px 9px; border-radius:999px; width:fit-content;
+    background:rgba(255,255,255,0.55); padding:2px 9px; border-radius:999px; width:fit-content;
   }
-
   .user-name{ font-size:15px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 
   .logout-btn{
     display:flex; align-items:center; justify-content:center;
-    width:36px; height:36px;
-    background:rgba(255,255,255,0.55);
-    border:none; border-radius:50%;
-    color:var(--ink); cursor:pointer; flex-shrink:0;
+    width:38px; height:38px; background:rgba(255,255,255,0.6);
+    border:none; border-radius:50%; color:var(--ink); cursor:pointer; flex-shrink:0;
     transition:transform .25s ease, background .25s ease, box-shadow .25s ease;
   }
-  .logout-btn svg{ width:16px; height:16px; }
-  .logout-btn:hover{
-    background:#fff; transform:translateY(-1px);
-    box-shadow:0 0 14px rgba(255,255,255,0.6), 0 6px 16px rgba(80,20,80,0.18);
-  }
-  .logout-btn:active{ transform:translateY(0); }
+  .logout-btn svg{ width:17px; height:17px; }
+  .logout-btn:hover{ background:#fff; transform:translateY(-1px); box-shadow:0 0 14px rgba(255,255,255,0.6), 0 6px 16px rgba(80,20,80,0.18); }
+  .logout-btn:active{ transform:translateY(0) scale(.94); }
 
-  /* ---------- CARD STACK ---------- */
+  /* ---------- CARD STACK (Today + Tomorrow only) ---------- */
   .stack-wrap{
-    flex:1 1 auto;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    min-height:0;
-    position:relative;
+    flex:1 1 auto; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; min-height:0; position:relative;
   }
 
   .card-stack{
     position:relative;
     width:min(310px, 76vw);
-    height:min(250px, 30vh);
+    height:min(240px, 28vh);
     perspective:1200px;
     touch-action:none;
   }
 
   .shift-card{
-    position:absolute;
-    inset:0;
-    border-radius:26px;
+    position:absolute; inset:0; border-radius:26px;
     background:var(--card-bg);
     border:1.5px solid rgba(255,255,255,0.6);
     box-shadow:
       0 0 0 1px rgba(255,255,255,0.12),
       0 0 32px 2px rgba(255,255,255,0.4),
-      0 20px 45px rgba(90,30,60,0.22);
+      0 20px 45px rgba(60,15,55,0.28);
     padding:18px 20px;
-    display:flex;
-    flex-direction:column;
-    justify-content:space-between;
+    display:flex; flex-direction:column; justify-content:space-between;
     transform-style:preserve-3d;
     will-change:transform, opacity, filter;
-    user-select:none;
-    cursor:grab;
-    transition:
-      transform .5s cubic-bezier(.22,.85,.32,1),
-      opacity .5s ease,
-      filter .5s ease;
+    user-select:none; cursor:grab;
+    transition: transform .5s cubic-bezier(.22,.85,.32,1), opacity .5s ease, filter .5s ease;
   }
   .shift-card:active{ cursor:grabbing; }
 
   .vibe-orb{ position:absolute; top:12px; right:46px; width:30px; height:30px; pointer-events:none; }
 
   .card-top{ display:flex; align-items:flex-start; justify-content:space-between; }
-
   .card-day-label{ font-size:11px; font-weight:700; letter-spacing:0.12em; color:var(--muted); }
   .card-date{ font-size:14.5px; font-weight:600; color:var(--ink); margin-top:3px; }
 
@@ -172,57 +157,62 @@
 
   .swipe-hint{
     margin-top:10px; display:flex; gap:22px; font-size:12px; font-weight:600;
-    color:rgba(60,40,70,0.75); align-items:center; flex-shrink:0;
+    color:rgba(255,255,255,0.9); text-shadow:0 1px 4px rgba(60,20,60,0.3);
+    align-items:center; flex-shrink:0;
   }
-  .swipe-hint span{ display:flex; align-items:center; gap:4px; cursor:pointer; }
+  .swipe-hint span{ display:flex; align-items:center; gap:4px; cursor:pointer; padding:4px 6px; border-radius:8px; transition:background .2s ease; }
+  .swipe-hint span:hover{ background:rgba(255,255,255,0.18); }
   .swipe-hint svg{ width:12px; height:12px; }
 
-  /* ---------- ACTION BUTTONS ---------- */
-  .actions{ display:flex; justify-content:center; gap:12px; flex-shrink:0; }
+  /* ---------- ACTION BUTTONS (bigger, easier to tap) ---------- */
+  .actions{ display:flex; justify-content:center; gap:16px; flex-shrink:0; }
 
   .action-btn{
     position:relative;
-    width:78px; height:74px;
-    border-radius:18px;
-    background:rgba(255,255,255,0.28);
-    border:1px solid rgba(255,255,255,0.4);
+    width:104px; height:98px;
+    border-radius:22px;
+    background:rgba(255,255,255,0.3);
+    border:1px solid rgba(255,255,255,0.45);
     display:flex; flex-direction:column; align-items:center; justify-content:center;
-    gap:5px; cursor:pointer; overflow:hidden;
+    gap:7px; cursor:pointer; overflow:hidden;
     color:var(--ink); font-family:inherit;
-    transition:transform .3s ease, box-shadow .3s ease, background .3s ease;
+    transition:transform .2s ease, box-shadow .2s ease, background .2s ease;
   }
 
   .action-btn:hover{
-    transform:translateY(-3px) scale(1.04);
-    box-shadow:0 0 20px rgba(255,255,255,0.45), 0 12px 26px rgba(90,30,60,0.2);
+    transform:translateY(-4px) scale(1.045);
+    box-shadow:0 0 22px rgba(255,255,255,0.5), 0 14px 30px rgba(60,15,55,0.28);
+    background:rgba(255,255,255,0.4);
   }
-  .action-btn:active{ transform:translateY(-1px) scale(1.01); }
+  .action-btn:active{ transform:translateY(-1px) scale(0.98); }
 
   .action-btn .glow{
-    position:absolute; width:130px; height:130px; border-radius:50%;
-    background:radial-gradient(circle, rgba(255,255,255,0.65) 0%, rgba(255,255,255,0) 70%);
+    position:absolute; width:160px; height:160px; border-radius:50%;
+    background:radial-gradient(circle, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0) 70%);
     left:var(--x, 50%); top:var(--y, 50%); transform:translate(-50%,-50%);
     opacity:0; transition:opacity .3s ease; pointer-events:none;
   }
   .action-btn:hover .glow{ opacity:1; }
 
-  .action-btn svg{ width:20px; height:20px; z-index:1; position:relative; }
-  .action-btn .label{ font-size:11.5px; font-weight:700; z-index:1; position:relative; }
+  .action-btn svg{ width:26px; height:26px; z-index:1; position:relative; }
+  .action-btn .label{ font-size:13px; font-weight:700; z-index:1; position:relative; }
 
   @media (min-width:700px) and (min-height:700px){
-    .card-stack{ width:340px; height:290px; }
-    .action-btn{ width:92px; height:88px; }
-    .action-btn .label{ font-size:13px; }
+    .card-stack{ width:340px; height:280px; }
+    .action-btn{ width:118px; height:110px; }
+    .action-btn svg{ width:28px; height:28px; }
+    .action-btn .label{ font-size:14px; }
   }
 
   @media (max-height:640px){
-    .card-stack{ height:min(220px, 28vh); }
-    .actions{ gap:10px; }
-    .action-btn{ width:70px; height:66px; }
+    .card-stack{ height:min(210px, 26vh); }
+    .actions{ gap:12px; }
+    .action-btn{ width:92px; height:86px; }
+    .action-btn svg{ width:22px; height:22px; }
   }
 
   @media (prefers-reduced-motion: reduce){
-    .shift-card{ transition:none !important; }
+    .shift-card, .page{ transition:none !important; animation:none !important; }
   }
 </style>
 </head>
@@ -247,34 +237,9 @@
     </header>
 
     <div class="stack-wrap">
-      <!-- Exactly 3 cards, written statically here. They are never created or destroyed —
-           swiping only changes which one is on top (front), which is peeking in the middle,
-           and which is hidden at the back, via a 3D flip-to-back animation. -->
+      <!-- Only 2 cards, written statically here: Today and Tomorrow. They are never
+           created or destroyed — swiping only flips which one is on top. -->
       <div class="card-stack" id="cardStack">
-
-        <div class="shift-card" id="card-yesterday" data-key="yesterday">
-          <div class="vibe-orb" id="vibe-yesterday" aria-hidden="true"></div>
-          <div class="card-top">
-            <div>
-              <div class="card-day-label">YESTERDAY</div>
-              <div class="card-date" id="date-yesterday"></div>
-            </div>
-            <div class="card-arrows">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-            </div>
-          </div>
-          <div class="card-bottom">
-            <div class="shift-icon" id="icon-yesterday">
-              <div class="icon-fallback" id="icon-fallback-yesterday"></div>
-              <div class="icon-lottie"></div>
-            </div>
-            <div>
-              <div class="shift-name" id="name-yesterday"></div>
-              <div class="shift-time" id="time-yesterday"></div>
-            </div>
-          </div>
-        </div>
 
         <div class="shift-card" id="card-today" data-key="today">
           <div class="vibe-orb" id="vibe-today" aria-hidden="true"></div>
@@ -329,7 +294,7 @@
       <div class="swipe-hint">
         <span id="hintDown">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-          Yesterday
+          Today
         </span>
         <span id="hintUp">
           Tomorrow
@@ -364,10 +329,7 @@
   </div>
 
 <script>
-  /* ================= Mobile viewport-height fix =================
-     Android/mobile browsers count the URL bar inside 100vh, which pushes
-     content (like the bottom buttons) below the visible screen. We measure
-     the real visible height in JS and feed it back in as a CSS variable. */
+  /* ================= Mobile viewport-height fix ================= */
   function setAppHeight(){
     document.documentElement.style.setProperty('--app-height', window.innerHeight + 'px');
   }
@@ -375,7 +337,7 @@
   window.addEventListener('resize', setAppHeight);
   window.addEventListener('orientationchange', setAppHeight);
 
-  /* ================= Cookie helpers (still used for header identity) ================= */
+  /* ================= Cookie helpers ================= */
   function getCookie(name){
     const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
     return match ? decodeURIComponent(match[2]) : null;
@@ -389,7 +351,7 @@
     .split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
   // Logout only redirects to /login (see inline onclick on the button).
 
-  /* ================= Embedded Lottie animations (no external asset needed) ================= */
+  /* ================= Embedded Lottie animations ================= */
   const sunLottie = {
     v:"5.9.0", fr:30, ip:0, op:90, w:100, h:100, nm:"sun", ddd:0, assets:[],
     layers:[
@@ -458,13 +420,9 @@
   const sunFallback = `<svg viewBox="0 0 24 24" fill="none" stroke="#e08a2b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
   const moonFallback = `<svg viewBox="0 0 24 24" fill="none" stroke="#5b62c9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
 
-  /* Vibe / mood animations — conveyed through motion, not words.
-     Drop a hosted Lottie JSON URL below to use your own animation instead
-     of the built-in fallback. Leave empty to keep the built-in one. */
   const VIBE_LOTTIE_URLS = {
-    today:     '', // 👉 paste a "lively / energetic" Lottie JSON URL here
-    tomorrow:  '', // 👉 paste an "upcoming / anticipation" Lottie JSON URL here
-    yesterday: ''  // 👉 paste a "faded / completed" Lottie JSON URL here
+    today:    '', // 👉 paste a "lively / energetic" Lottie JSON URL here
+    tomorrow: ''  // 👉 paste an "upcoming / anticipation" Lottie JSON URL here
   };
 
   const vibeLottieFallback = {
@@ -497,28 +455,13 @@
           { ty:"tr", p:{a:0,k:[0,0]}, a:{a:0,k:[0,0]}, s:{a:0,k:[100,100]}, r:{a:0,k:0}, o:{a:0,k:100} }
         ]}], ip:0, op:75, st:0
       }]
-    },
-    yesterday: {
-      v:"5.9.0", fr:30, ip:0, op:90, w:60, h:60, nm:"vibe-yesterday", ddd:0, assets:[],
-      layers:[{ ddd:0, ind:1, ty:4, nm:"fade", sr:1,
-        ks:{
-          o:{a:1,k:[{t:0,s:[55]},{t:45,s:[15]},{t:90,s:[55]}]},
-          r:{a:0,k:0}, p:{a:0,k:[30,30,0]}, a:{a:0,k:[0,0,0]},
-          s:{a:1,k:[{t:0,s:[100,100,100]},{t:45,s:[88,88,100]},{t:90,s:[100,100,100]}]}
-        },
-        shapes:[{ ty:"gr", it:[
-          { ty:"el", p:{a:0,k:[0,0]}, s:{a:0,k:[24,24]} },
-          { ty:"fl", c:{a:0,k:[0.6,0.58,0.66,1]}, o:{a:0,k:60} },
-          { ty:"tr", p:{a:0,k:[0,0]}, a:{a:0,k:[0,0]}, s:{a:0,k:[100,100]}, r:{a:0,k:0}, o:{a:0,k:100} }
-        ]}], ip:0, op:90, st:0
-      }]
     }
   };
 
   function mountLottie(container, data){
     if(typeof lottie === 'undefined' || !container) return;
     try{ lottie.loadAnimation({ container, renderer:'svg', loop:true, autoplay:true, animationData:data }); }
-    catch(e){ /* keep static fallback visible */ }
+    catch(e){}
   }
   function mountVibe(container, key){
     if(typeof lottie === 'undefined' || !container) return;
@@ -526,10 +469,10 @@
     try{
       if(url) lottie.loadAnimation({ container, renderer:'svg', loop:true, autoplay:true, path:url });
       else lottie.loadAnimation({ container, renderer:'svg', loop:true, autoplay:true, animationData:vibeLottieFallback[key] });
-    }catch(e){ /* leave the space empty if it fails */ }
+    }catch(e){}
   }
 
-  /* ================= Fixed content for the 3 real dates ================= */
+  /* ================= Fixed content for Today / Tomorrow ================= */
   function formatDate(offset){
     const d = new Date();
     d.setDate(d.getDate() + offset);
@@ -542,7 +485,7 @@
       : { label:'Night Shift', time:'20:00 — 04:00', fallback:moonFallback, data:moonLottie, night:true };
   }
 
-  const DAY_OFFSETS = { yesterday:-1, today:0, tomorrow:1 };
+  const DAY_OFFSETS = { today:0, tomorrow:1 };
 
   Object.keys(DAY_OFFSETS).forEach(key => {
     const offset = DAY_OFFSETS[key];
@@ -556,24 +499,18 @@
     mountVibe(document.getElementById(`vibe-${key}`), key);
   });
 
-  /* ================= Slot rotation (3 fixed cards, never rebuilt) =================
-     Each card keeps its own identity/content forever. Swiping only changes which
-     slot (front / mid / back) each of the 3 elements currently occupies, using a
-     3D flip so the outgoing front card visibly rotates away and hides behind the
-     stack — exactly like moving the top card of a real deck to the bottom. */
+  /* ================= Slot rotation (2 fixed cards, never rebuilt) ================= */
   const EL = {
-    yesterday: document.getElementById('card-yesterday'),
-    today:     document.getElementById('card-today'),
-    tomorrow:  document.getElementById('card-tomorrow')
+    today:    document.getElementById('card-today'),
+    tomorrow: document.getElementById('card-tomorrow')
   };
 
-  let slots = { front:'today', mid:'tomorrow', back:'yesterday' };
+  let slots = { front:'today', back:'tomorrow' };
   let isAnimating = false;
 
   const REST = {
-    front:{ y:0,  scale:1,    opacity:1,    blur:0,   z:10, rx:0 },
-    mid:  { y:13, scale:0.94, opacity:0.6,  blur:1.5, z:9,  rx:0 },
-    back: { y:24, scale:0.88, opacity:0.32, blur:3,   z:8,  rx:0 }
+    front:{ y:0,  scale:1,    opacity:1,   blur:0,  z:10 },
+    back: { y:16, scale:0.93, opacity:0.55,blur:2,  z:9  }
   };
 
   function applyRest(el, slotName, withTransition){
@@ -581,57 +518,29 @@
     el.style.transition = withTransition
       ? 'transform .5s cubic-bezier(.22,.85,.32,1), opacity .5s ease, filter .5s ease'
       : 'none';
-    el.style.transform = `translateY(${r.y}px) scale(${r.scale}) rotateX(${r.rx}deg)`;
+    el.style.transform = `translateY(${r.y}px) scale(${r.scale}) rotateX(0deg)`;
     el.style.opacity = r.opacity;
     el.style.filter = `blur(${r.blur}px)`;
     el.style.zIndex = r.z;
   }
 
-  // initial paint, no animation
   Object.keys(slots).forEach(slotName => applyRest(EL[slots[slotName]], slotName, false));
 
   const FLIP_MS = 460;
 
-  function rotateUp(){
-    // front -> back (flips edge-on then reappears behind), mid -> front, back -> mid
+  function flip(direction){
+    // direction: 1 = swipe up (reveal the other card from below), -1 = swipe down
     if(isAnimating) return;
     isAnimating = true;
 
-    const outKey = slots.front, midKey = slots.mid, backKey = slots.back;
-    const outEl = EL[outKey], midEl = EL[midKey], backEl = EL[backKey];
-
-    outEl.style.transition = `transform ${FLIP_MS/2}ms ease-in, opacity ${FLIP_MS/2}ms ease, filter ${FLIP_MS/2}ms ease`;
-    outEl.style.transform = 'translateY(-60px) scale(0.9) rotateX(-100deg)';
-    outEl.style.opacity = '0.12';
-    outEl.style.zIndex = 11;
-
-    applyRest(midEl, 'front', true);
-    applyRest(backEl, 'mid', true);
-
-    setTimeout(() => {
-      outEl.style.transition = `transform ${FLIP_MS/2}ms ease-out, opacity ${FLIP_MS/2}ms ease, filter ${FLIP_MS/2}ms ease`;
-      outEl.style.zIndex = REST.back.z;
-      outEl.style.transform = `translateY(${REST.back.y}px) scale(${REST.back.scale}) rotateX(0deg)`;
-      outEl.style.opacity = REST.back.opacity;
-      outEl.style.filter = `blur(${REST.back.blur}px)`;
-    }, FLIP_MS/2);
-
-    setTimeout(() => {
-      slots = { front:midKey, mid:backKey, back:outKey };
-      isAnimating = false;
-    }, FLIP_MS);
-  }
-
-  function rotateDown(){
-    // front -> back (flips the other way), back -> front, mid stays untouched
-    if(isAnimating) return;
-    isAnimating = true;
-
-    const outKey = slots.front, inKey = slots.back, stayKey = slots.mid;
+    const outKey = slots.front, inKey = slots.back;
     const outEl = EL[outKey], inEl = EL[inKey];
 
+    const flyY = direction === 1 ? -60 : 60;
+    const rx = direction === 1 ? -100 : 100;
+
     outEl.style.transition = `transform ${FLIP_MS/2}ms ease-in, opacity ${FLIP_MS/2}ms ease, filter ${FLIP_MS/2}ms ease`;
-    outEl.style.transform = 'translateY(60px) scale(0.9) rotateX(100deg)';
+    outEl.style.transform = `translateY(${flyY}px) scale(0.9) rotateX(${rx}deg)`;
     outEl.style.opacity = '0.12';
     outEl.style.zIndex = 11;
 
@@ -646,12 +555,15 @@
     }, FLIP_MS/2);
 
     setTimeout(() => {
-      slots = { front:inKey, mid:stayKey, back:outKey };
+      slots = { front:inKey, back:outKey };
       isAnimating = false;
     }, FLIP_MS);
   }
 
-  /* ================= Drag handling on whichever card is currently front ================= */
+  const rotateUp = () => flip(1);
+  const rotateDown = () => flip(-1);
+
+  /* ================= Drag handling ================= */
   const stackEl = document.getElementById('cardStack');
   const COMMIT_THRESHOLD = 65;
   let startY = null, dragging = false, dragEl = null;
@@ -659,8 +571,7 @@
   function dragStart(y){
     if(isAnimating) return;
     dragEl = EL[slots.front];
-    startY = y;
-    dragging = true;
+    startY = y; dragging = true;
     dragEl.style.transition = 'none';
   }
   function dragMove(y){
@@ -688,7 +599,6 @@
   stackEl.addEventListener('touchmove', e => dragMove(e.touches[0].clientY), {passive:true});
   stackEl.addEventListener('touchend', e => dragEnd(e.changedTouches[0].clientY));
 
-  // wheel: one step per gesture
   let wheelLock = false;
   document.querySelector('.stack-wrap').addEventListener('wheel', e => {
     if(isAnimating || wheelLock) return;
@@ -698,13 +608,11 @@
     setTimeout(() => wheelLock = false, FLIP_MS + 100);
   }, {passive:true});
 
-  // keyboard arrows
   document.addEventListener('keydown', e => {
     if(e.key === 'ArrowUp') rotateUp();
     if(e.key === 'ArrowDown') rotateDown();
   });
 
-  // hint clicks
   document.getElementById('hintDown').addEventListener('click', rotateDown);
   document.getElementById('hintUp').addEventListener('click', rotateUp);
 
