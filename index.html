@@ -481,33 +481,35 @@
   }
 
   /* ================= Fixed content for Today / Tomorrow ================= */
-document.getElementById("date-today").textContent = formatDate(0);
-document.getElementById("date-tomorrow").textContent = formatDate(1);
+  function formatDate(offset){
+    const d = new Date();
+    d.setDate(d.getDate() + offset);
+    return d.toLocaleDateString('en-US', { weekday:'long', month:'short', day:'numeric' });
+  }
 
-(async () => {
-    const res = await fetch("/shift");
-    const shifts = await res.json();
+  // 👉 Replace with your deployed Cloudflare Worker URL (see shift-worker.js)
+  const WORKER_URL = 'https://shift-api.YOUR-SUBDOMAIN.workers.dev';
 
-    ["today", "tomorrow"].forEach(key => {
-        const isDay = shifts[key] === "Day Shift";
+  function shiftInfoFromLabel(label){
+    const night = /night/i.test(label || '');
+    return night
+      ? { label:'Night Shift', time:'20:00 — 04:00', fallback:moonFallback, data:moonLottie, night:true }
+      : { label:'Day Shift',   time:'08:00 — 16:00', fallback:sunFallback,  data:sunLottie,  night:false };
+  }
 
-        document.getElementById(`name-${key}`).textContent = shifts[key];
-        document.getElementById(`time-${key}`).textContent =
-            isDay ? "08:00 — 16:00" : "20:00 — 04:00";
+  async function fetchShiftValue(id){
+    try{
+      const res = await fetch(`${WORKER_URL}/?id=${encodeURIComponent(id)}`);
+      if(!res.ok) throw new Error(`Worker responded ${res.status}`);
+      const json = await res.json();
+      return json.value; // expected format: "Day Shift,Night Shift"
+    }catch(e){
+      console.warn('Could not load shift data from KV, using fallback:', e);
+      return null;
+    }
+  }
 
-        document.getElementById(`icon-${key}`).classList.toggle("night", !isDay);
-
-        document.getElementById(`icon-fallback-${key}`).innerHTML =
-            isDay ? sunFallback : moonFallback;
-
-        mountLottie(
-            document.querySelector(`#icon-${key} .icon-lottie`),
-            isDay ? sunLottie : moonLottie
-        );
-
-        mountVibe(document.getElementById(`vibe-${key}`), key);
-    });
-})();
+  function populateCard(key, offset, shift){
     document.getElementById(`date-${key}`).textContent = formatDate(offset);
     document.getElementById(`name-${key}`).textContent = shift.label;
     document.getElementById(`time-${key}`).textContent = shift.time;
@@ -515,7 +517,19 @@ document.getElementById("date-tomorrow").textContent = formatDate(1);
     document.getElementById(`icon-fallback-${key}`).innerHTML = shift.fallback;
     mountLottie(document.getElementById(`icon-${key}`).querySelector('.icon-lottie'), shift.data);
     mountVibe(document.getElementById(`vibe-${key}`), key);
-  });
+  }
+
+  async function loadDashboard(){
+    const raw = await fetchShiftValue(userId);
+    // raw looks like "Day Shift,Night Shift" -> [today, tomorrow]
+    const parts = raw ? raw.split(',').map(s => s.trim()) : [];
+    const todayShift = shiftInfoFromLabel(parts[0] || 'Day Shift');
+    const tomorrowShift = shiftInfoFromLabel(parts[1] || 'Day Shift');
+    populateCard('today', 0, todayShift);
+    populateCard('tomorrow', 1, tomorrowShift);
+  }
+
+  loadDashboard();
 
   /* ================= Slot rotation (2 fixed cards, never rebuilt) ================= */
   const EL = {
