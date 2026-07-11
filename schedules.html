@@ -60,20 +60,21 @@
     padding:30px 0;
   }
   .scroll{
-    display:flex;
-    flex-wrap:nowrap;
-    gap:10px;
     overflow-x:auto;
     overflow-y:hidden;
+    white-space:nowrap;
     padding-bottom:8px;
   }
   .day{
-    flex:0 0 auto;
+    display:inline-block;
+    white-space:normal;
+    vertical-align:top;
     width:88px;
     background:var(--card);
     border:1px solid var(--line);
     border-radius:10px;
     padding:12px 10px;
+    margin-right:10px;
     text-align:center;
   }
   .day .date{
@@ -172,7 +173,7 @@ function render(headerRow, empRow){
 
   const scroll = document.getElementById('scroll');
   scroll.innerHTML = "";
-  scroll.style.display = 'flex';
+  scroll.style.display = 'block';
 
   for(let c = 2; c < headerRow.length; c++){
     const date = (headerRow[c] || "").trim();
