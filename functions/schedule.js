@@ -27,7 +27,7 @@ export async function onRequestGet(context) {
 
   // 1. Get Arcos ID from cookie
   const cookies = parseCookies(request.headers.get("Cookie"));
-  const arcosId = cookies.arcosId; // adjust key name if yours differs
+  const arcosId = cookies.id; // cookie is stored as "id", e.g. id=ARL19786
   const employeeName = cookies.employeeName;
 
   if (!arcosId) {
