@@ -17,6 +17,8 @@
     --cyan-glow:rgba(77,216,232,0.35);
     --red:#FF6B6B;
     --red-glow:rgba(255,107,107,0.3);
+    --violet:#B98EF0;
+    --violet-glow:rgba(185,142,240,0.3);
     --text:#E8EDF2;
     --muted:#5A6672;
     --muted-2:#8A94A0;
@@ -217,22 +219,34 @@
     letter-spacing:0.01em;
   }
 
-  .shift-pill.day{
+  .shift-pill.working{
     color:var(--amber);
     background:rgba(255,179,71,0.12);
     border:1px solid rgba(255,179,71,0.3);
   }
 
-  .shift-pill.night{
+  .shift-pill.weekoff{
     color:var(--cyan);
     background:rgba(77,216,232,0.12);
     border:1px solid rgba(77,216,232,0.3);
   }
 
-  .shift-pill.off{
+  .shift-pill.absent{
     color:var(--red);
     background:rgba(255,107,107,0.1);
     border:1px solid rgba(255,107,107,0.28);
+  }
+
+  .shift-pill.training{
+    color:var(--violet);
+    background:rgba(185,142,240,0.12);
+    border:1px solid rgba(185,142,240,0.3);
+  }
+
+  .shift-pill.leave{
+    color:var(--muted-2);
+    background:rgba(255,255,255,0.06);
+    border:1px solid var(--panel-border);
   }
 
   .shift-pill.unknown{
@@ -352,10 +366,12 @@
 
   function classifyShift(raw){
     const v = (raw || '').toString().trim().toLowerCase();
-    if(!v || v === '-' ) return 'unknown';
-    if(v.includes('off') || v.includes('leave') || v.includes('holiday')) return 'off';
-    if(v.includes('night') || v.includes('n)') || v === 'n') return 'night';
-    if(v.includes('day') || v.includes('morning') || v.includes('d)') || v === 'd') return 'day';
+    if(!v) return 'unknown';
+    if(v === 'day present' || v === 'day shift') return 'working';
+    if(v === 'week off') return 'weekoff';
+    if(v === 'absent') return 'absent';
+    if(v === 'training') return 'training';
+    if(v === 'dl') return 'leave';
     return 'unknown';
   }
 
