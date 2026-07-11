@@ -400,7 +400,13 @@
 
   document.getElementById('retryBtn').addEventListener('click', () => loadDashboard());
 
-  /* ================= User rendering (server-confirmed data only) ================= */
+  /* ================= Cookie helper ================= */
+  function getCookie(name){
+    const match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+    return match ? decodeURIComponent(match[1]) : null;
+  }
+
+  /* ================= User rendering (from cookies) ================= */
   function renderUser(id, name){
     document.getElementById('userId').textContent = id;
     document.getElementById('userName').textContent = name;
@@ -550,9 +556,16 @@
     return { label, ...known };
   }
 
-  async function fetchShiftData(){
+  async function fetchShiftData(retriesLeft = 1){
     const res = await fetch('/shift', { credentials: 'same-origin' });
     if(res.status === 401){
+      // Don't trust a single 401 — could be a race with a token refresh,
+      // a transient server hiccup, etc. Retry once before treating this
+      // as a real logout.
+      if(retriesLeft > 0){
+        await new Promise(r => setTimeout(r, 400));
+        return fetchShiftData(retriesLeft - 1);
+      }
       window.location.href = '/login';
       return null;
     }
@@ -561,7 +574,7 @@
       try{ detail = (await res.json()).error || ''; }catch(e){}
       throw new Error(detail || `Request failed (${res.status})`);
     }
-    return res.json(); // { id, name, today, tomorrow }
+    return res.json(); // { id, today, tomorrow }
   }
 
   function populateCard(key, offset, shift){
@@ -583,9 +596,19 @@
   async function loadDashboard(){
     showLoading();
     try{
+      // Header identity comes straight from cookies (id + name),
+      // not from the server response.
+      const cookieId = getCookie('id');
+      const cookieName = getCookie('name');
+
+      if(!cookieId || !cookieName){
+        window.location.href = '/login';
+        return;
+      }
+      renderUser(cookieId, cookieName);
+
       const data = await fetchShiftData();
       if(!data) return; // redirected to /login
-      renderUser(data.id, data.name);
       populateCard('today', 0, shiftInfoFromLabel(data.today));
       populateCard('tomorrow', 1, shiftInfoFromLabel(data.tomorrow));
       showPage();
@@ -596,6 +619,13 @@
   }
 
   loadDashboard();
+
+  /* ================= Logout ================= */
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    document.cookie = 'id=; Max-Age=0; path=/';
+    document.cookie = 'name=; Max-Age=0; path=/';
+    window.location.href = '/login';
+  });
 
   /* ================= Slot rotation (2 fixed cards, never rebuilt) ================= */
   const EL = {
