@@ -460,7 +460,7 @@
     `;
 
     try{
-      const res = await fetch('/api/schedule', { credentials: 'include' });
+      const res = await fetch('/schedule', { credentials: 'include' });
 
       if(res.status === 401){
         window.location.href = '/login.html';
