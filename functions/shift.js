@@ -2,24 +2,32 @@ export async function onRequestGet(context) {
   const { request, env } = context;
 
   const cookieHeader = request.headers.get('Cookie') || '';
-  const match = cookieHeader.match(/(?:^|;\s*)session=([^;]+)/);
-  const sessionToken = match ? decodeURIComponent(match[1]) : null;
+  const match = cookieHeader.match(/(?:^|;\s*)id=([^;]+)/);
+  const id = match ? decodeURIComponent(match[1]) : null;
 
-  if (!sessionToken) {
-    return Response.json({ error: 'Not authenticated' }, { status: 401 });
+  if (!id) {
+    return new Response(JSON.stringify({ error: 'Not authenticated' }), {
+      status: 401,
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
 
-  const sessionRaw = await env.SESSIONS.get(sessionToken);
-  if (!sessionRaw) {
-    return Response.json({ error: 'Invalid or expired session' }, { status: 401 });
-  }
-  const session = JSON.parse(sessionRaw); // { id, name }
+  // Use the binding NAME "SHIFT", not the namespace name "shift"
+  const raw = await env.SHIFT.get(id);
 
-  const raw = await env.SHIFT.get(session.id);        // 👈 renamed
-  if (!raw) {
-    return Response.json({ error: 'No schedule found for this user' }, { status: 404 });
+  if (raw === null) {
+    return new Response(JSON.stringify({ error: 'No shift data found for this id' }), {
+      status: 404,
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
 
-  const [today, tomorrow] = raw.split(',').map(s => s.trim());
-  return Response.json({ id: session.id, name: session.name, today, tomorrow });
+  const parts = raw.split(',').map(s => s.trim()).filter(Boolean);
+  const today = parts[0] || null;
+  const tomorrow = parts[1] || null;
+
+  return new Response(JSON.stringify({ id, today, tomorrow }), {
+    status: 200,
+    headers: { 'Content-Type': 'application/json' }
+  });
 }
