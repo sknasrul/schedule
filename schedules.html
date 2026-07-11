@@ -3,503 +3,502 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Schedule</title>
+<title>Duty Manifest — Lifetime Schedule</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0A0E13;
-    --panel:rgba(255,255,255,0.04);
-    --panel-border:rgba(255,255,255,0.08);
-    --amber:#FFB347;
-    --amber-glow:rgba(255,179,71,0.35);
-    --cyan:#4DD8E8;
-    --cyan-glow:rgba(77,216,232,0.35);
-    --red:#FF6B6B;
-    --red-glow:rgba(255,107,107,0.3);
-    --violet:#B98EF0;
-    --violet-glow:rgba(185,142,240,0.3);
-    --text:#E8EDF2;
-    --muted:#5A6672;
-    --muted-2:#8A94A0;
+    --paper:#EDE9DD;
+    --paper-dark:#E2DDCC;
+    --ink:#1B1B1B;
+    --safety:#F5B400;
+    --rust:#B23A2E;
+    --steel:#3A5A78;
+    --moss:#55684B;
+    --plum:#6B4E71;
+    --clay:#8C5A3C;
+    --void:#C9C2AE;
+    --line:#B9B19A;
+    --paper-hole:#00000000;
   }
-
-  *{ box-sizing:border-box; }
-
+  *{box-sizing:border-box;}
   html,body{
-    margin:0; padding:0; min-height:100%;
-    background:var(--bg);
-    color:var(--text);
-    font-family:'Space Grotesk', sans-serif;
-    -webkit-font-smoothing:antialiased;
+    margin:0;padding:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans',sans-serif;
+    min-height:100vh;
   }
-
-  /* ambient scanline overlay, matches home.html */
-  body::before{
-    content:"";
-    position:fixed; inset:0;
-    pointer-events:none;
-    background:repeating-linear-gradient(
-      to bottom,
-      rgba(255,255,255,0.015) 0px,
-      rgba(255,255,255,0.015) 1px,
-      transparent 1px,
-      transparent 3px
-    );
-    z-index:1;
+  body{
+    background-image:
+      radial-gradient(circle at 4px 4px, rgba(0,0,0,0.05) 1px, transparent 1.2px);
+    background-size:14px 14px;
   }
-
-  body::after{
-    content:"";
-    position:fixed; inset:0;
-    pointer-events:none;
-    background:radial-gradient(ellipse at top, rgba(77,216,232,0.05), transparent 60%),
-               radial-gradient(ellipse at bottom, rgba(255,179,71,0.04), transparent 60%);
-    z-index:0;
-  }
-
   .wrap{
-    position:relative; z-index:2;
     max-width:920px;
     margin:0 auto;
-    padding:32px 20px 64px;
+    padding:28px 20px 80px;
   }
 
-  /* ---------- Identity strip ---------- */
-  .identity{
+  /* ---------- Hazard header ---------- */
+  .hazard-bar{
+    height:14px;
+    width:100%;
+    background:repeating-linear-gradient(135deg, var(--safety) 0 18px, var(--ink) 18px 36px);
+    border-radius:3px 3px 0 0;
+  }
+  header.manifest-head{
+    background:var(--ink);
+    color:var(--paper);
+    padding:22px 26px 18px;
+    border-radius:0 0 3px 3px;
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+  header.manifest-head .title{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:42px;
+    letter-spacing:2px;
+    line-height:0.9;
+  }
+  header.manifest-head .sub{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    letter-spacing:2px;
+    color:var(--safety);
+    text-transform:uppercase;
+    margin-top:6px;
+  }
+  header.manifest-head .doc-no{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    color:var(--void);
+    text-align:right;
+  }
+
+  /* ---------- ID card ---------- */
+  .id-card{
+    margin-top:22px;
+    background:var(--paper-dark);
+    border:1px solid var(--line);
+    border-left:8px solid var(--safety);
+    border-radius:2px;
+    padding:20px 24px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:16px;
+    position:relative;
+  }
+  .id-card .field-label{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    color:#6b6455;
+    margin-bottom:3px;
+  }
+  .id-card .field-value{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:26px;
+    letter-spacing:1px;
+  }
+  .id-card .arcos-id{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:22px;
+    font-weight:600;
+    letter-spacing:1px;
+    background:var(--ink);
+    color:var(--safety);
+    padding:6px 12px;
+    border-radius:3px;
+  }
+  .stamp{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:13px;
+    letter-spacing:3px;
+    border:3px solid var(--rust);
+    color:var(--rust);
+    padding:5px 12px;
+    border-radius:6px;
+    transform:rotate(-4deg);
+    text-transform:uppercase;
+    opacity:0.85;
+    white-space:nowrap;
+  }
+  .stamp.ok{border-color:var(--moss);color:var(--moss);}
+
+  /* ---------- status states ---------- */
+  #status-msg{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    color:#6b6455;
+    padding:40px 10px;
+    text-align:center;
+  }
+  /* ---------- tally counters ---------- */
+  .tally-section{margin-top:34px;}
+  .section-eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    color:#6b6455;
     display:flex;
     align-items:center;
-    justify-content:space-between;
-    gap:16px;
-    padding:20px 24px;
-    background:var(--panel);
-    border:1px solid var(--panel-border);
-    border-radius:16px;
-    backdrop-filter:blur(16px);
-    -webkit-backdrop-filter:blur(16px);
-    margin-bottom:28px;
-    flex-wrap:wrap;
-  }
-
-  .identity-left{ display:flex; align-items:center; gap:14px; min-width:0; }
-
-  .avatar-ring{
-    width:48px; height:48px;
-    border-radius:50%;
-    display:flex; align-items:center; justify-content:center;
-    background:linear-gradient(135deg, rgba(255,179,71,0.18), rgba(77,216,232,0.18));
-    border:1px solid var(--panel-border);
-    font-weight:600;
-    font-size:17px;
-    color:var(--amber);
-    flex-shrink:0;
-  }
-
-  .identity-name-block{ min-width:0; }
-
-  .identity-name{
-    font-size:19px;
-    font-weight:600;
-    letter-spacing:-0.01em;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
-
-  .identity-id{
-    font-family:'JetBrains Mono', monospace;
-    font-size:12px;
-    color:var(--muted-2);
-    letter-spacing:0.03em;
-    margin-top:2px;
-  }
-
-  .status-pill{
-    display:flex; align-items:center; gap:8px;
-    padding:8px 14px;
-    border-radius:999px;
-    background:rgba(255,255,255,0.03);
-    border:1px solid var(--panel-border);
-    font-family:'JetBrains Mono', monospace;
-    font-size:11px;
-    color:var(--muted-2);
-    letter-spacing:0.04em;
-    white-space:nowrap;
-  }
-
-  .live-dot{
-    width:7px; height:7px;
-    border-radius:50%;
-    background:var(--cyan);
-    box-shadow:0 0 8px var(--cyan-glow);
-    animation:pulse 2.2s ease-in-out infinite;
-  }
-
-  @keyframes pulse{
-    0%,100%{ opacity:1; transform:scale(1); }
-    50%{ opacity:0.5; transform:scale(0.8); }
-  }
-
-  /* ---------- Section label ---------- */
-  .section-label{
-    font-family:'JetBrains Mono', monospace;
-    font-size:11px;
-    letter-spacing:0.12em;
-    text-transform:uppercase;
-    color:var(--muted);
-    margin:0 0 14px 4px;
-  }
-
-  /* ---------- Shift strip ---------- */
-  .strip{
-    display:grid;
-    grid-template-columns:repeat(auto-fill, minmax(118px, 1fr));
-    gap:12px;
-  }
-
-  .day-card{
-    position:relative;
-    padding:18px 14px 16px;
-    background:var(--panel);
-    border:1px solid var(--panel-border);
-    border-radius:14px;
-    backdrop-filter:blur(16px);
-    -webkit-backdrop-filter:blur(16px);
-    display:flex;
-    flex-direction:column;
     gap:10px;
-    transition:transform 0.18s ease, border-color 0.18s ease;
+    margin-bottom:12px;
   }
-
-  .day-card:hover{
-    transform:translateY(-2px);
-    border-color:rgba(255,255,255,0.16);
+  .section-eyebrow::after{
+    content:"";
+    flex:1;
+    height:1px;
+    background:var(--line);
   }
-
-  .day-card.is-today{
-    border-color:var(--cyan);
-    box-shadow:0 0 0 1px var(--cyan-glow), 0 0 24px -4px var(--cyan-glow);
+  .tally-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+    gap:10px;
   }
-
-  .day-date-label{
-    font-family:'JetBrains Mono', monospace;
-    font-size:13px;
-    font-weight:500;
-    color:var(--text);
+  .tally-card{
+    background:var(--paper-dark);
+    border:1px solid var(--line);
+    border-radius:3px;
+    padding:14px 16px;
+    position:relative;
+    overflow:hidden;
   }
-
-  .day-weekday{
-    font-family:'JetBrains Mono', monospace;
-    font-size:10px;
-    letter-spacing:0.08em;
-    text-transform:uppercase;
-    color:var(--muted);
-  }
-
-  .today-tag{
+  .tally-card .bar{
     position:absolute;
-    top:-9px; right:12px;
-    font-family:'JetBrains Mono', monospace;
-    font-size:9px;
-    letter-spacing:0.08em;
-    color:var(--bg);
-    background:var(--cyan);
-    padding:2px 7px;
-    border-radius:999px;
-    font-weight:600;
+    left:0;bottom:0;
+    height:4px;
+    width:100%;
+    transform-origin:left;
   }
-
-  .shift-pill{
-    align-self:flex-start;
-    padding:6px 10px;
-    border-radius:8px;
-    font-family:'JetBrains Mono', monospace;
-    font-size:12px;
+  .tally-card .count{
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:600;
+    font-size:34px;
+    line-height:1;
+    letter-spacing:-1px;
+  }
+  .tally-card .label{
+    margin-top:6px;
+    font-size:12.5px;
+    color:#4a4436;
     font-weight:500;
-    letter-spacing:0.01em;
   }
-
-  .shift-pill.working{
-    color:var(--amber);
-    background:rgba(255,179,71,0.12);
-    border:1px solid rgba(255,179,71,0.3);
+  .tally-card.total{
+    background:var(--ink);
+    color:var(--paper);
   }
+  .tally-card.total .label{color:var(--void);}
+  .tally-card.total .count{color:var(--safety);}
 
-  .shift-pill.weekoff{
-    color:var(--cyan);
-    background:rgba(77,216,232,0.12);
-    border:1px solid rgba(77,216,232,0.3);
+  /* ---------- timeline strip ---------- */
+  .timeline-section{margin-top:36px;}
+  .timeline-scroll{
+    display:flex;
+    gap:6px;
+    overflow-x:auto;
+    padding:14px 4px 18px;
+    background:var(--paper-dark);
+    border:1px solid var(--line);
+    border-radius:3px;
+    position:relative;
   }
-
-  .shift-pill.absent{
-    color:var(--red);
-    background:rgba(255,107,107,0.1);
-    border:1px solid rgba(255,107,107,0.28);
+  .timeline-scroll::before,.timeline-scroll::after{
+    content:"";
+    position:absolute;
+    top:0;bottom:0;
+    width:14px;
+    background-image:radial-gradient(circle, var(--paper) 3px, transparent 3.2px);
+    background-size:14px 16px;
+    background-repeat:repeat-y;
   }
-
-  .shift-pill.training{
-    color:var(--violet);
-    background:rgba(185,142,240,0.12);
-    border:1px solid rgba(185,142,240,0.3);
-  }
-
-  .shift-pill.leave{
-    color:var(--muted-2);
-    background:rgba(255,255,255,0.06);
-    border:1px solid var(--panel-border);
-  }
-
-  .shift-pill.unknown{
-    color:var(--muted-2);
-    background:rgba(255,255,255,0.04);
-    border:1px solid var(--panel-border);
-  }
-
-  /* ---------- Loading state ---------- */
-  .loading-wrap{
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-    padding:80px 20px;
-    gap:16px;
-    color:var(--muted-2);
-    font-family:'JetBrains Mono', monospace;
-    font-size:13px;
-    letter-spacing:0.03em;
-  }
-
-  .spinner{
-    width:28px; height:28px;
-    border-radius:50%;
-    border:2px solid rgba(255,255,255,0.08);
-    border-top-color:var(--cyan);
-    animation:spin 0.8s linear infinite;
-  }
-
-  @keyframes spin{ to{ transform:rotate(360deg); } }
-
-  /* ---------- Error / empty states ---------- */
-  .state-panel{
-    padding:40px 28px;
+  .timeline-scroll::before{left:0;}
+  .timeline-scroll::after{right:0;}
+  .day-chip{
+    flex:0 0 auto;
+    width:64px;
     text-align:center;
-    background:var(--panel);
-    border:1px solid var(--panel-border);
-    border-radius:16px;
+    padding:8px 4px 10px;
+    border-radius:3px;
+    color:var(--paper);
   }
-
-  .state-panel .state-title{
-    font-size:16px;
-    font-weight:600;
-    margin-bottom:8px;
+  .day-chip .date{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    opacity:0.85;
   }
-
-  .state-panel .state-desc{
-    font-size:13px;
-    color:var(--muted-2);
-    line-height:1.6;
-    max-width:400px;
-    margin:0 auto 18px;
-  }
-
-  .retry-btn{
-    font-family:'JetBrains Mono', monospace;
+  .day-chip .status{
+    font-family:'Bebas Neue',sans-serif;
     font-size:12px;
-    letter-spacing:0.03em;
-    color:var(--bg);
-    background:var(--cyan);
-    border:none;
-    padding:10px 20px;
-    border-radius:8px;
-    cursor:pointer;
-    font-weight:600;
+    letter-spacing:0.5px;
+    margin-top:4px;
+    line-height:1.1;
+  }
+  .day-chip.blank{
+    background:transparent;
+    border:1px dashed var(--line);
+    color:#a29c8a;
   }
 
-  .retry-btn:hover{ opacity:0.9; }
-  .retry-btn:focus-visible{ outline:2px solid var(--text); outline-offset:2px; }
-
-  a:focus-visible, button:focus-visible{
-    outline:2px solid var(--cyan);
-    outline-offset:2px;
+  /* ---------- legend ---------- */
+  .legend{
+    margin-top:14px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:14px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    color:#4a4436;
+  }
+  .legend span.dot{
+    display:inline-block;
+    width:10px;height:10px;
+    border-radius:2px;
+    margin-right:6px;
+    vertical-align:middle;
   }
 
-  @media (prefers-reduced-motion: reduce){
-    .live-dot, .spinner{ animation:none; }
+  footer{
+    margin-top:40px;
+    text-align:center;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    color:#8a8371;
+    letter-spacing:0.5px;
   }
 
-  @media (max-width: 560px){
-    .wrap{ padding:20px 14px 48px; }
-    .identity{ padding:16px 18px; }
-    .strip{ grid-template-columns:repeat(2, 1fr); }
+  @media (max-width:520px){
+    header.manifest-head .title{font-size:32px;}
+    .id-card .arcos-id{font-size:18px;}
   }
 </style>
 </head>
 <body>
-
 <div class="wrap">
-
-  <div id="identity-block" style="display:none;" class="identity">
-    <div class="identity-left">
-      <div class="avatar-ring" id="avatar-initial">--</div>
-      <div class="identity-name-block">
-        <div class="identity-name" id="employee-name">—</div>
-        <div class="identity-id" id="employee-id">ID —</div>
-      </div>
+  <div class="hazard-bar"></div>
+  <header class="manifest-head">
+    <div>
+      <div class="title">Duty Manifest</div>
+      <div class="sub">Lifetime Schedule Record</div>
     </div>
-    <div class="status-pill">
-      <span class="live-dot"></span>
-      <span id="today-label">—</span>
+    <div class="doc-no" id="doc-no">FORM ARC-LS · —</div>
+  </header>
+
+  <div class="id-card" id="id-card" style="display:none;">
+    <div>
+      <div class="field-label">Employee</div>
+      <div class="field-value" id="emp-name">—</div>
+    </div>
+    <div>
+      <div class="field-label">Arcos ID</div>
+      <div class="arcos-id" id="emp-id">—</div>
+    </div>
+    <div class="stamp ok" id="emp-stamp">On File</div>
+  </div>
+
+  <div id="status-msg">Reading duty roster…</div>
+
+  <div id="content" style="display:none;">
+    <div class="tally-section">
+      <div class="section-eyebrow">Lifetime Tally</div>
+      <div class="tally-grid" id="tally-grid"></div>
+    </div>
+
+    <div class="timeline-section">
+      <div class="section-eyebrow">Day-by-Day Record</div>
+      <div class="timeline-scroll" id="timeline"></div>
+      <div class="legend" id="legend"></div>
     </div>
   </div>
 
-  <div id="content-area">
-    <div class="loading-wrap">
-      <div class="spinner"></div>
-      <span>Fetching your schedule…</span>
-    </div>
-  </div>
-
+  <footer>Data sourced live from the duty roster sheet · Arcos ID read from your session cookie</footer>
 </div>
 
 <script>
-(function(){
+const SHEET_ID = "1OyX6V_7SGFBbTzL6vTpq4gj3PQ0Q5euPUsAYraxyY94";
+const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Sheet1`;
 
-  const contentArea = document.getElementById('content-area');
-  const identityBlock = document.getElementById('identity-block');
+const STATUS_STYLE = {
+  "Day Present": {color:"var(--moss)",  short:"Present"},
+  "Day Shift":   {color:"var(--steel)", short:"Shift"},
+  "Week Off":    {color:"var(--safety)",short:"Week Off", dark:true},
+  "Absent":      {color:"var(--rust)",  short:"Absent"},
+  "Training":    {color:"var(--plum)",  short:"Training"},
+  "DL":          {color:"var(--clay)",  short:"DL"}
+};
 
-  function classifyShift(raw){
-    const v = (raw || '').toString().trim().toLowerCase();
-    if(!v) return 'unknown';
-    if(v === 'day present' || v === 'day shift') return 'working';
-    if(v === 'week off') return 'weekoff';
-    if(v === 'absent') return 'absent';
-    if(v === 'training') return 'training';
-    if(v === 'dl') return 'leave';
-    return 'unknown';
-  }
+function getCookie(name){
+  const match = document.cookie.match(new RegExp('(?:^|; )' + name.replace(/([.$?*|{}()\[\]\\\/+^])/g,'\\$1') + '=([^;]*)'));
+  return match ? decodeURIComponent(match[1]) : null;
+}
 
-  function todayKey(){
-    // Builds a "12-Jun" style key matching your sheet's header format
-    const d = new Date();
-    const day = d.getDate();
-    const month = d.toLocaleString('en-US', { month: 'short' });
-    return `${day}-${month}`;
-  }
-
-  function renderError(title, desc, opts){
-    opts = opts || {};
-    identityBlock.style.display = 'none';
-    contentArea.innerHTML = `
-      <div class="state-panel">
-        <div class="state-title">${title}</div>
-        <div class="state-desc">${desc}</div>
-        ${opts.showRetry ? '<button class="retry-btn" id="retry-btn">Try again</button>' : ''}
-      </div>
-    `;
-    if(opts.showRetry){
-      document.getElementById('retry-btn').addEventListener('click', loadSchedule);
+function parseCSV(text){
+  const rows = [];
+  let row = [], field = "", inQuotes = false;
+  for(let i=0;i<text.length;i++){
+    const c = text[i], next = text[i+1];
+    if(inQuotes){
+      if(c === '"' && next === '"'){ field += '"'; i++; }
+      else if(c === '"'){ inQuotes = false; }
+      else { field += c; }
+    } else {
+      if(c === '"'){ inQuotes = true; }
+      else if(c === ','){ row.push(field); field = ""; }
+      else if(c === '\n'){ row.push(field); rows.push(row); row = []; field = ""; }
+      else if(c === '\r'){ /* skip */ }
+      else { field += c; }
     }
   }
+  if(field.length || row.length){ row.push(field); rows.push(row); }
+  return rows;
+}
 
-  function renderSchedule(data){
-    const entries = Object.entries(data.schedule || {});
+function animateCount(el, target, duration=900){
+  const start = performance.now();
+  function tick(now){
+    const p = Math.min(1, (now - start) / duration);
+    const eased = 1 - Math.pow(1-p, 3);
+    el.textContent = Math.round(eased * target);
+    if(p < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
 
-    // identity strip
-    const name = data.name || 'Unknown';
-    document.getElementById('employee-name').textContent = name;
-    document.getElementById('employee-id').textContent = `ID ${data.arcosId || '—'}`;
-    document.getElementById('avatar-initial').textContent = name.trim().charAt(0).toUpperCase() || '?';
+function showMessage(msg){
+  document.getElementById('status-msg').style.display = 'block';
+  document.getElementById('status-msg').textContent = msg;
+}
 
-    const tKey = todayKey();
-    document.getElementById('today-label').textContent = tKey.toUpperCase();
-    identityBlock.style.display = 'flex';
+function render(headerRow, empRow){
+  document.getElementById('status-msg').style.display = 'none';
+  document.getElementById('id-card').style.display = 'flex';
+  document.getElementById('content').style.display = 'block';
 
-    if(entries.length === 0){
-      contentArea.innerHTML = `
-        <div class="state-panel">
-          <div class="state-title">No shift data yet</div>
-          <div class="state-desc">Your schedule hasn't been published for the upcoming dates. Check back once the roster is updated.</div>
-        </div>
-      `;
-      return;
-    }
+  const arcosId = empRow[0] || "—";
+  const name = empRow[1] || "—";
+  document.getElementById('emp-id').textContent = arcosId;
+  document.getElementById('emp-name').textContent = name;
+  document.getElementById('doc-no').textContent = `FORM ARC-LS · ${arcosId}`;
 
-    const cards = entries.map(([dateLabel, shiftRaw]) => {
-      const cls = classifyShift(shiftRaw);
-      const isToday = dateLabel.trim().toLowerCase() === tKey.toLowerCase();
-      const displayVal = (shiftRaw && shiftRaw.trim()) ? shiftRaw : '—';
-
-      // derive weekday label from "12-Jun" style string against current year
-      let weekday = '';
-      const parsed = new Date(`${dateLabel}-${new Date().getFullYear()}`);
-      if(!isNaN(parsed)){
-        weekday = parsed.toLocaleString('en-US', { weekday: 'short' });
-      }
-
-      return `
-        <div class="day-card ${isToday ? 'is-today' : ''}">
-          ${isToday ? '<div class="today-tag">TODAY</div>' : ''}
-          <div>
-            <div class="day-date-label">${dateLabel}</div>
-            <div class="day-weekday">${weekday}</div>
-          </div>
-          <div class="shift-pill ${cls}">${displayVal}</div>
-        </div>
-      `;
-    }).join('');
-
-    contentArea.innerHTML = `
-      <div class="section-label">Full roster · ${entries.length} days</div>
-      <div class="strip">${cards}</div>
-    `;
+  const counts = {};
+  let dayCells = [];
+  for(let c = 2; c < headerRow.length; c++){
+    const dateLabel = (headerRow[c] || "").trim();
+    const val = (empRow[c] || "").trim();
+    if(!dateLabel) continue;
+    if(val){ counts[val] = (counts[val] || 0) + 1; }
+    dayCells.push({date: dateLabel, val});
   }
 
-  async function loadSchedule(){
-    contentArea.innerHTML = `
-      <div class="loading-wrap">
-        <div class="spinner"></div>
-        <span>Fetching your schedule…</span>
-      </div>
-    `;
+  const totalMarked = dayCells.filter(d => d.val).length;
 
-    try{
-      const res = await fetch('/schedule', { credentials: 'include' });
+  // Tally cards
+  const grid = document.getElementById('tally-grid');
+  grid.innerHTML = "";
+  const order = ["Day Present","Day Shift","Week Off","Absent","Training","DL"];
+  const seen = new Set();
+  order.concat(Object.keys(counts)).forEach(key => {
+    if(seen.has(key) || !(key in counts)) return;
+    seen.add(key);
+    const style = STATUS_STYLE[key] || {color:"var(--line)", short:key};
+    const card = document.createElement('div');
+    card.className = 'tally-card';
+    card.innerHTML = `<div class="count">0</div><div class="label">${style.short}</div><div class="bar" style="background:${style.color}"></div>`;
+    grid.appendChild(card);
+    animateCount(card.querySelector('.count'), counts[key]);
+  });
+  const totalCard = document.createElement('div');
+  totalCard.className = 'tally-card total';
+  totalCard.innerHTML = `<div class="count">0</div><div class="label">Total Days Logged</div>`;
+  grid.appendChild(totalCard);
+  animateCount(totalCard.querySelector('.count'), totalMarked);
 
-      if(res.status === 401){
-        window.location.href = '/login.html';
-        return;
-      }
+  // Timeline
+  const timeline = document.getElementById('timeline');
+  timeline.innerHTML = "";
+  dayCells.forEach(d => {
+    const chip = document.createElement('div');
+    if(d.val){
+      const style = STATUS_STYLE[d.val] || {color:"var(--void)", short:d.val, dark:true};
+      chip.className = 'day-chip';
+      chip.style.background = style.color;
+      if(style.dark) chip.style.color = "var(--ink)";
+      chip.innerHTML = `<div class="date">${d.date}</div><div class="status">${style.short}</div>`;
+    } else {
+      chip.className = 'day-chip blank';
+      chip.innerHTML = `<div class="date">${d.date}</div><div class="status">—</div>`;
+    }
+    timeline.appendChild(chip);
+  });
 
-      if(res.status === 404){
-        renderError(
-          'Employee not found',
-          'Your ID isn\'t on the current roster sheet. If this looks wrong, contact your shift admin.',
-          { showRetry: true }
-        );
-        return;
-      }
+  // Legend
+  const legend = document.getElementById('legend');
+  legend.innerHTML = "";
+  order.forEach(key => {
+    if(!(key in counts)) return;
+    const style = STATUS_STYLE[key];
+    const item = document.createElement('span');
+    item.innerHTML = `<span class="dot" style="background:${style.color}"></span>${style.short}`;
+    legend.appendChild(item);
+  });
+}
 
-      if(!res.ok){
-        renderError(
-          'Couldn\'t load schedule',
-          'The server didn\'t return your data. This is usually temporary.',
-          { showRetry: true }
-        );
-        return;
-      }
-
-      const data = await res.json();
-      renderSchedule(data);
-
-    }catch(err){
-      renderError(
-        'Connection lost',
-        'Couldn\'t reach the server. Check your connection and try again.',
-        { showRetry: true }
-      );
+function findEmployee(rows, targetId){
+  const header = rows[0];
+  const norm = s => (s || "").trim().toUpperCase();
+  for(let i=1;i<rows.length;i++){
+    if(norm(rows[i][0]) === norm(targetId)){
+      return {header, row: rows[i]};
     }
   }
+  return null;
+}
 
-  loadSchedule();
-})();
+let allRows = null;
+
+function lookup(id){
+  if(!id){
+    showMessage("No Arcos ID cookie found. This page expects an 'id' cookie (e.g. id=ARL19786).");
+    return;
+  }
+  showMessage("Reading duty roster…");
+  document.getElementById('id-card').style.display = 'none';
+  document.getElementById('content').style.display = 'none';
+
+  const proceed = (rows) => {
+    allRows = rows;
+    const found = findEmployee(rows, id);
+    if(found){
+      render(found.header, found.row);
+    } else {
+      showMessage(`No manifest found for "${id}".`);
+    }
+  };
+
+  if(allRows){ proceed(allRows); return; }
+
+  fetch(CSV_URL)
+    .then(res => {
+      if(!res.ok) throw new Error("Sheet fetch failed: " + res.status);
+      return res.text();
+    })
+    .then(text => proceed(parseCSV(text)))
+    .catch(err => {
+      showMessage("Couldn't reach the duty roster sheet. Confirm it's shared as 'Anyone with the link can view'.");
+      console.error(err);
+    });
+}
+
+// Entry point: read the Arcos ID straight from the cookie
+lookup(getCookie('id'));
 </script>
-
 </body>
 </html>
