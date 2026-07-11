@@ -714,15 +714,6 @@
   document.getElementById('hintDown').addEventListener('click', rotateDown);
   document.getElementById('hintUp').addEventListener('click', rotateUp);
 
-  /* ================= Logout (real server-side session invalidation) ================= */
-  document.getElementById('logoutBtn').addEventListener('click', async () => {
-    try{
-      await fetch('/api/logout', { method: 'POST', credentials: 'same-origin' });
-    }catch(e){
-      console.warn('Logout request failed, redirecting anyway:', e);
-    }
-    window.location.href = '/login';
-  });
 
   /* ================= Button glow follow ================= */
   document.querySelectorAll('.action-btn').forEach(btn => {
