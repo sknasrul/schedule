@@ -25,7 +25,7 @@
   html{
     height:100%;
     overflow:hidden;
-    overscroll-behavior-y:auto; /* keeps Android's native pull-to-refresh working */
+    overscroll-behavior-y:auto;
   }
 
   body{
@@ -33,7 +33,7 @@
     height:var(--app-height);
     width:100%;
     overflow:hidden;
-    overscroll-behavior-y:auto; /* don't block Android's native pull-to-refresh gesture */
+    overscroll-behavior-y:auto;
     font-family:'Inter', system-ui, -apple-system, sans-serif;
     color:var(--ink);
     display:flex;
@@ -170,7 +170,7 @@
   .swipe-hint span:hover{ background:rgba(255,255,255,0.18); }
   .swipe-hint svg{ width:12px; height:12px; }
 
-  /* ---------- ACTION BUTTONS (bigger, easier to tap) ---------- */
+  /* ---------- ACTION BUTTONS ---------- */
   .actions{ display:flex; justify-content:center; gap:16px; flex-shrink:0; }
 
   .action-btn{
@@ -204,7 +204,7 @@
   .action-btn .label{ font-size:13px; font-weight:700; z-index:1; position:relative; }
 
   @media (min-width:700px) and (min-height:700px){
-    .card-stack{ width:340px; max-width:340px; height:214px; } /* credit-card ratio ~1.586:1 */
+    .card-stack{ width:340px; max-width:340px; height:214px; }
     .action-btn{ width:118px; height:110px; }
     .action-btn svg{ width:28px; height:28px; }
     .action-btn .label{ font-size:14px; }
@@ -222,20 +222,50 @@
   @media (prefers-reduced-motion: reduce){
     .shift-card, .page{ transition:none !important; animation:none !important; }
   }
+
+  /* ---------- STATE OVERLAYS ---------- */
+  .state-overlay{
+    position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
+    flex-direction:column; gap:12px; background:rgba(44,36,64,0.35);
+    backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+    color:#fff; font-weight:600; font-size:14px; text-align:center; padding:24px;
+    z-index:50;
+  }
+  .state-overlay.hidden{ display:none; }
+  .spinner{
+    width:34px; height:34px; border-radius:50%;
+    border:3px solid rgba(255,255,255,0.35); border-top-color:#fff;
+    animation:spin .8s linear infinite;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+  .retry-btn{
+    margin-top:6px; padding:8px 18px; border-radius:999px; border:none;
+    background:#fff; color:var(--ink); font-weight:700; cursor:pointer;
+  }
 </style>
 </head>
 <body>
 
-  <div class="page">
+  <div id="loadingOverlay" class="state-overlay">
+    <div class="spinner"></div>
+    <div>Loading your schedule…</div>
+  </div>
+
+  <div id="errorOverlay" class="state-overlay hidden">
+    <div id="errorMessage">Something went wrong.</div>
+    <button class="retry-btn" id="retryBtn">Retry</button>
+  </div>
+
+  <div class="page" id="pageContent" style="visibility:hidden;">
     <header>
       <div class="user-info">
         <div class="avatar" id="avatarInitials">--</div>
         <div class="user-text">
           <span class="user-id" id="userId">-------</span>
-          <span class="user-name" id="userName">Guest User</span>
+          <span class="user-name" id="userName">Loading…</span>
         </div>
       </div>
-      <button class="logout-btn" id="logoutBtn" title="Logout" aria-label="Logout" onclick="window.location.href='/login'">
+      <button class="logout-btn" id="logoutBtn" title="Logout" aria-label="Logout">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
           <polyline points="16 17 21 12 16 7"/>
@@ -345,21 +375,40 @@
   window.addEventListener('resize', setAppHeight);
   window.addEventListener('orientationchange', setAppHeight);
 
-  /* ================= Cookie helpers ================= */
-  function getCookie(name){
-    const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
-    return match ? decodeURIComponent(match[2]) : null;
+  /* ================= State overlay helpers ================= */
+  const loadingOverlay = document.getElementById('loadingOverlay');
+  const errorOverlay = document.getElementById('errorOverlay');
+  const errorMessage = document.getElementById('errorMessage');
+  const pageContent = document.getElementById('pageContent');
+
+  function showLoading(){
+    loadingOverlay.classList.remove('hidden');
+    errorOverlay.classList.add('hidden');
+    pageContent.style.visibility = 'hidden';
+  }
+  function showError(msg){
+    loadingOverlay.classList.add('hidden');
+    errorOverlay.classList.remove('hidden');
+    errorMessage.textContent = msg;
+    pageContent.style.visibility = 'hidden';
+  }
+  function showPage(){
+    loadingOverlay.classList.add('hidden');
+    errorOverlay.classList.add('hidden');
+    pageContent.style.visibility = 'visible';
   }
 
-  const userId = getCookie('id') || 'ARL19786';
-  const userName = getCookie('name') || 'Maidul Mir';
-  document.getElementById('userId').textContent = userId;
-  document.getElementById('userName').textContent = userName;
-  document.getElementById('avatarInitials').textContent = userName
-    .split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
-  // Logout only redirects to /login (see inline onclick on the button).
+  document.getElementById('retryBtn').addEventListener('click', () => loadDashboard());
 
-  /* ================= Embedded Lottie animations ================= */
+  /* ================= User rendering (server-confirmed data only) ================= */
+  function renderUser(id, name){
+    document.getElementById('userId').textContent = id;
+    document.getElementById('userName').textContent = name;
+    document.getElementById('avatarInitials').textContent = name
+      .split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+  }
+
+  /* ================= Embedded Lottie animations (visual assets, not data) ================= */
   const sunLottie = {
     v:"5.9.0", fr:30, ip:0, op:90, w:100, h:100, nm:"sun", ddd:0, assets:[],
     layers:[
@@ -480,37 +529,49 @@
     }catch(e){}
   }
 
-  /* ================= Fixed content for Today / Tomorrow ================= */
+  /* ================= Date formatting (real, not data) ================= */
   function formatDate(offset){
     const d = new Date();
     d.setDate(d.getDate() + offset);
     return d.toLocaleDateString('en-US', { weekday:'long', month:'short', day:'numeric' });
   }
 
-  // 👉 Replace with your deployed Cloudflare Worker URL (see shift-worker.js)
-  const WORKER_URL = 'https://shift-api.YOUR-SUBDOMAIN.workers.dev';
+  /* ================= Real KV-backed shift lookup ================= */
+  const SHIFT_TYPES = {
+    'Day Shift':   { time:'08:00 — 16:00', fallback:sunFallback,  data:sunLottie,  night:false },
+    'Night Shift': { time:'20:00 — 04:00', fallback:moonFallback, data:moonLottie, night:true }
+  };
 
+  // Returns a display object for a known shift label, or null if the value
+  // is missing/unrecognized — never guesses.
   function shiftInfoFromLabel(label){
-    const night = /night/i.test(label || '');
-    return night
-      ? { label:'Night Shift', time:'20:00 — 04:00', fallback:moonFallback, data:moonLottie, night:true }
-      : { label:'Day Shift',   time:'08:00 — 16:00', fallback:sunFallback,  data:sunLottie,  night:false };
+    const known = SHIFT_TYPES[label];
+    if(!known) return null;
+    return { label, ...known };
   }
 
-  async function fetchShiftValue(id){
-    try{
-      const res = await fetch(`${WORKER_URL}/?id=${encodeURIComponent(id)}`);
-      if(!res.ok) throw new Error(`Worker responded ${res.status}`);
-      const json = await res.json();
-      return json.value; // expected format: "Day Shift,Night Shift"
-    }catch(e){
-      console.warn('Could not load shift data from KV, using fallback:', e);
+  async function fetchShiftData(){
+    const res = await fetch('/api/shift', { credentials: 'same-origin' });
+    if(res.status === 401){
+      window.location.href = '/login';
       return null;
     }
+    if(!res.ok){
+      let detail = '';
+      try{ detail = (await res.json()).error || ''; }catch(e){}
+      throw new Error(detail || `Request failed (${res.status})`);
+    }
+    return res.json(); // { id, name, today, tomorrow }
   }
 
   function populateCard(key, offset, shift){
     document.getElementById(`date-${key}`).textContent = formatDate(offset);
+    if(!shift){
+      document.getElementById(`name-${key}`).textContent = 'No schedule';
+      document.getElementById(`time-${key}`).textContent = '—';
+      document.getElementById(`icon-fallback-${key}`).innerHTML = '';
+      return;
+    }
     document.getElementById(`name-${key}`).textContent = shift.label;
     document.getElementById(`time-${key}`).textContent = shift.time;
     document.getElementById(`icon-${key}`).classList.toggle('night', shift.night);
@@ -520,13 +581,18 @@
   }
 
   async function loadDashboard(){
-    const raw = await fetchShiftValue(userId);
-    // raw looks like "Day Shift,Night Shift" -> [today, tomorrow]
-    const parts = raw ? raw.split(',').map(s => s.trim()) : [];
-    const todayShift = shiftInfoFromLabel(parts[0] || 'Day Shift');
-    const tomorrowShift = shiftInfoFromLabel(parts[1] || 'Day Shift');
-    populateCard('today', 0, todayShift);
-    populateCard('tomorrow', 1, tomorrowShift);
+    showLoading();
+    try{
+      const data = await fetchShiftData();
+      if(!data) return; // redirected to /login
+      renderUser(data.id, data.name);
+      populateCard('today', 0, shiftInfoFromLabel(data.today));
+      populateCard('tomorrow', 1, shiftInfoFromLabel(data.tomorrow));
+      showPage();
+    }catch(e){
+      console.error('Dashboard load failed:', e);
+      showError('Could not load your schedule. Check your connection and try again.');
+    }
   }
 
   loadDashboard();
@@ -647,6 +713,16 @@
 
   document.getElementById('hintDown').addEventListener('click', rotateDown);
   document.getElementById('hintUp').addEventListener('click', rotateUp);
+
+  /* ================= Logout (real server-side session invalidation) ================= */
+  document.getElementById('logoutBtn').addEventListener('click', async () => {
+    try{
+      await fetch('/api/logout', { method: 'POST', credentials: 'same-origin' });
+    }catch(e){
+      console.warn('Logout request failed, redirecting anyway:', e);
+    }
+    window.location.href = '/login';
+  });
 
   /* ================= Button glow follow ================= */
   document.querySelectorAll('.action-btn').forEach(btn => {
