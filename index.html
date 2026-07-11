@@ -551,7 +551,7 @@
   }
 
   async function fetchShiftData(){
-    const res = await fetch('/api/shift', { credentials: 'same-origin' });
+    const res = await fetch('/shift', { credentials: 'same-origin' });
     if(res.status === 401){
       window.location.href = '/login';
       return null;
