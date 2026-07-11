@@ -40,8 +40,11 @@ export async function onRequestGet(context) {
   const targetId = arcosId.trim().toUpperCase();
 
   // 2. Fetch sheet via gviz
-  const SHEET_ID = env.SHEET_ID; // set in Cloudflare Pages env vars
-  const GID = env.SHEET_GID || "0";
+  // Set SHEET_ID as a Cloudflare Pages environment variable:
+  //   SHEET_ID = 1OyX6V_7SGFBbTzL6vTpq4gj3PQ0Q5euPUsAYraxyY94
+  // Falls back to the known value below only if the env var isn't set.
+  const SHEET_ID = env.SHEET_ID || "1OyX6V_7SGFBbTzL6vTpq4gj3PQ0Q5euPUsAYraxyY94";
+  const GID = env.SHEET_GID || "0"; // Sheet1 tab
   const gvizUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${GID}`;
 
   const sheetRes = await fetch(gvizUrl);
@@ -76,7 +79,7 @@ export async function onRequestGet(context) {
   // Date columns = everything else, in original order
   const dateCols = cols
     .map((c, i) => ({ index: i, label: c.label }))
-    .filter((c) => c.index !== idColIdx && c.index !== nameColIdx);
+    .filter((c) => c.index !== idColIdx && c.index !== nameColIdx && c.label && c.label.trim() !== "");
 
   // 4. Find the matching row
   const matchRow = rows.find((r) => {
@@ -95,13 +98,13 @@ export async function onRequestGet(context) {
   const schedule = {};
   dateCols.forEach((col) => {
     const cell = matchRow.c[col.index];
-    schedule[col.label] = cell && cell.v !== null ? String(cell.v) : "";
+    schedule[col.label] = cell && cell.v !== null && cell.v !== undefined ? String(cell.v) : "";
   });
 
   const result = {
     arcosId: targetId,
     name: matchRow.c[nameColIdx]?.v || employeeName || "",
-    schedule, // { "12-Jun": "Morning", "13-Jun": "Off", ... }
+    schedule, // { "12-Jun": "Day Present", "13-Jun": "Week Off", ... }
   };
 
   return new Response(JSON.stringify(result), {
