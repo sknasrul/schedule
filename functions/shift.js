@@ -1,22 +1,25 @@
-export async function onRequest(context) {
-    const cookie = context.request.headers.get("Cookie") || "";
+export async function onRequestGet(context) {
+  const { request, env } = context;
 
-    const id = cookie.match(/(?:^|;\s*)id=([^;]+)/)?.[1];
+  const cookieHeader = request.headers.get('Cookie') || '';
+  const match = cookieHeader.match(/(?:^|;\s*)session=([^;]+)/);
+  const sessionToken = match ? decodeURIComponent(match[1]) : null;
 
-    if (!id) {
-        return Response.json({ error: "No ID cookie" }, { status: 401 });
-    }
+  if (!sessionToken) {
+    return Response.json({ error: 'Not authenticated' }, { status: 401 });
+  }
 
-    const value = await context.env.SHIFTS.get(decodeURIComponent(id));
+  const sessionRaw = await env.SESSIONS.get(sessionToken);
+  if (!sessionRaw) {
+    return Response.json({ error: 'Invalid or expired session' }, { status: 401 });
+  }
+  const session = JSON.parse(sessionRaw); // { id, name }
 
-    if (!value) {
-        return Response.json({ error: "Shift not found" }, { status: 404 });
-    }
+  const raw = await env.SHIFT.get(session.id);        // 👈 renamed
+  if (!raw) {
+    return Response.json({ error: 'No schedule found for this user' }, { status: 404 });
+  }
 
-    const [today, tomorrow] = value.split(",").map(v => v.trim());
-
-    return Response.json({
-        today,
-        tomorrow
-    });
+  const [today, tomorrow] = raw.split(',').map(s => s.trim());
+  return Response.json({ id: session.id, name: session.name, today, tomorrow });
 }
