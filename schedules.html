@@ -1,37 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Schedule</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0E13;
+    --panel:rgba(255,255,255,0.04);
+    --panel-border:rgba(255,255,255,0.08);
+    --amber:#FFB347;
+    --amber-glow:rgba(255,179,71,0.35);
+    --cyan:#4DD8E8;
+    --cyan-glow:rgba(77,216,232,0.35);
+    --red:#FF6B6B;
+    --red-glow:rgba(255,107,107,0.3);
+    --text:#E8EDF2;
+    --muted:#5A6672;
+    --muted-2:#8A94A0;
+  }
+
+  *{ box-sizing:border-box; }
+
+  html,body{
+    margin:0; padding:0; min-height:100%;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Space Grotesk', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ambient scanline overlay, matches home.html */
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    pointer-events:none;
+    background:repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.015) 0px,
+      rgba(255,255,255,0.015) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    z-index:1;
+  }
+
+  body::after{
+    content:"";
+    position:fixed; inset:0;
+    pointer-events:none;
+    background:radial-gradient(ellipse at top, rgba(77,216,232,0.05), transparent 60%),
+               radial-gradient(ellipse at bottom, rgba(255,179,71,0.04), transparent 60%);
+    z-index:0;
+  }
+
+  .wrap{
+    position:relative; z-index:2;
+    max-width:920px;
+    margin:0 auto;
+    padding:32px 20px 64px;
+  }
+
+  /* ---------- Identity strip ---------- */
+  .identity{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    padding:20px 24px;
+    background:var(--panel);
+    border:1px solid var(--panel-border);
+    border-radius:16px;
+    backdrop-filter:blur(16px);
+    -webkit-backdrop-filter:blur(16px);
+    margin-bottom:28px;
+    flex-wrap:wrap;
+  }
+
+  .identity-left{ display:flex; align-items:center; gap:14px; min-width:0; }
+
+  .avatar-ring{
+    width:48px; height:48px;
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(135deg, rgba(255,179,71,0.18), rgba(77,216,232,0.18));
+    border:1px solid var(--panel-border);
+    font-weight:600;
+    font-size:17px;
+    color:var(--amber);
+    flex-shrink:0;
+  }
+
+  .identity-name-block{ min-width:0; }
+
+  .identity-name{
+    font-size:19px;
+    font-weight:600;
+    letter-spacing:-0.01em;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .identity-id{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    color:var(--muted-2);
+    letter-spacing:0.03em;
+    margin-top:2px;
+  }
+
+  .status-pill{
+    display:flex; align-items:center; gap:8px;
+    padding:8px 14px;
+    border-radius:999px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid var(--panel-border);
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    color:var(--muted-2);
+    letter-spacing:0.04em;
+    white-space:nowrap;
+  }
+
+  .live-dot{
+    width:7px; height:7px;
+    border-radius:50%;
+    background:var(--cyan);
+    box-shadow:0 0 8px var(--cyan-glow);
+    animation:pulse 2.2s ease-in-out infinite;
+  }
+
+  @keyframes pulse{
+    0%,100%{ opacity:1; transform:scale(1); }
+    50%{ opacity:0.5; transform:scale(0.8); }
+  }
+
+  /* ---------- Section label ---------- */
+  .section-label{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--muted);
+    margin:0 0 14px 4px;
+  }
+
+  /* ---------- Shift strip ---------- */
+  .strip{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(118px, 1fr));
+    gap:12px;
+  }
+
+  .day-card{
+    position:relative;
+    padding:18px 14px 16px;
+    background:var(--panel);
+    border:1px solid var(--panel-border);
+    border-radius:14px;
+    backdrop-filter:blur(16px);
+    -webkit-backdrop-filter:blur(16px);
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    transition:transform 0.18s ease, border-color 0.18s ease;
+  }
+
+  .day-card:hover{
+    transform:translateY(-2px);
+    border-color:rgba(255,255,255,0.16);
+  }
+
+  .day-card.is-today{
+    border-color:var(--cyan);
+    box-shadow:0 0 0 1px var(--cyan-glow), 0 0 24px -4px var(--cyan-glow);
+  }
+
+  .day-date-label{
+    font-family:'JetBrains Mono', monospace;
+    font-size:13px;
+    font-weight:500;
+    color:var(--text);
+  }
+
+  .day-weekday{
+    font-family:'JetBrains Mono', monospace;
+    font-size:10px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--muted);
+  }
+
+  .today-tag{
+    position:absolute;
+    top:-9px; right:12px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:9px;
+    letter-spacing:0.08em;
+    color:var(--bg);
+    background:var(--cyan);
+    padding:2px 7px;
+    border-radius:999px;
+    font-weight:600;
+  }
+
+  .shift-pill{
+    align-self:flex-start;
+    padding:6px 10px;
+    border-radius:8px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    font-weight:500;
+    letter-spacing:0.01em;
+  }
+
+  .shift-pill.day{
+    color:var(--amber);
+    background:rgba(255,179,71,0.12);
+    border:1px solid rgba(255,179,71,0.3);
+  }
+
+  .shift-pill.night{
+    color:var(--cyan);
+    background:rgba(77,216,232,0.12);
+    border:1px solid rgba(77,216,232,0.3);
+  }
+
+  .shift-pill.off{
+    color:var(--red);
+    background:rgba(255,107,107,0.1);
+    border:1px solid rgba(255,107,107,0.28);
+  }
+
+  .shift-pill.unknown{
+    color:var(--muted-2);
+    background:rgba(255,255,255,0.04);
+    border:1px solid var(--panel-border);
+  }
+
+  /* ---------- Loading state ---------- */
+  .loading-wrap{
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:80px 20px;
+    gap:16px;
+    color:var(--muted-2);
+    font-family:'JetBrains Mono', monospace;
+    font-size:13px;
+    letter-spacing:0.03em;
+  }
+
+  .spinner{
+    width:28px; height:28px;
+    border-radius:50%;
+    border:2px solid rgba(255,255,255,0.08);
+    border-top-color:var(--cyan);
+    animation:spin 0.8s linear infinite;
+  }
+
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+
+  /* ---------- Error / empty states ---------- */
+  .state-panel{
+    padding:40px 28px;
+    text-align:center;
+    background:var(--panel);
+    border:1px solid var(--panel-border);
+    border-radius:16px;
+  }
+
+  .state-panel .state-title{
+    font-size:16px;
+    font-weight:600;
+    margin-bottom:8px;
+  }
+
+  .state-panel .state-desc{
+    font-size:13px;
+    color:var(--muted-2);
+    line-height:1.6;
+    max-width:400px;
+    margin:0 auto 18px;
+  }
+
+  .retry-btn{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    letter-spacing:0.03em;
+    color:var(--bg);
+    background:var(--cyan);
+    border:none;
+    padding:10px 20px;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:600;
+  }
+
+  .retry-btn:hover{ opacity:0.9; }
+  .retry-btn:focus-visible{ outline:2px solid var(--text); outline-offset:2px; }
+
+  a:focus-visible, button:focus-visible{
+    outline:2px solid var(--cyan);
+    outline-offset:2px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .live-dot, .spinner{ animation:none; }
+  }
+
+  @media (max-width: 560px){
+    .wrap{ padding:20px 14px 48px; }
+    .identity{ padding:16px 18px; }
+    .strip{ grid-template-columns:repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div id="identity-block" style="display:none;" class="identity">
+    <div class="identity-left">
+      <div class="avatar-ring" id="avatar-initial">--</div>
+      <div class="identity-name-block">
+        <div class="identity-name" id="employee-name">—</div>
+        <div class="identity-id" id="employee-id">ID —</div>
+      </div>
+    </div>
+    <div class="status-pill">
+      <span class="live-dot"></span>
+      <span id="today-label">—</span>
+    </div>
+  </div>
+
+  <div id="content-area">
+    <div class="loading-wrap">
+      <div class="spinner"></div>
+      <span>Fetching your schedule…</span>
+    </div>
+  </div>
+
+</div>
+
 <script>
-async function loadSchedule() {
-  const container = document.getElementById('schedule-container');
-  try {
-    const res = await fetch('/api/schedule', { credentials: 'include' });
-    if (res.status === 401) {
-      window.location.href = '/login.html';
+(function(){
+
+  const contentArea = document.getElementById('content-area');
+  const identityBlock = document.getElementById('identity-block');
+
+  function classifyShift(raw){
+    const v = (raw || '').toString().trim().toLowerCase();
+    if(!v || v === '-' ) return 'unknown';
+    if(v.includes('off') || v.includes('leave') || v.includes('holiday')) return 'off';
+    if(v.includes('night') || v.includes('n)') || v === 'n') return 'night';
+    if(v.includes('day') || v.includes('morning') || v.includes('d)') || v === 'd') return 'day';
+    return 'unknown';
+  }
+
+  function todayKey(){
+    // Builds a "12-Jun" style key matching your sheet's header format
+    const d = new Date();
+    const day = d.getDate();
+    const month = d.toLocaleString('en-US', { month: 'short' });
+    return `${day}-${month}`;
+  }
+
+  function renderError(title, desc, opts){
+    opts = opts || {};
+    identityBlock.style.display = 'none';
+    contentArea.innerHTML = `
+      <div class="state-panel">
+        <div class="state-title">${title}</div>
+        <div class="state-desc">${desc}</div>
+        ${opts.showRetry ? '<button class="retry-btn" id="retry-btn">Try again</button>' : ''}
+      </div>
+    `;
+    if(opts.showRetry){
+      document.getElementById('retry-btn').addEventListener('click', loadSchedule);
+    }
+  }
+
+  function renderSchedule(data){
+    const entries = Object.entries(data.schedule || {});
+
+    // identity strip
+    const name = data.name || 'Unknown';
+    document.getElementById('employee-name').textContent = name;
+    document.getElementById('employee-id').textContent = `ID ${data.arcosId || '—'}`;
+    document.getElementById('avatar-initial').textContent = name.trim().charAt(0).toUpperCase() || '?';
+
+    const tKey = todayKey();
+    document.getElementById('today-label').textContent = tKey.toUpperCase();
+    identityBlock.style.display = 'flex';
+
+    if(entries.length === 0){
+      contentArea.innerHTML = `
+        <div class="state-panel">
+          <div class="state-title">No shift data yet</div>
+          <div class="state-desc">Your schedule hasn't been published for the upcoming dates. Check back once the roster is updated.</div>
+        </div>
+      `;
       return;
     }
-    if (!res.ok) throw new Error('Failed to load schedule');
 
-    const data = await res.json();
-    renderSchedule(data);
-  } catch (err) {
-    container.innerHTML = `<p class="error">Could not load schedule. Please try again.</p>`;
+    const cards = entries.map(([dateLabel, shiftRaw]) => {
+      const cls = classifyShift(shiftRaw);
+      const isToday = dateLabel.trim().toLowerCase() === tKey.toLowerCase();
+      const displayVal = (shiftRaw && shiftRaw.trim()) ? shiftRaw : '—';
+
+      // derive weekday label from "12-Jun" style string against current year
+      let weekday = '';
+      const parsed = new Date(`${dateLabel}-${new Date().getFullYear()}`);
+      if(!isNaN(parsed)){
+        weekday = parsed.toLocaleString('en-US', { weekday: 'short' });
+      }
+
+      return `
+        <div class="day-card ${isToday ? 'is-today' : ''}">
+          ${isToday ? '<div class="today-tag">TODAY</div>' : ''}
+          <div>
+            <div class="day-date-label">${dateLabel}</div>
+            <div class="day-weekday">${weekday}</div>
+          </div>
+          <div class="shift-pill ${cls}">${displayVal}</div>
+        </div>
+      `;
+    }).join('');
+
+    contentArea.innerHTML = `
+      <div class="section-label">7-day roster</div>
+      <div class="strip">${cards}</div>
+    `;
   }
-}
 
-function renderSchedule(data) {
-  const container = document.getElementById('schedule-container');
-  const dates = Object.keys(data.schedule);
+  async function loadSchedule(){
+    contentArea.innerHTML = `
+      <div class="loading-wrap">
+        <div class="spinner"></div>
+        <span>Fetching your schedule…</span>
+      </div>
+    `;
 
-  container.innerHTML = `
-    <h2>${data.name}</h2>
-    <table class="schedule-table">
-      <thead>
-        <tr>${dates.map(d => `<th>${d}</th>`).join('')}</tr>
-      </thead>
-      <tbody>
-        <tr>${dates.map(d => `<td>${data.schedule[d] || '-'}</td>`).join('')}</tr>
-      </tbody>
-    </table>
-  `;
-}
+    try{
+      const res = await fetch('/api/schedule', { credentials: 'include' });
 
-loadSchedule();
+      if(res.status === 401){
+        window.location.href = '/login.html';
+        return;
+      }
+
+      if(res.status === 404){
+        renderError(
+          'Employee not found',
+          'Your ID isn\'t on the current roster sheet. If this looks wrong, contact your shift admin.',
+          { showRetry: true }
+        );
+        return;
+      }
+
+      if(!res.ok){
+        renderError(
+          'Couldn\'t load schedule',
+          'The server didn\'t return your data. This is usually temporary.',
+          { showRetry: true }
+        );
+        return;
+      }
+
+      const data = await res.json();
+      renderSchedule(data);
+
+    }catch(err){
+      renderError(
+        'Connection lost',
+        'Couldn\'t reach the server. Check your connection and try again.',
+        { showRetry: true }
+      );
+    }
+  }
+
+  loadSchedule();
+})();
 </script>
+
+</body>
+</html>
