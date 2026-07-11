@@ -60,30 +60,26 @@
     padding:30px 0;
   }
   .scroll{
-    overflow-x:auto;
-    overflow-y:hidden;
-    white-space:nowrap;
-    padding-bottom:8px;
+    max-height:70vh;
+    overflow-y:auto;
+    overflow-x:hidden;
   }
   .day{
-    display:inline-block;
-    white-space:normal;
-    vertical-align:top;
-    width:88px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
     background:var(--card);
     border:1px solid var(--line);
     border-radius:10px;
-    padding:12px 10px;
-    margin-right:10px;
-    text-align:center;
+    padding:12px 14px;
+    margin-bottom:8px;
   }
   .day .date{
-    font-size:12px;
+    font-size:13px;
     color:var(--sub);
     font-weight:500;
   }
   .day .status{
-    margin-top:8px;
     font-size:13px;
     font-weight:600;
   }
