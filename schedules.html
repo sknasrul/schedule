@@ -8,36 +8,54 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
+  /* ==========================================================================
+     Same design language as the dashboard (home.html): light glass panels
+     floating over a softly-washed photo background, teal accent, amber used
+     only for the "today" highlight. Fonts kept as Space Grotesk / IBM Plex
+     Mono to match this page's own established convention.
+
+     Page background base ......... #eef2f6
+     Glass panel background ....... rgba(255,255,255,0.6)
+     Glass panel border ........... rgba(15,23,42,0.10)
+     Primary text .................. #1e293b
+     Secondary / muted text ........ #64748b
+     Accent (teal) .................. #0891b2 / #22d3ee
+     Today accent (amber) .......... #c7912f
+     ========================================================================== */
   :root{
-    --bg:#EEF0EA;
-    --ink:#1B2430;
-    --ink-soft:#4B5563;
-    --card:#FFFFFF;
-    --line:#E2E4DC;
-    --amber:#C7912F;
-    --present:#2F7A4F;
-    --present-bg:#E7F3EB;
-    --shift:#2E6C9E;
-    --shift-bg:#E7F0F8;
-    --weekoff:#B8860B;
-    --weekoff-bg:#FBF1DD;
-    --absent:#B23A2E;
-    --absent-bg:#FAEAE8;
-    --training:#6750A4;
-    --training-bg:#EFEAF7;
-    --dl:#8C5A3C;
-    --dl-bg:#F5EAE2;
-    --blank:#9AA0A6;
-    --blank-bg:#F1F2EF;
+    --ink:#1e293b;
+    --ink-soft:#64748b;
+    --card:rgba(255,255,255,0.6);
+    --card-solid:#ffffff;
+    --line:rgba(15,23,42,0.10);
+    --teal:#0891b2;
+    --teal-bright:#22d3ee;
+    --amber:#c7912f;
+
+    --present:#2F7A4F;   --present-bg:rgba(47,122,79,0.12);
+    --shift:#2E6C9E;     --shift-bg:rgba(46,108,158,0.12);
+    --weekoff:#B8860B;   --weekoff-bg:rgba(184,134,11,0.14);
+    --absent:#B23A2E;    --absent-bg:rgba(178,58,46,0.12);
+    --training:#6750A4;  --training-bg:rgba(103,80,164,0.12);
+    --dl:#8C5A3C;        --dl-bg:rgba(140,90,60,0.12);
+    --blank:#94a3b8;     --blank-bg:rgba(15,23,42,0.05);
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
-    background:var(--bg);
     color:var(--ink);
     font-family:'Space Grotesk',sans-serif;
     min-height:100vh;
     -webkit-font-smoothing:antialiased;
+
+    background-image:
+      linear-gradient(150deg, rgba(255,255,255,0.86) 0%, rgba(241,245,249,0.74) 45%, rgba(226,240,242,0.84) 100%),
+      url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRsld00P-Uk05dRZhB_31vkySwWZDiXDKIODMK0wxEdMN_p26upEeBp7JY&s=10');
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+    background-attachment:fixed;
+    background-color:#eef2f6;
   }
   .wrap{
     max-width:560px;
@@ -45,59 +63,38 @@
     padding:20px 16px 24px;
   }
 
-  /* ---------- ticket header ---------- */
-  .ticket{
+  /* ---------- employee panel (glass, matches dashboard header) ---------- */
+  .employee-panel{
     background:var(--card);
-    border-radius:16px;
-    box-shadow:0 1px 2px rgba(27,36,48,0.04), 0 8px 24px rgba(27,36,48,0.06);
-    position:relative;
-    overflow:visible;
-    padding:22px 22px 18px;
-  }
-  .ticket::before, .ticket::after{
-    content:"";
-    position:absolute;
-    bottom:-10px;
-    width:20px;height:20px;
-    background:var(--bg);
-    border-radius:50%;
-  }
-  .ticket::before{left:-10px;}
-  .ticket::after{right:-10px;}
-  .ticket .eyebrow{
-    font-family:'IBM Plex Mono',monospace;
-    font-size:12.5px;
-    letter-spacing:1.6px;
-    text-transform:uppercase;
-    color:var(--amber);
-    font-weight:600;
-  }
-  .ticket .row{
+    border:1px solid var(--line);
+    border-radius:20px;
+    backdrop-filter:blur(16px);
+    -webkit-backdrop-filter:blur(16px);
+    box-shadow:0 12px 30px rgba(15,23,42,0.10);
     display:flex;
-    justify-content:space-between;
-    align-items:flex-end;
-    margin-top:10px;
-    gap:10px;
-    flex-wrap:wrap;
+    align-items:center;
+    gap:14px;
+    padding:16px 20px;
   }
-  .ticket .name{
-    font-size:28px;
-    font-weight:700;
-    letter-spacing:-0.2px;
+  .avatar{
+    width:48px;height:48px;border-radius:50%;
+    background:linear-gradient(135deg, var(--teal-bright), var(--teal));
+    display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:16px;color:#06232b;flex-shrink:0;
   }
-  .ticket .id{
+  .emp-text{display:flex;flex-direction:column;gap:4px;min-width:0;}
+  .emp-eyebrow{
     font-family:'IBM Plex Mono',monospace;
-    font-size:15px;
-    font-weight:500;
-    color:var(--ink-soft);
-    background:var(--bg);
-    padding:7px 12px;
-    border-radius:8px;
-    white-space:nowrap;
+    font-size:11px;letter-spacing:1.4px;text-transform:uppercase;
+    color:var(--teal);font-weight:600;
   }
-  .ticket .stub-divider{
-    margin-top:16px;
-    border-top:1.5px dashed var(--line);
+  .emp-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .name{font-size:19px;font-weight:700;letter-spacing:-0.1px;}
+  .id{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12.5px;font-weight:500;color:var(--ink-soft);
+    background:rgba(15,23,42,0.06);
+    padding:3px 10px;border-radius:999px;white-space:nowrap;
   }
 
   /* ---------- section title ---------- */
@@ -118,6 +115,8 @@
     color:var(--ink-soft);
     background:var(--card);
     border:1px solid var(--line);
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
     padding:4px 11px;
     border-radius:20px;
   }
@@ -129,23 +128,27 @@
     padding:36px 4px;
     text-align:center;
     background:var(--card);
-    border-radius:14px;
+    border-radius:16px;
     border:1px solid var(--line);
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
   }
   .skeleton{
     background:var(--card);
     border:1px solid var(--line);
-    border-radius:12px;
+    border-radius:14px;
     padding:14px 16px;
     margin-bottom:8px;
     display:flex;
     justify-content:space-between;
     align-items:center;
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
   }
   .skeleton .bar{
     height:12px;
     border-radius:6px;
-    background:linear-gradient(90deg, var(--line) 25%, #eceee6 37%, var(--line) 63%);
+    background:linear-gradient(90deg, var(--line) 25%, rgba(255,255,255,0.6) 37%, var(--line) 63%);
     background-size:400% 100%;
     animation:shimmer 1.3s ease infinite;
   }
@@ -157,35 +160,16 @@
   }
 
   /* ---------- board ---------- */
-  .board-frame{
-    position:relative;
-  }
-  .board-frame::before, .board-frame::after{
-    content:"";
-    position:absolute;
-    left:0;right:0;
-    height:18px;
-    pointer-events:none;
-    z-index:2;
-  }
-  .board-frame::before{
-    top:0;
-    background:linear-gradient(var(--bg), rgba(238,240,234,0));
-  }
-  .board-frame::after{
-    bottom:0;
-    background:linear-gradient(rgba(238,240,234,0), var(--bg));
-  }
   .board{
     max-height:62vh;
     overflow-y:auto;
     overflow-x:hidden;
     padding:2px;
     scrollbar-width:thin;
-    scrollbar-color:#c9ccc0 transparent;
+    scrollbar-color:rgba(15,23,42,0.2) transparent;
   }
   .board::-webkit-scrollbar{width:6px;}
-  .board::-webkit-scrollbar-thumb{background:#c9ccc0;border-radius:10px;}
+  .board::-webkit-scrollbar-thumb{background:rgba(15,23,42,0.2);border-radius:10px;}
 
   .day{
     display:flex;
@@ -193,14 +177,20 @@
     align-items:center;
     background:var(--card);
     border:1px solid var(--line);
-    border-radius:14px;
+    border-radius:18px;
     padding:18px 20px;
     margin-bottom:10px;
-    transition:transform 0.12s ease, box-shadow 0.12s ease;
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+    transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  }
+  .day:hover{
+    transform:translateY(-2px);
+    box-shadow:0 10px 22px rgba(15,23,42,0.10);
   }
   .day.today{
     border-color:var(--amber);
-    box-shadow:0 0 0 1.5px var(--amber) inset;
+    box-shadow:0 0 0 1.5px var(--amber) inset, 0 10px 22px rgba(199,145,47,0.14);
   }
   .day .date-block{
     display:flex;
@@ -260,7 +250,7 @@
   }
 
   @media (max-width:420px){
-    .ticket .name{font-size:19px;}
+    .name{font-size:17px;}
     .board{max-height:58vh;}
   }
   @media (min-width:720px){
@@ -272,13 +262,15 @@
 <body>
 <div class="wrap">
 
-  <div class="ticket">
-    <div class="eyebrow">Employee</div>
-    <div class="row">
-      <div class="name" id="emp-name">—</div>
-      <div class="id" id="emp-id">—</div>
+  <div class="employee-panel">
+    <div class="avatar" id="avatarInitials">--</div>
+    <div class="emp-text">
+      <span class="emp-eyebrow">Employee</span>
+      <div class="emp-row">
+        <span class="name" id="emp-name">—</span>
+        <span class="id" id="emp-id">—</span>
+      </div>
     </div>
-    <div class="stub-divider"></div>
   </div>
 
   <div class="section-title">
@@ -380,10 +372,22 @@ function isSameDay(a, b){
   return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 }
 
+function setAvatarInitials(name){
+  const initials = (name || "")
+    .split(' ')
+    .filter(Boolean)
+    .map(w => w[0])
+    .join('')
+    .slice(0,2)
+    .toUpperCase();
+  document.getElementById('avatarInitials').textContent = initials || "--";
+}
+
 function render(headerRow, empRow){
   document.getElementById('status-msg').style.display = 'none';
   document.getElementById('emp-id').textContent = empRow[0] || "—";
   document.getElementById('emp-name').textContent = empRow[1] || "—";
+  setAvatarInitials(empRow[1]);
 
   const frame = document.getElementById('board-frame');
   const board = document.getElementById('board');
