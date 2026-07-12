@@ -25,7 +25,7 @@ const CACHE_NAME = 'shift-dashboard-shell-v1';
 const APP_SHELL = [
   '/',                          // if your server serves index.html at root
   '/index.html',
-  '/assets/background.jpg'      // <-- your self-hosted background image
+  '/background.avif'      // <-- your self-hosted background image
 ];
 
 /* ---------------------------- install ---------------------------- */
