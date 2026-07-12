@@ -49,10 +49,13 @@
     gap: 12px;
 
     /* Light, airy wash over the photo -- keeps the scene visible but reads
-       clearly as a bright, professional daytime surface. */
+       clearly as a bright, professional daytime surface.
+       NOTE: now self-hosted -- put your image at /assets/background.jpg
+       (or update this path + the matching path in sw.js's APP_SHELL list
+       to wherever you actually serve it from). */
     background-image:
       linear-gradient(150deg, rgba(255,255,255,0.86) 0%, rgba(241,245,249,0.74) 45%, rgba(226,240,242,0.84) 100%),
-      url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRsld00P-Uk05dRZhB_31vkySwWZDiXDKIODMK0wxEdMN_p26upEeBp7JY&s=10');
+      url('/background.avif');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -139,7 +142,7 @@
     gap: 7px;
     width: fit-content;
     max-width: 90vw;
-    margin: 2rem auto;
+    margin: 0 auto;
     padding: 8px 18px;
     border-radius: 999px;
     background: rgba(255,255,255,0.6);
@@ -168,8 +171,19 @@
   /* ---------------------------------------------------------------------- */
   .stack-wrap {
     flex: 1 1 auto; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; min-height: 0; position: relative;
+    align-items: center; min-height: 0; position: relative;
   }
+
+  /* The card centers itself in whatever space is left above the hint. */
+  .card-area {
+    flex: 1 1 auto; width: 100%; display: flex;
+    align-items: center; justify-content: center; min-height: 0;
+  }
+
+  /* Fixed gap that always separates the hint from the card above it, and
+     nudges the hint down toward the action grid so it's an easy, deliberate
+     thumb-reach tap rather than sitting right against the card. */
+  .swipe-hint { margin-top: 22px; margin-bottom: 4px; flex-shrink: 0; }
 
   .card-stack {
     position: relative;
@@ -439,6 +453,7 @@
            from behind the front card so it's obvious there's another one.
            Content starts as a "skel" (skeleton pulse) placeholder and is
            replaced once /shift resolves (or instantly from cache, see script). -->
+      <div class="card-area">
       <div class="card-stack" id="cardStack">
 
         <div class="shift-card" id="card-today" data-key="today">
@@ -485,6 +500,7 @@
           </div>
         </div>
 
+      </div>
       </div>
 
       <!-- Swipe hint line -- replaces the old Today/Tomorrow tab buttons.
@@ -545,6 +561,19 @@
   window.addEventListener('resize', setAppHeight);
   window.addEventListener('orientationchange', setAppHeight);
 
+  /* ================= Service worker registration ================= */
+  /* Caches the app shell (this page + the self-hosted background image)
+     for instant repeat loads and offline access. Deliberately does NOT
+     touch /shift -- see sw.js, which hard-codes that endpoint to always
+     go to the network so shift data is always fetched live from the
+     database, never served from a cache. */
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .catch(err => console.warn('Service worker registration failed:', err));
+    });
+  }
+
   /* ================= Overlay helpers ================= */
   const errorOverlay = document.getElementById('errorOverlay');
   const errorMessage = document.getElementById('errorMessage');
@@ -566,47 +595,10 @@
     return match ? decodeURIComponent(match[1]) : null;
   }
 
-  /* ================= Local cache helpers (instant-response layer) ================= */
-  /* We cache the last successful /shift payload in localStorage, keyed to
-     the logged-in user's id so a shared device never shows the wrong
-     person's cached shift. This is stale-while-revalidate: cache paints
-     instantly, then loadShiftData() always still hits the network and
-     overwrites both the UI and the cache with the fresh result. */
-  const SHIFT_CACHE_PREFIX = 'shiftCache_v1_';
-
-  function shiftCacheKey(userId){
-    return SHIFT_CACHE_PREFIX + userId;
-  }
-
-  function saveShiftCache(userId, data){
-    try{
-      localStorage.setItem(shiftCacheKey(userId), JSON.stringify({
-        data,
-        cachedAt: Date.now()
-      }));
-    }catch(e){
-      // Storage full, disabled, or in a context (e.g. private browsing in
-      // some browsers) that blocks it -- caching is a nice-to-have, so
-      // fail silently rather than breaking the page.
-      console.warn('Could not save shift cache:', e);
-    }
-  }
-
-  function loadShiftCache(userId){
-    try{
-      const raw = localStorage.getItem(shiftCacheKey(userId));
-      if(!raw) return null;
-      const parsed = JSON.parse(raw);
-      if(!parsed || !parsed.data) return null;
-      return parsed; // { data: { id, today, tomorrow }, cachedAt }
-    }catch(e){
-      return null;
-    }
-  }
-
-  function clearShiftCache(userId){
-    try{ localStorage.removeItem(shiftCacheKey(userId)); }catch(e){ /* ignore */ }
-  }
+  /* NOTE: Shift data returned from /shift is never cached (no localStorage /
+     sessionStorage). It's always fetched fresh from the server on every page
+     load. Only the already-public id/name cookies are used for the instant
+     header paint below. */
 
   /* ================= User rendering (from cookies, instant -- no server round trip) ================= */
   function renderUser(id, name){
@@ -720,47 +712,25 @@
       if(!data) return; // redirected to /login
       populateCard('today', 0, shiftInfoFromLabel(data.today));
       populateCard('tomorrow', 1, shiftInfoFromLabel(data.tomorrow));
-      // Remember this as the last-known-good payload for this user, so the
-      // next page load can paint instantly before the network responds.
-      saveShiftCache(cookieId, data);
     }catch(e){
       console.error('Shift load failed:', e);
-      // If we already painted something (from cache) a moment ago, don't
-      // yank it away with a scary error overlay -- only show the error
-      // screen if we truly have nothing on screen to show the user.
-      const cached = loadShiftCache(cookieId);
-      if(!cached){
-        showError('Could not load your schedule. Check your connection and try again.');
-      }
+      showError('Could not load your schedule. Check your connection and try again.');
     }
   }
 
   // Only kick off the shift fetch once we know the user is authenticated
   // (i.e. we didn't just redirect to /login above).
   if(cookieId && cookieName){
-    // Dates render immediately even before the fetch resolves.
+    // Dates render immediately even before the fetch resolves; the shift
+    // name/time/icon stay in their skeleton state until /shift responds,
+    // then loadShiftData() fetches fresh data from the server every time.
     document.getElementById('date-today').textContent = formatDate(0);
     document.getElementById('date-tomorrow').textContent = formatDate(1);
-
-    // INSTANT PAINT FROM CACHE: if we have a last-known-good shift payload
-    // for this exact user, show it right now -- no skeleton flash on
-    // repeat visits. loadShiftData() below still always runs afterward to
-    // fetch the real, current data from the network and silently correct
-    // the UI (and the cache) if anything has changed since last time.
-    const cached = loadShiftCache(cookieId);
-    if(cached){
-      populateCard('today', 0, shiftInfoFromLabel(cached.data.today));
-      populateCard('tomorrow', 1, shiftInfoFromLabel(cached.data.tomorrow));
-    }
-
     loadShiftData();
   }
 
   /* ================= Logout ================= */
   document.getElementById('logoutBtn').addEventListener('click', () => {
-    // Clear this user's cached shift data too, so a shared/public device
-    // never flashes the previous person's schedule on the next login.
-    clearShiftCache(cookieId);
     document.cookie = 'id=; Max-Age=0; path=/';
     document.cookie = 'name=; Max-Age=0; path=/';
     window.location.href = '/login';
