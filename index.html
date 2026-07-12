@@ -6,22 +6,22 @@
 <title>Shift Dashboard</title>
 <style>
   /* ==========================================================================
-     COLOR REFERENCE (kept here as plain comments, not CSS variables, so every
-     rule below just uses the real value directly -- easy to scan top to bottom)
+     COLOR REFERENCE (light mode) -- kept as plain comments, every rule below
+     just uses the real value directly.
 
-     Page background base ......... #060b14
-     Page gradient (dark navy -> teal, professional/IT) :
-        rgba(8,14,26,0.82)  ->  rgba(13,37,54,0.72)  ->  rgba(8,35,38,0.80)
-     Glass panel background ....... rgba(15,23,42,0.55)
-     Glass panel border ........... rgba(148,163,184,0.22)
-     Primary text .................. #eef2f7
-     Secondary / muted text ........ #93a1b5
-     Accent (cyan) .................. #22d3ee
-     Accent (cyan, deeper) .......... #0891b2
-     Card body gradient (day) ...... #1c2534 -> #2c3b52 -> #1c2534
-     Card body gradient (night) .... #191b34 -> #2c2f63 -> #191b34
-     Card edge / border ............ rgba(148,163,184,0.28)
-     Card gold trim ................ #d8b675
+     Page background base ......... #eef2f6
+     Page gradient (light wash over photo) :
+        rgba(255,255,255,0.86) -> rgba(241,245,249,0.74) -> rgba(226,240,242,0.84)
+     Glass panel background ....... rgba(255,255,255,0.6)
+     Glass panel border ........... rgba(15,23,42,0.10)
+     Primary text .................. #1e293b
+     Secondary / muted text ........ #64748b
+     Accent (teal) .................. #0891b2
+     Accent (teal, brighter) ........ #22d3ee
+     Card body gradient (day) ...... #fef3e2 -> #fde3b0 -> #fef3e2
+     Card body gradient (night) .... #eef0ff -> #dbe0ff -> #eef0ff
+     Card edge / border ............ rgba(15,23,42,0.12)
+     Card gold trim ................ #e2c288
      Day badge gradient ............ #f2a93a -> #f7c65f
      Night badge gradient .......... #6d7cff -> #4c56c9
      ========================================================================== */
@@ -37,21 +37,21 @@
     overflow: hidden;
     overscroll-behavior-y: auto;
     font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
-    color: #eef2f7;
+    color: #1e293b;
     display: flex;
     flex-direction: column;
     padding: clamp(10px, 2.5vw, 18px);
     gap: 12px;
 
-    /* Professional IT / tech gradient over the photo -- lower opacity so the
-       photo underneath still reads clearly through the color wash. */
+    /* Light, airy wash over the photo -- keeps the scene visible but reads
+       clearly as a bright, professional daytime surface. */
     background-image:
-      linear-gradient(150deg, rgba(8,14,26,0.80) 0%, rgba(13,37,54,0.62) 45%, rgba(8,35,38,0.78) 100%),
+      linear-gradient(150deg, rgba(255,255,255,0.86) 0%, rgba(241,245,249,0.74) 45%, rgba(226,240,242,0.84) 100%),
       url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRsld00P-Uk05dRZhB_31vkySwWZDiXDKIODMK0wxEdMN_p26upEeBp7JY&s=10');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    background-color: #060b14;
+    background-color: #eef2f6;
   }
 
   .page {
@@ -72,7 +72,7 @@
   }
 
   /* ---------------------------------------------------------------------- */
-  /* HEADER -- taller, fluid width, works from small phones to wide desktop */
+  /* HEADER                                                                  */
   /* ---------------------------------------------------------------------- */
   header {
     display: flex;
@@ -82,11 +82,11 @@
     min-height: 84px;
     padding: 14px clamp(16px, 3vw, 28px);
     border-radius: 20px;
-    background: rgba(15, 23, 42, 0.55);
-    border: 1px solid rgba(148, 163, 184, 0.22);
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(15, 23, 42, 0.10);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+    box-shadow: 0 12px 30px rgba(15,23,42,0.10);
     flex-shrink: 0;
   }
 
@@ -101,20 +101,20 @@
 
   .user-text { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
   .user-id {
-    font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; color: #93a1b5;
-    background: rgba(148,163,184,0.14); padding: 2px 9px; border-radius: 999px; width: fit-content;
+    font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; color: #64748b;
+    background: rgba(15,23,42,0.06); padding: 2px 9px; border-radius: 999px; width: fit-content;
   }
-  .user-name { font-size: 16px; font-weight: 700; color: #eef2f7; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .user-name { font-size: 16px; font-weight: 700; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
   .logout-btn {
     display: flex; align-items: center; justify-content: center;
-    width: 42px; height: 42px; background: rgba(148,163,184,0.14);
-    border: 1px solid rgba(148,163,184,0.2);
-    border-radius: 50%; color: #eef2f7; cursor: pointer; flex-shrink: 0;
+    width: 42px; height: 42px; background: rgba(15,23,42,0.06);
+    border: 1px solid rgba(15,23,42,0.10);
+    border-radius: 50%; color: #1e293b; cursor: pointer; flex-shrink: 0;
     transition: transform .2s ease, background .2s ease, box-shadow .2s ease;
   }
   .logout-btn svg { width: 18px; height: 18px; }
-  .logout-btn:hover { background: rgba(34,211,238,0.18); box-shadow: 0 0 0 3px rgba(34,211,238,0.15); transform: translateY(-1px); }
+  .logout-btn:hover { background: rgba(8,145,178,0.14); box-shadow: 0 0 0 3px rgba(8,145,178,0.14); transform: translateY(-1px); }
   .logout-btn:active { transform: translateY(0) scale(.94); }
 
   @media (max-width: 380px) {
@@ -123,46 +123,40 @@
   }
 
   /* ---------------------------------------------------------------------- */
-  /* TODAY / TOMORROW TAB SWITCH -- real buttons with a real hit area       */
+  /* SWIPE HINT -- replaces the tab buttons. Small tappable line below the   */
+  /* cards that always names the *other* card, with a chevron that points   */
+  /* the direction of the swipe.                                            */
   /* ---------------------------------------------------------------------- */
-  .tab-switch {
+  .swipe-hint {
     display: flex;
-    gap: 6px;
-    width: 90vw;
-    max-width: 400px;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    width: fit-content;
+    max-width: 90vw;
     margin: 0 auto;
-    padding: 5px;
-    border-radius: 14px;
-    background: rgba(15,23,42,0.55);
-    border: 1px solid rgba(148,163,184,0.22);
+    padding: 8px 18px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.6);
+    border: 1px solid rgba(15,23,42,0.10);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    flex-shrink: 0;
-  }
-  .tab-btn {
-    flex: 1 1 0;
-    min-height: 42px;
-    border: none;
-    border-radius: 10px;
-    background: transparent;
-    color: #93a1b5;
-    font-family: inherit;
-    font-size: 14px;
+    color: #475569;
+    font-size: 12.5px;
     font-weight: 700;
     letter-spacing: 0.02em;
     cursor: pointer;
-    transition: background .25s ease, color .25s ease, box-shadow .25s ease;
+    flex-shrink: 0;
+    user-select: none;
+    transition: background .2s ease, color .2s ease, border-color .2s ease, transform .2s ease;
   }
-  .tab-btn.active {
-    background: linear-gradient(135deg, #22d3ee, #0891b2);
-    color: #05222a;
-    box-shadow: 0 4px 14px rgba(34,211,238,0.35);
+  .swipe-hint:hover { background: rgba(8,145,178,0.10); border-color: rgba(8,145,178,0.3); color: #0891b2; }
+  .swipe-hint:active { transform: scale(0.97); }
+  .swipe-hint svg {
+    width: 13px; height: 13px;
+    transition: transform .3s ease;
   }
-  .tab-btn:not(.active):hover { background: rgba(148,163,184,0.12); color: #eef2f7; }
-
-  @media (min-width: 700px) and (min-height: 700px) {
-    .tab-switch { max-width: 340px; }
-  }
+  .swipe-hint.pointing-down svg { transform: rotate(180deg); }
 
   /* ---------------------------------------------------------------------- */
   /* CARD STACK -- credit-card styled shift cards                          */
@@ -179,16 +173,17 @@
     height: min(230px, 27vh);
     perspective: 1200px;
     touch-action: none;
+    overflow: visible;
   }
 
   .shift-card {
     position: absolute; inset: 0; border-radius: 22px;
-    /* dark metallic "credit card" surface */
-    background: linear-gradient(135deg, #1c2534 0%, #2c3b52 50%, #1c2534 100%);
-    border: 1px solid rgba(148,163,184,0.28);
+    /* light "credit card" surface, day tone */
+    background: linear-gradient(135deg, #fef3e2 0%, #fde3b0 50%, #fef3e2 100%);
+    border: 1px solid rgba(15,23,42,0.12);
     box-shadow:
-      0 1px 0 rgba(255,255,255,0.06) inset,
-      0 22px 45px rgba(0,0,0,0.45);
+      0 1px 0 rgba(255,255,255,0.5) inset,
+      0 22px 45px rgba(15,23,42,0.16);
     padding: 20px 22px;
     display: flex; flex-direction: column; justify-content: space-between;
     transform-style: preserve-3d;
@@ -205,18 +200,20 @@
     position: absolute;
     top: -60%; left: -20%;
     width: 60%; height: 220%;
-    background: linear-gradient(120deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.02) 40%, transparent 70%);
+    background: linear-gradient(120deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.08) 40%, transparent 70%);
     transform: rotate(12deg);
     pointer-events: none;
   }
 
   .shift-card.night {
-    background: linear-gradient(135deg, #191b34 0%, #2c2f63 50%, #191b34 100%);
+    background: linear-gradient(135deg, #eef0ff 0%, #dbe0ff 50%, #eef0ff 100%);
   }
 
   .card-top { display: flex; align-items: flex-start; justify-content: space-between; position: relative; z-index: 1; }
-  .card-day-label { font-size: 11.5px; font-weight: 800; letter-spacing: 0.16em; color: #93a1b5; }
-  .card-date { font-size: 13.5px; font-weight: 600; color: #cbd5e1; margin-top: 4px; }
+  .card-day-label { font-size: 11.5px; font-weight: 800; letter-spacing: 0.16em; color: #9c7a3f; }
+  .shift-card.night .card-day-label { color: #6b74b8; }
+  .card-date { font-size: 13.5px; font-weight: 600; color: #7a5f34; margin-top: 4px; }
+  .shift-card.night .card-date { color: #4f5793; }
 
   /* badge in the corner, standing in for a card network logo */
   .shift-badge {
@@ -226,11 +223,11 @@
     box-shadow: 0 6px 16px rgba(242,169,58,0.35);
     flex-shrink: 0;
   }
-  .shift-badge.night { background: linear-gradient(135deg, #6d7cff, #4c56c9); box-shadow: 0 6px 16px rgba(76,86,201,0.4); }
-  .shift-badge svg { width: 24px; height: 24px; color: #1c1408; }
+  .shift-badge.night { background: linear-gradient(135deg, #6d7cff, #4c56c9); box-shadow: 0 6px 16px rgba(76,86,201,0.35); }
+  .shift-badge svg { width: 24px; height: 24px; color: #3a2a10; }
   .shift-badge.night svg { color: #eef0ff; }
 
-  /* subtle animated glow ring behind the badge -- replaces the old Lottie */
+  /* subtle animated glow ring behind the badge */
   .shift-badge { position: relative; }
   .shift-badge::after {
     content: "";
@@ -247,25 +244,28 @@
 
   .card-mid { position: relative; z-index: 1; }
   .shift-name {
-    font-size: 24px; font-weight: 800; letter-spacing: 0.01em; color: #f4f7fb;
+    font-size: 24px; font-weight: 800; letter-spacing: 0.01em; color: #4a3510;
     line-height: 1.15;
   }
+  .shift-card.night .shift-name { color: #232a5c; }
 
   .card-bottom { display: flex; align-items: flex-end; justify-content: space-between; position: relative; z-index: 1; }
   .shift-time-block { display: flex; flex-direction: column; gap: 2px; }
-  .shift-time-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: #6f7f97; }
-  .shift-time { font-size: 15px; font-weight: 700; color: #cfe3ec; letter-spacing: 0.04em; font-variant-numeric: tabular-nums; }
+  .shift-time-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: #a3855a; }
+  .shift-card.night .shift-time-label { color: #7c85c9; }
+  .shift-time { font-size: 15px; font-weight: 700; color: #5b431c; letter-spacing: 0.04em; font-variant-numeric: tabular-nums; }
+  .shift-card.night .shift-time { color: #383f7a; }
 
   .card-chip {
     width: 38px; height: 28px; border-radius: 6px;
-    background: linear-gradient(135deg, #d8b675, #f4e2ad, #d8b675);
+    background: linear-gradient(135deg, #e2c288, #f4e2ad, #e2c288);
     position: relative;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.35);
+    box-shadow: 0 2px 4px rgba(15,23,42,0.2);
   }
   .card-chip::before {
     content: "";
     position: absolute; inset: 4px;
-    border: 1px solid rgba(0,0,0,0.25);
+    border: 1px solid rgba(15,23,42,0.22);
     border-radius: 3px;
   }
 
@@ -285,6 +285,7 @@
 
   /* ---------------------------------------------------------------------- */
   /* ACTION GRID -- Schedules / Presence on row 1, Forms / Roster on row 2  */
+  /* Windows-10-tile style torch/spotlight follows the cursor on hover.     */
   /* ---------------------------------------------------------------------- */
   .actions {
     display: grid;
@@ -297,31 +298,47 @@
   }
 
   .action-btn {
+    --mx: 50%;
+    --my: 50%;
     position: relative;
     width: 100%;
     min-height: 84px;
     border-radius: 18px;
-    background: rgba(15,23,42,0.55);
-    border: 1px solid rgba(148,163,184,0.22);
+    background: rgba(255,255,255,0.6);
+    border: 1px solid rgba(15,23,42,0.10);
     display: flex; flex-direction: row; align-items: center; justify-content: flex-start;
     gap: 12px; padding: 0 18px; cursor: pointer; overflow: hidden;
-    color: #eef2f7; font-family: inherit;
+    color: #1e293b; font-family: inherit;
     transition: transform .2s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease;
   }
 
+  /* the torch: a soft radial glow that tracks the mouse, revealed on hover */
+  .action-btn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(160px circle at var(--mx) var(--my), rgba(8,145,178,0.22), transparent 68%);
+    opacity: 0;
+    transition: opacity .35s ease;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .action-btn:hover::before,
+  .action-btn:focus-visible::before { opacity: 1; }
+
   .action-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 12px 26px rgba(0,0,0,0.35), 0 0 0 1px rgba(34,211,238,0.25) inset;
-    background: rgba(34,211,238,0.10);
-    border-color: rgba(34,211,238,0.35);
+    box-shadow: 0 12px 26px rgba(15,23,42,0.12), 0 0 0 1px rgba(8,145,178,0.25) inset;
+    border-color: rgba(8,145,178,0.35);
   }
   .action-btn:active { transform: translateY(0) scale(0.98); }
 
   .action-btn .icon-wrap {
     width: 42px; height: 42px; border-radius: 12px; flex-shrink: 0;
     display: flex; align-items: center; justify-content: center;
-    background: rgba(34,211,238,0.14);
-    color: #22d3ee;
+    background: rgba(8,145,178,0.12);
+    color: #0891b2;
+    position: relative; z-index: 1;
   }
   .action-btn .icon-wrap svg { width: 21px; height: 21px; }
   .action-btn .label { font-size: 14.5px; font-weight: 700; z-index: 1; position: relative; }
@@ -336,15 +353,15 @@
   /* ---------------------------------------------------------------------- */
   .state-overlay {
     position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
-    flex-direction: column; gap: 12px; background: rgba(6,11,20,0.6);
+    flex-direction: column; gap: 12px; background: rgba(238,242,246,0.85);
     backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
-    color: #eef2f7; font-weight: 600; font-size: 14px; text-align: center; padding: 24px;
+    color: #1e293b; font-weight: 600; font-size: 14px; text-align: center; padding: 24px;
     z-index: 50;
   }
   .state-overlay.hidden { display: none; }
   .spinner {
     width: 34px; height: 34px; border-radius: 50%;
-    border: 3px solid rgba(148,163,184,0.3); border-top-color: #22d3ee;
+    border: 3px solid rgba(15,23,42,0.15); border-top-color: #0891b2;
     animation: spin .8s linear infinite;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
@@ -384,17 +401,11 @@
       </button>
     </header>
 
-    <!-- Real tab buttons, not just a hint -- these give an explicit, generous
-         tap target and always reflect which card is currently on top. -->
-    <div class="tab-switch" role="tablist" aria-label="Choose day">
-      <button class="tab-btn active" id="tabToday" role="tab" aria-selected="true">Today</button>
-      <button class="tab-btn" id="tabTomorrow" role="tab" aria-selected="false">Tomorrow</button>
-    </div>
-
     <div class="stack-wrap">
       <!-- Only 2 cards, written statically here: Today and Tomorrow. They are never
-           created or destroyed -- swiping or tapping the tabs above only flips
-           which one is on top. -->
+           created or destroyed -- swiping or tapping the swipe-hint below only
+           flips which one is on top. The back card's edge is left peeking out
+           from behind the front card so it's obvious there's another one. -->
       <div class="card-stack" id="cardStack">
 
         <div class="shift-card" id="card-today" data-key="today">
@@ -441,6 +452,16 @@
           </div>
         </div>
 
+      </div>
+
+      <!-- Swipe hint line -- replaces the old Today/Tomorrow tab buttons.
+           Always names the *other* card and points the direction to swipe.
+           Tapping it also triggers the flip, same as swiping. -->
+      <div class="swipe-hint" id="swipeHint" role="button" tabindex="0">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="18 15 12 9 6 15"/>
+        </svg>
+        <span id="swipeHintText">Swipe up for tomorrow</span>
       </div>
     </div>
 
@@ -633,17 +654,16 @@
     today:    document.getElementById('card-today'),
     tomorrow: document.getElementById('card-tomorrow')
   };
-  const TAB = {
-    today:    document.getElementById('tabToday'),
-    tomorrow: document.getElementById('tabTomorrow')
-  };
 
   let slots = { front:'today', back:'tomorrow' };
   let isAnimating = false;
 
+  // Back card is offset further down and left just slightly smaller than the
+  // front card, so a visible sliver of its bottom edge peeks out -- signals
+  // "there's another card here" without needing a label.
   const REST = {
-    front:{ y:0,  scale:1,    opacity:1,   blur:0,  z:10 },
-    back: { y:16, scale:0.93, opacity:0.55,blur:2,  z:9  }
+    front:{ y:0,  scale:1,    opacity:1,    blur:0,  z:10 },
+    back: { y:24, scale:0.95, opacity:0.85, blur:0,  z:9  }
   };
 
   function applyRest(el, slotName, withTransition){
@@ -653,20 +673,23 @@
       : 'none';
     el.style.transform = `translateY(${r.y}px) scale(${r.scale}) rotateX(0deg)`;
     el.style.opacity = r.opacity;
-    el.style.filter = `blur(${r.blur}px)`;
+    el.style.filter = r.blur ? `blur(${r.blur}px)` : 'none';
     el.style.zIndex = r.z;
   }
 
-  function syncTabs(){
-    Object.keys(TAB).forEach(key => {
-      const isActive = slots.front === key;
-      TAB[key].classList.toggle('active', isActive);
-      TAB[key].setAttribute('aria-selected', String(isActive));
-    });
+  const swipeHint = document.getElementById('swipeHint');
+  const swipeHintText = document.getElementById('swipeHintText');
+  const HINT_LABEL = { today: 'tomorrow', tomorrow: 'today' };
+
+  function updateSwipeHint(){
+    const otherKey = slots.back; // the card currently hidden behind the front one
+    const pointingDown = otherKey === 'today'; // today sits "before" tomorrow, so swipe down to see it
+    swipeHint.classList.toggle('pointing-down', pointingDown);
+    swipeHintText.textContent = `Swipe ${pointingDown ? 'down' : 'up'} for ${HINT_LABEL[slots.front]}`;
   }
 
   Object.keys(slots).forEach(slotName => applyRest(EL[slots[slotName]], slotName, false));
-  syncTabs();
+  updateSwipeHint();
 
   const FLIP_MS = 460;
 
@@ -693,29 +716,30 @@
       outEl.style.zIndex = REST.back.z;
       outEl.style.transform = `translateY(${REST.back.y}px) scale(${REST.back.scale}) rotateX(0deg)`;
       outEl.style.opacity = REST.back.opacity;
-      outEl.style.filter = `blur(${REST.back.blur}px)`;
+      outEl.style.filter = REST.back.blur ? `blur(${REST.back.blur}px)` : 'none';
     }, FLIP_MS/2);
 
     setTimeout(() => {
       slots = { front:inKey, back:outKey };
       isAnimating = false;
-      syncTabs();
+      updateSwipeHint();
     }, FLIP_MS);
   }
 
   const rotateUp = () => flip(1);
   const rotateDown = () => flip(-1);
 
-  // Explicit tab buttons -- always land on the requested card regardless
-  // of which one is currently on top.
-  function goTo(targetKey){
-    if(isAnimating || slots.front === targetKey) return;
-    flip(targetKey === 'tomorrow' ? 1 : -1);
+  // Tapping/clicking the swipe hint triggers the same flip as a swipe would.
+  function triggerHintFlip(){
+    if(isAnimating) return;
+    slots.back === 'today' ? rotateDown() : rotateUp();
   }
-  TAB.today.addEventListener('click', () => goTo('today'));
-  TAB.tomorrow.addEventListener('click', () => goTo('tomorrow'));
+  swipeHint.addEventListener('click', triggerHintFlip);
+  swipeHint.addEventListener('keydown', e => {
+    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); triggerHintFlip(); }
+  });
 
-  /* ================= Drag handling (swipe still works alongside tabs) ================= */
+  /* ================= Drag handling (swipe still works alongside the hint) ================= */
   const stackEl = document.getElementById('cardStack');
   const COMMIT_THRESHOLD = 65;
   let startY = null, dragging = false, dragEl = null;
@@ -763,6 +787,20 @@
   document.addEventListener('keydown', e => {
     if(e.key === 'ArrowUp') rotateUp();
     if(e.key === 'ArrowDown') rotateDown();
+  });
+
+  /* ================= Windows-10-tile style torch/spotlight on hover ================= */
+  document.querySelectorAll('.action-btn').forEach(btn => {
+    btn.addEventListener('mousemove', e => {
+      const rect = btn.getBoundingClientRect();
+      btn.style.setProperty('--mx', `${e.clientX - rect.left}px`);
+      btn.style.setProperty('--my', `${e.clientY - rect.top}px`);
+    });
+    // Keyboard focus: center the torch so focus-visible still gets the glow.
+    btn.addEventListener('focus', () => {
+      btn.style.setProperty('--mx', '50%');
+      btn.style.setProperty('--my', '50%');
+    });
   });
 </script>
 
