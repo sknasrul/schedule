@@ -1,134 +1,103 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Login</title>
-    <link rel="prefetch" href="/index.html" as="document">
-<link rel="prefetch" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRsld00P-Uk05dRZhB_31vkySwWZDiXDKIODMK0wxEdMN_p26upEeBp7JY&s=10" as="image">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Login</title>
 <style>
-    *{
-        -webkit-tap-highlight-color: transparent;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  *{
+    -webkit-tap-highlight-color: transparent;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  form{
+    display: grid;
+    place-items: center;
+  }
+  h4{
+    font-weight: normal;
+    color: #5f6368;
+  }
+  .inp{
+    position: relative;
+    margin-bottom: 1rem;
+  }
+  input{
+    width: 90vw;
+    max-width: 350px;
+    aspect-ratio: 5/1;
+    border: 2px solid #dadce0;
+    border-radius: 3rem;
+    outline: none;
+    font-size: 1.3rem;
+    text-indent: 1.5rem;
+  }
+  input:focus{
+    border-color: #4070F4;
+  }
+  label{
+    position: absolute;
+    pointer-events: none;
+    top: 50%;
+    left: 1.7rem;
+    translate: 0 -50%;
+    color: #5f6368;
+    background-color: white;
+    padding: .2rem;
+    font-size: 1.3rem;
+    transition: transform 0.2s ease, top 0.2s ease, font-size 0.2s ease, color 0.2s ease;
+  }
+  input:focus ~ label, input:not(:placeholder-shown) ~ label{
+    top: 0;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #5f6368;
+  }
+  input:focus ~ label{
+    color: #4070F4;
+  }
+  button{
+    position: relative;
+    font-size: 1.1rem;
+    font-weight:bold;
+    border: none;
+    border-radius: 3rem;
+    margin: 1rem 0;
+    padding: 1rem 3rem;
+    cursor: pointer;
+    color: white;
+    background: rgb(0, 100, 224);
+  }
+  .ripple{
+    position: absolute;
+    border-radius: 50%;
+    transform: scale(0);
+    background: rgba(255, 255, 255, 0.35);
+    animation: expand-ripple 0.6s linear;
+  }
+  @keyframes expand-ripple{to{transform: scale(4);opacity: 0;}}
+  @media (min-width: 500px){
+    body{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 95vh;
     }
     form{
-        display: grid;
-        place-items: center;
+      box-shadow:0 10px 30px rgba(0,0,0,.08);
+      padding: 1rem 2rem;
+      border-radius: 3rem;
     }
-    h4{font-weight: normal;}
-    .input{
-        position: relative;
-        width: min(95%, 355px);
-        font-size: 1.3rem;
-        margin: .5rem 0;
-        padding: 0;
-    }
-    input{
-        width: 100%;
-        border: 2px solid #dadce0;
-        border-radius: 3rem;
-        outline: none;
-        aspect-ratio: 5/1;
-        padding: 0 1rem;
-        font-size: 1.3rem;
-        box-sizing: border-box;
-    }
-    label{
-        position: absolute;
-        pointer-events: none;
-        top: 50%;
-        left: 1.7rem;
-        padding: .2rem;
-        transform: translateY(-50%);
-        color: #5f6368;
-        background-color: white;
-        transition: transform 0.2s ease, top 0.2s ease, font-size 0.2s ease, color 0.2s ease;
-    }
-    input:focus{
-        border: 2px solid #1a73e8;
-    }
-    input:focus ~ label, input:not(:placeholder-shown) ~ label{
-        top: 0;
-        font-size: 1rem;
-        font-weight: bold;
-        color: #5f6368;
-    }
-    input:focus ~ label{
-        color: #1a73e8;
-    }
-    button{
-        position: relative;
-        font-size: 1.1rem;
-        font-weight:bold;
-        padding: 1rem 2rem;
-        border:none;
-        border-radius: 3rem;
-        cursor: pointer;
-        color: #ffffff;
-        background-color: rgb(0, 100, 224);
-        transition: transform 0.1s ease, box-shadow 0.1s ease;
-    }
-    button .ripple-wave {
-        position: absolute;
-        border-radius: 50%;
-        transform: scale(0);
-        background: rgba(255, 255, 255, 0.35); /* Translucent overlay for the highlight contrast */
-        pointer-events: none; /* Prevents the ripple from blocking consecutive click events */
-        animation: expand-ripple 0.6s linear;
-    }
-    @keyframes expand-ripple {
-        to {
-            transform: scale(4);
-            opacity: 0;
-        }
-    }
-    @media (min-width: 426px){
-        body{
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 97vh;
-        }
-        form{
-            box-shadow:0 10px 30px rgba(0,0,0,.08);
-            padding: 2rem 0;
-            border-radius: 3rem;
-            width: 425px;
-        }
-    }
+  }
 </style>
 </head>
 <body>
 <form method="post" action="/logins">
-    <h1>Employee Login</h1>
-    <img src="person.avif" height="150px">
-    <h4>Enter your Arcos ID and Name</h4>
-    <div class="input">
-        <input type="text" name="id" placeholder="" required>
-        <label>Arcos ID</label>
-    </div>
-    <div class="input">
-        <input type="text" name="name" placeholder="" required>
-        <label>Name</label>
-    </div>
-    <br><button>Submit</button>
+  <h1>Employee Login</h1>
+  <img src="data:image/avif;base64,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">
+  <h4>Enter your Arcos ID and Name</h4>
+  <div class="inp"><input placeholder="" name="id" required><label>Arcos ID</div>
+  <div class="inp"><input placeholder="" name="name" required><label>Name</div>
+  <button onclick="const r=this.getBoundingClientRect(),s=Math.max(r.width,r.height);this.querySelector('.ripple')?.remove();let p=document.createElement('span');p.className='ripple';p.style.cssText='width:'+s+'px;height:'+s+'px;left:'+(event.clientX-r.left-s/2)+'px;top:'+(event.clientY-r.top-s/2)+'px;';this.appendChild(p);">Login</button>
 </form>
-<script>
-document.querySelector('button').addEventListener('click', function(e) {
-    const rect = this.getBoundingClientRect();
-    const size = Math.max(rect.width, rect.height);
-
-    this.querySelector('.ripple-wave')?.remove();
-
-    const ripple = document.createElement('span');
-    ripple.className = 'ripple-wave';
-    ripple.style.cssText = `
-        width:${size}px; height:${size}px;
-        left:${e.clientX - rect.left - size / 2}px;
-        top:${e.clientY - rect.top - size / 2}px;
-    `;
-    this.appendChild(ripple);
-});
-</script>
 </body>
 </html>
