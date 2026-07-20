@@ -6,6 +6,9 @@
 <title>Schedules</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; }
+
+  html { height: 100%; overflow: hidden; overscroll-behavior-y: auto; }
+
   body {
     height: 100vh;
     height: var(--app-height, 100vh);
@@ -60,10 +63,21 @@
     gap: 16px;
   }
 
-  .greeting-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-  .greeting-hello { font-size: 15px; font-weight: 600; color: #7a7e8f; }
-  .greeting-name { font-size: clamp(22px, 4vw, 30px); font-weight: 800; color: #21232b; line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .greeting-sub { font-size: 14px; font-weight: 500; color: #7a7e8f; margin-top: 2px; }
+  .greeting-header h1 { font-weight: 700; line-height: 1.3; min-width: 0; }
+
+  @keyframes wave {
+    0%, 60%, 100% { transform: rotate(0deg); }
+    10%, 30% { transform: rotate(14deg); }
+    20% { transform: rotate(-8deg); }
+    40% { transform: rotate(10deg); }
+    50% { transform: rotate(0deg); }
+  }
+  .wave-emoji {
+    display: inline-block;
+    font-size: larger;
+    transform-origin: 70% 70%;
+    animation: wave 2.4s ease-in-out infinite;
+  }
 
   .avatar-wrap {
     position: relative;
@@ -389,11 +403,7 @@
 
   <div class="page" id="pageContent" style="visibility:hidden;">
     <div class="greeting-header">
-      <div class="greeting-text">
-        <span class="greeting-hello">Hello,</span>
-        <h1 class="greeting-name" id="userName">-</h1>
-        <span class="greeting-sub">Here's what's happening today.</span>
-      </div>
+      <h1><span>Hello,</span><br><span id="userName">-</span> <span class="wave-emoji">👋</span><br><span style="font-size: large; color: #7a7e8f;">Here's what's happening today.</span></h1>
       <div class="avatar-wrap" tabindex="0">
         <div class="avatar-ring"></div>
         <div class="avatar" id="avatarInitials">--</div>
