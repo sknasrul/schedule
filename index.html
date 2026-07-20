@@ -6,6 +6,9 @@
 <title>Schedules</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; }
+
+  html { height: 100%; overflow: hidden; overscroll-behavior-y: auto; }
+
   body {
     height: 100vh;
     height: var(--app-height, 100vh);
@@ -317,10 +320,20 @@
     50%      { opacity: .8; }
   }
 
+  .actions-heading {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #9295a6;
+    margin: 4px 0 4px clamp(4px, 2vw, 12px);
+    flex-shrink: 0;
+  }
+
   .actions {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
+    gap: 14px;
     flex-shrink: 0;
     width: 100%;
     max-width: 460px;
@@ -332,12 +345,13 @@
     --my: 50%;
     position: relative;
     width: 100%;
-    min-height: 84px;
-    border-radius: 18px;
-    background: rgba(255,255,255,0.6);
-    border: 1px solid rgba(15,23,42,0.10);
-    display: flex; flex-direction: row; align-items: center; justify-content: flex-start;
-    gap: 12px; padding: 0 18px; cursor: pointer; overflow: hidden;
+    min-height: 108px;
+    border-radius: 22px;
+    background: #fff;
+    border: 1px solid rgba(15,23,42,0.06);
+    box-shadow: 0 6px 18px rgba(15,23,42,0.06);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 10px; padding: 18px 10px; cursor: pointer; overflow: hidden;
     color: #21232b; font-family: inherit;
     transition: transform .2s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease;
   }
@@ -346,7 +360,7 @@
     content: "";
     position: absolute;
     inset: 0;
-    background: radial-gradient(160px circle at var(--mx) var(--my), rgba(8,145,178,0.22), transparent 68%);
+    background: radial-gradient(160px circle at var(--mx) var(--my), rgba(109,94,240,0.14), transparent 68%);
     opacity: 0;
     transition: opacity .35s ease;
     pointer-events: none;
@@ -357,24 +371,25 @@
 
   .action-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 12px 26px rgba(15,23,42,0.12), 0 0 0 1px rgba(8,145,178,0.25) inset;
-    border-color: rgba(8,145,178,0.35);
+    box-shadow: 0 12px 26px rgba(15,23,42,0.10);
+    border-color: rgba(109,94,240,0.25);
   }
   .action-btn:active { transform: translateY(0) scale(0.98); }
 
   .action-btn .icon-wrap {
-    width: 42px; height: 42px; border-radius: 12px; flex-shrink: 0;
+    width: 52px; height: 52px; border-radius: 50%; flex-shrink: 0;
     display: flex; align-items: center; justify-content: center;
-    background: rgba(8,145,178,0.12);
-    color: #0891b2;
+    background: rgba(109,94,240,0.12);
+    color: #6d5ef0;
     position: relative; z-index: 1;
   }
-  .action-btn .icon-wrap svg { width: 21px; height: 21px; }
-  .action-btn .label { font-size: 14.5px; font-weight: 700; z-index: 1; position: relative; }
+  .action-btn .icon-wrap svg { width: 24px; height: 24px; }
+  .action-btn .label { font-size: 13.5px; font-weight: 700; z-index: 1; position: relative; }
 
   @media (min-width: 700px) {
-    .action-btn { min-height: 92px; }
-    .action-btn .label { font-size: 15px; }
+    .actions { grid-template-columns: repeat(4, 1fr); max-width: 640px; gap: 16px; }
+    .action-btn { min-height: 120px; }
+    .action-btn .label { font-size: 14.5px; }
   }
 
   .state-overlay {
@@ -473,6 +488,7 @@
       </div>
     </div>
 
+    <div class="actions-heading">Quick actions</div>
     <div class="actions">
       <button class="action-btn" data-action="schedules" onclick="window.location.href='/schedules'">
         <div class="icon-wrap">
