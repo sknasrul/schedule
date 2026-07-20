@@ -332,11 +332,11 @@
 
   .actions {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 14px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
     flex-shrink: 0;
     width: 100%;
-    max-width: 460px;
+    max-width: 480px;
     margin: 0 auto;
   }
 
@@ -387,7 +387,7 @@
   .action-btn .label { font-size: 13.5px; font-weight: 700; z-index: 1; position: relative; }
 
   @media (min-width: 700px) {
-    .actions { grid-template-columns: repeat(4, 1fr); max-width: 640px; gap: 16px; }
+    .actions { max-width: 640px; gap: 18px; }
     .action-btn { min-height: 120px; }
     .action-btn .label { font-size: 14.5px; }
   }
@@ -490,21 +490,13 @@
 
     <div class="actions-heading">Quick actions</div>
     <div class="actions">
-      <button class="action-btn" data-action="schedules" onclick="window.location.href='/schedules'">
+      <button class="action-btn" data-action="activities" onclick="window.location.href='/activities'">
         <div class="icon-wrap">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="4" width="18" height="18" rx="3"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
           </svg>
         </div>
-        <span class="label">Schedules</span>
-      </button>
-      <button class="action-btn" data-action="presence" onclick="window.location.href='/presents'">
-        <div class="icon-wrap">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/>
-          </svg>
-        </div>
-        <span class="label">Presents</span>
+        <span class="label">My Activities</span>
       </button>
       <button class="action-btn" data-action="forms" onclick="window.location.href='/forms'">
         <div class="icon-wrap">
@@ -517,8 +509,7 @@
       <button class="action-btn" data-action="payslip" onclick="window.location.href='/payslip'">
         <div class="icon-wrap">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/>
-            <line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="16" y2="11"/><line x1="8" y1="15" x2="12" y2="15"/>
+            <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/>
           </svg>
         </div>
         <span class="label">Payslip</span>
