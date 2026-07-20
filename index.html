@@ -5,32 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
 <title>Shift Dashboard</title>
 <style>
-  /* ==========================================================================
-     COLOR REFERENCE (light mode) -- kept as plain comments, every rule below
-     just uses the real value directly.
-
-     Page background base ......... #eef2f6
-     Page gradient (light wash over photo) :
-        rgba(255,255,255,0.86) -> rgba(241,245,249,0.74) -> rgba(226,240,242,0.84)
-     Glass panel background ....... rgba(255,255,255,0.6)
-     Glass panel border ........... rgba(15,23,42,0.10)
-     Primary text .................. #1e293b
-     Secondary / muted text ........ #64748b
-     Accent (teal) .................. #0891b2
-     Accent (teal, brighter) ........ #22d3ee
-     Card body gradient (day) ...... #fef3e2 -> #fde3b0 -> #fef3e2
-     Card body gradient (night) .... #eef0ff -> #dbe0ff -> #eef0ff
-     Card body gradient (week off).. #eafaf0 -> #c9f0da -> #eafaf0
-     Card body gradient (leave) .... #fdeef1 -> #f9d2dc -> #fdeef1
-     Card edge / border ............ rgba(15,23,42,0.12)
-     Card gold trim ................ #e2c288
-     Day badge gradient ............ #f2a93a -> #f7c65f
-     Night badge gradient .......... #6d7cff -> #4c56c9
-     Week off badge gradient ....... #34d399 -> #10b981
-     Leave badge gradient .......... #fb7185 -> #e11d48
-     Skeleton pulse base ........... rgba(100,116,139,0.4)
-     ========================================================================== */
-
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
   html { height: 100%; overflow: hidden; overscroll-behavior-y: auto; }
@@ -100,11 +74,47 @@
 
   .user-info { display: flex; align-items: center; gap: 13px; min-width: 0; }
 
+  /* ---- animated avatar: spinning conic ring + status dot ---- */
+  .avatar-wrap {
+    position: relative;
+    width: 46px;
+    height: 46px;
+    flex-shrink: 0;
+  }
+  .avatar-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, #0891b2, #22d3ee, #67e8f9, #0891b2);
+    animation: spin 5s linear infinite;
+    transition: filter .3s ease;
+  }
   .avatar {
-    width: 46px; height: 46px; border-radius: 50%;
+    position: absolute;
+    inset: 3px;
+    border-radius: 50%;
     background: linear-gradient(135deg, #22d3ee, #0891b2);
     display: flex; align-items: center; justify-content: center;
-    font-weight: 700; font-size: 15px; color: #06232b; flex-shrink: 0;
+    font-weight: 700; font-size: 14px; color: #06232b;
+    transition: transform .25s cubic-bezier(.22,1,.36,1);
+  }
+  .avatar-wrap:hover .avatar { transform: scale(1.06); }
+  .avatar-wrap:hover .avatar-ring { filter: brightness(1.15); animation-duration: 2s; }
+  .status-dot {
+    position: absolute;
+    bottom: -1px;
+    right: -1px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #33c17a;
+    border: 2px solid rgba(255,255,255,0.95);
+    animation: breathe 2.4s ease-in-out infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes breathe {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50%      { transform: scale(1.15); opacity: .75; }
   }
 
   .user-text { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
@@ -113,6 +123,8 @@
     background: rgba(15,23,42,0.06); padding: 2px 9px; border-radius: 999px; width: fit-content;
   }
   .user-name { font-size: 16px; font-weight: 700; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .user-name .wave { display: inline-block; }
+  .user-sub { font-size: 11.5px; font-weight: 500; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
   .logout-btn {
     display: flex; align-items: center; justify-content: center;
@@ -127,6 +139,7 @@
 
   @media (max-width: 380px) {
     .user-name { font-size: 14.5px; }
+    .user-sub { display: none; }
     header { min-height: 76px; }
   }
 
@@ -310,11 +323,12 @@
   @media (max-height: 640px) {
     .card-stack { height: min(190px, 24vh); }
     header { min-height: 76px; padding: 12px clamp(14px, 3vw, 24px); }
-    .avatar { width: 44px; height: 44px; font-size: 15px; }
+    .avatar-wrap { width: 44px; height: 44px; }
+    .avatar { font-size: 14px; }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .shift-card, .page, .shift-badge::after { transition: none !important; animation: none !important; }
+    .shift-card, .page, .shift-badge::after, .avatar-ring, .status-dot { transition: none !important; animation: none !important; }
   }
 
   /* ---------------------------------------------------------------------- */
@@ -420,10 +434,15 @@
   <div class="page" id="pageContent" style="visibility:hidden;">
     <header>
       <div class="user-info">
-        <div class="avatar" id="avatarInitials">--</div>
+        <div class="avatar-wrap" title="Online">
+          <div class="avatar-ring"></div>
+          <div class="avatar" id="avatarInitials">--</div>
+          <div class="status-dot"></div>
+        </div>
         <div class="user-text">
           <span class="user-id" id="userId">-------</span>
-          <span class="user-name" id="userName">-</span>
+          <span class="user-name">Hello, <span id="userName">-</span> <span class="wave">👋</span></span>
+          <span class="user-sub">Here's what's happening today.</span>
         </div>
       </div>
       <button class="logout-btn" id="logoutBtn" title="Logout" aria-label="Logout">
