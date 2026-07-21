@@ -331,8 +331,9 @@
   }
 
   .actions {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 12px;
     flex-shrink: 0;
     width: 100%;
@@ -344,7 +345,8 @@
     --mx: 50%;
     --my: 50%;
     position: relative;
-    width: 100%;
+    flex: 0 1 calc((100% - 24px) / 3);
+    min-width: 96px;
     min-height: 108px;
     border-radius: 22px;
     background: #fff;
@@ -386,9 +388,20 @@
   .action-btn .icon-wrap svg { width: 24px; height: 24px; }
   .action-btn .label { font-size: 13.5px; font-weight: 700; z-index: 1; position: relative; }
 
+  .action-btn.vip .icon-wrap {
+    background: linear-gradient(135deg, rgba(124,58,237,0.16), rgba(246,211,101,0.28));
+    color: #7c3aed;
+  }
+  .action-btn.vip::before {
+    background: radial-gradient(160px circle at var(--mx) var(--my), rgba(246,211,101,0.30), transparent 68%);
+  }
+  .action-btn.vip:hover {
+    border-color: rgba(124,58,237,0.35);
+  }
+
   @media (min-width: 700px) {
     .actions { max-width: 640px; gap: 18px; }
-    .action-btn { min-height: 120px; }
+    .action-btn { flex-basis: calc((100% - 36px) / 3); min-height: 120px; }
     .action-btn .label { font-size: 14.5px; }
   }
 
@@ -489,14 +502,22 @@
     </div>
 
     <div class="actions-heading">Quick actions</div>
-    <div class="actions">
-      <button class="action-btn" data-action="activities" onclick="window.location.href='/activities'">
+    <div class="actions" id="actionsGrid">
+      <button class="action-btn" data-action="schedules" onclick="window.location.href='/schedules'">
         <div class="icon-wrap">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
           </svg>
         </div>
-        <span class="label">My Activities</span>
+        <span class="label">Schedules</span>
+      </button>
+      <button class="action-btn" data-action="present" onclick="window.location.href='/present'">
+        <div class="icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/>
+          </svg>
+        </div>
+        <span class="label">Present</span>
       </button>
       <button class="action-btn" data-action="forms" onclick="window.location.href='/forms'">
         <div class="icon-wrap">
@@ -513,6 +534,14 @@
           </svg>
         </div>
         <span class="label">Payslip</span>
+      </button>
+      <button class="action-btn vip" data-action="vip" data-requires-vip="true" onclick="window.location.href='/vip'" style="display:none;">
+        <div class="icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7Z"/><path d="M5 20h14"/>
+          </svg>
+        </div>
+        <span class="label">VIP Panel</span>
       </button>
     </div>
   </div>
@@ -565,6 +594,15 @@
   } else {
     renderUser(cookieId, cookieName);
     pageContent.style.visibility = 'visible';
+  }
+
+  const vipBtn = document.querySelector('[data-requires-vip="true"]');
+  if(vipBtn){
+    if(getCookie('vip') === 'yes'){
+      vipBtn.style.display = '';
+    } else {
+      vipBtn.remove();
+    }
   }
 
   const sunIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
