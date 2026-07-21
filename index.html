@@ -7,13 +7,12 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; }
 
-  html { height: 100%; overflow: hidden; overscroll-behavior-y: auto; }
+  html { height: auto; overscroll-behavior-y: auto; }
 
   body {
-    height: 100vh;
-    height: var(--app-height, 100vh);
+    min-height: 100vh;
     width: 100%;
-    overflow: hidden;
+    overflow-y: auto;
     overscroll-behavior-y: auto;
     color: #21232b;
     display: flex;
@@ -30,13 +29,60 @@
   .page {
     display: flex;
     flex-direction: column;
-    height: 100%;
     width: 100%;
     max-width: 1100px;
     margin: 0 auto;
     gap: 14px;
-    min-height: 0;
     animation: fadeUp .5s ease both;
+  }
+
+  @media (min-width: 900px) {
+    html { height: 100%; overflow: hidden; }
+    body { height: 100vh; height: var(--app-height, 100vh); overflow: hidden; }
+    .page {
+      height: 100%;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      grid-template-rows: auto 1fr;
+      grid-template-areas:
+        "sidebar header"
+        "sidebar stack";
+      gap: 20px;
+    }
+    .greeting-header { grid-area: header; }
+    .stack-wrap { grid-area: stack; }
+    .actions-panel {
+      grid-area: sidebar;
+      background: rgba(255,255,255,0.6);
+      border: 1px solid rgba(15,23,42,0.08);
+      border-radius: 24px;
+      padding: 20px 14px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      overflow-y: auto;
+    }
+    .actions-panel .actions-heading { margin: 0 0 12px 6px; }
+    .actions-panel .actions {
+      flex-direction: column;
+      flex-wrap: nowrap;
+      max-width: none;
+      gap: 10px;
+    }
+    .actions-panel .action-btn {
+      flex: 0 0 auto;
+      width: 100%;
+      flex-direction: row;
+      justify-content: flex-start;
+      min-height: 60px;
+      padding: 12px 14px;
+      gap: 14px;
+      border-radius: 16px;
+    }
+    .actions-panel .action-btn .icon-wrap { width: 42px; height: 42px; }
+    .actions-panel .action-btn .icon-wrap svg { width: 20px; height: 20px; }
+    .actions-panel .action-btn .label-block { align-items: flex-start; }
+    .actions-panel .action-btn .label { font-size: 14px; }
   }
 
   @keyframes fadeUp {
@@ -386,7 +432,9 @@
     position: relative; z-index: 1;
   }
   .action-btn .icon-wrap svg { width: 24px; height: 24px; }
-  .action-btn .label { font-size: 13.5px; font-weight: 700; z-index: 1; position: relative; }
+  .action-btn .label-block { display: flex; flex-direction: column; align-items: center; z-index: 1; position: relative; }
+  .action-btn .label { font-size: 13.5px; font-weight: 700; }
+  .action-btn .sublabel { font-size: 10px; font-weight: 700; color: #94a3b8; margin-top: 1px; }
 
   .action-btn.vip .icon-wrap {
     background: linear-gradient(135deg, rgba(124,58,237,0.16), rgba(246,211,101,0.28));
@@ -398,6 +446,50 @@
   .action-btn.vip:hover {
     border-color: rgba(124,58,237,0.35);
   }
+  .action-btn .lock-badge {
+    display: none;
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    border: 1px solid rgba(15,23,42,0.12);
+    align-items: center;
+    justify-content: center;
+    color: #7c3aed;
+    box-shadow: 0 2px 6px rgba(15,23,42,0.15);
+  }
+  .action-btn .lock-badge svg { width: 10px; height: 10px; }
+  .action-btn.vip.locked .lock-badge { display: flex; }
+  .action-btn.vip.locked { opacity: .6; cursor: not-allowed; }
+  .action-btn.vip.locked:hover {
+    transform: none;
+    box-shadow: 0 6px 18px rgba(15,23,42,0.06);
+    border-color: rgba(15,23,42,0.06);
+  }
+
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 28px;
+    transform: translate(-50%, 16px);
+    background: rgba(33,35,43,0.94);
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .25s ease, transform .25s ease;
+    z-index: 60;
+    box-shadow: 0 10px 30px rgba(15,23,42,0.25);
+    max-width: 86vw;
+    text-align: center;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
   @media (min-width: 700px) {
     .actions { max-width: 640px; gap: 18px; }
@@ -501,50 +593,62 @@
       </div>
     </div>
 
-    <div class="actions-heading">Quick actions</div>
-    <div class="actions" id="actionsGrid">
-      <button class="action-btn" data-action="schedules" onclick="window.location.href='/schedules'">
-        <div class="icon-wrap">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
-          </svg>
-        </div>
-        <span class="label">Schedules</span>
-      </button>
-      <button class="action-btn" data-action="present" onclick="window.location.href='/present'">
-        <div class="icon-wrap">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/>
-          </svg>
-        </div>
-        <span class="label">Present</span>
-      </button>
-      <button class="action-btn" data-action="forms" onclick="window.location.href='/forms'">
-        <div class="icon-wrap">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
-          </svg>
-        </div>
-        <span class="label">Forms</span>
-      </button>
-      <button class="action-btn" data-action="payslip" onclick="window.location.href='/payslip'">
-        <div class="icon-wrap">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/>
-          </svg>
-        </div>
-        <span class="label">Payslip</span>
-      </button>
-      <button class="action-btn vip" data-action="vip" data-requires-vip="true" onclick="window.location.href='/vip'" style="display:none;">
-        <div class="icon-wrap">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7Z"/><path d="M5 20h14"/>
-          </svg>
-        </div>
-        <span class="label">VIP Panel</span>
-      </button>
+    <div class="actions-panel">
+      <div class="actions-heading">Quick actions</div>
+      <div class="actions" id="actionsGrid">
+        <button class="action-btn" data-action="schedules" onclick="window.location.href='/schedules'">
+          <div class="icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+          </div>
+          <div class="label-block"><span class="label">Schedules</span></div>
+        </button>
+        <button class="action-btn" data-action="present" onclick="window.location.href='/present'">
+          <div class="icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/>
+            </svg>
+          </div>
+          <div class="label-block"><span class="label">Present</span></div>
+        </button>
+        <button class="action-btn" data-action="forms" onclick="window.location.href='/forms'">
+          <div class="icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+            </svg>
+          </div>
+          <div class="label-block"><span class="label">Forms</span></div>
+        </button>
+        <button class="action-btn" data-action="payslip" onclick="window.location.href='/payslip'">
+          <div class="icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/>
+            </svg>
+          </div>
+          <div class="label-block"><span class="label">Payslip</span></div>
+        </button>
+        <button class="action-btn vip" id="vipBtn" data-action="vip">
+          <div class="icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7Z"/><path d="M5 20h14"/>
+            </svg>
+            <span class="lock-badge" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>
+              </svg>
+            </span>
+          </div>
+          <div class="label-block">
+            <span class="label">VIP Panel</span>
+            <span class="sublabel" id="vipSubLabel"></span>
+          </div>
+        </button>
+      </div>
     </div>
   </div>
+
+  <div class="toast" id="toast"></div>
 
 <script>
   function setAppHeight(){
@@ -596,13 +700,32 @@
     pageContent.style.visibility = 'visible';
   }
 
-  const vipBtn = document.querySelector('[data-requires-vip="true"]');
+  const vipBtn = document.getElementById('vipBtn');
+  const vipSubLabel = document.getElementById('vipSubLabel');
+  const toastEl = document.getElementById('toast');
+  let toastTimer = null;
+
+  function showToast(msg, duration = 2400){
+    if(!toastEl) return;
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toastEl.classList.remove('show'), duration);
+  }
+
   if(vipBtn){
-    if(getCookie('vip') === 'yes'){
-      vipBtn.style.display = '';
-    } else {
-      vipBtn.remove();
+    const isVip = getCookie('vip') === 'yes';
+    if(!isVip){
+      vipBtn.classList.add('locked');
+      if(vipSubLabel) vipSubLabel.textContent = 'Members only';
     }
+    vipBtn.addEventListener('click', () => {
+      if(vipBtn.classList.contains('locked')){
+        showToast('VIP Panel is only available for VIP members.');
+      } else {
+        window.location.href = '/vip';
+      }
+    });
   }
 
   const sunIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
