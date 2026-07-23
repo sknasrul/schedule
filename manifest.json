@@ -1,7 +1,8 @@
 {
-  "name": "Arcos",
+  "id": "/login.html",
+  "name": "Arcos Management",
   "short_name": "Arcos",
-  "description": "ARCOS Managements App",
+  "description": "ARCOS Management App",
   "start_url": "/login.html",
   "scope": "/",
   "display": "standalone",
@@ -11,7 +12,17 @@
   "lang": "en",
   "dir": "ltr",
   "icons": [
-    { "src": "assets/icon192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "assets/icon512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+    {
+      "src": "assets/icon192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icon512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
   ]
 }
