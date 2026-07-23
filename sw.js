@@ -2,7 +2,8 @@ const CACHE_NAME = 'app-cache-v3';
 const OFFLINE_URL = '/index.html';
 
 const PRECACHE_URLS = [
-  '/index.html',
+  '/login',
+  '/login.html',
   '/assets/icon192.png',
   '/assets/login.avif'
 ];
