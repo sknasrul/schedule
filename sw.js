@@ -1,10 +1,10 @@
-const CACHE_NAME = 'app-cache-v2';
+const CACHE_NAME = 'app-cache-v3';
 const OFFLINE_URL = '/index.html';
 
 const PRECACHE_URLS = [
-  '/manifest.json',
+  '/index.html',
   '/assets/icon192.png',
-  '/assets/icon512.png'
+  '/assets/login.avif'
 ];
 
 self.addEventListener('install', (event) => {
