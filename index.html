@@ -1,973 +1,128 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
-<title>Schedules</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Login</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="shortcut icon" href="assets/icon192.png" type="image/x-icon">
+  <link rel="apple-touch-icon" href="assets/icon512.png">
+  <link rel="prefetch" href="/index.html" as="document">
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; }
-
-  html { height: auto; overscroll-behavior-y: auto; }
-
-  body {
-    min-height: 100vh;
-    width: 100%;
-    overflow-y: auto;
-    overscroll-behavior-y: auto;
-    color: #21232b;
-    display: flex;
-    flex-direction: column;
-    padding: clamp(14px, 3vw, 28px) clamp(16px, 4vw, 48px);
-    gap: 12px;
-    background:
-      radial-gradient(1200px 600px at 10% -10%, oklch(90% .06 275 / .55), transparent 60%),
-      radial-gradient(900px 500px at 100% 10%, oklch(90% .06 200 / .45), transparent 60%),
-      radial-gradient(700px 500px at 50% 110%, oklch(90% .05 320 / .35), transparent 60%),
-      #f6f7fb;
+  *{
+    -webkit-tap-highlight-color: transparent;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   }
-
-  .page {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    max-width: 1100px;
-    margin: 0 auto;
-    gap: 14px;
-    animation: fadeUp .5s ease both;
-  }
-
-  @media (min-width: 900px) {
-    html { height: 100%; overflow: hidden; }
-    body { height: 100vh; height: var(--app-height, 100vh); overflow: hidden; }
-    .page {
-      height: 100%;
-      min-height: 0;
-      display: grid;
-      grid-template-columns: 240px 1fr;
-      grid-template-rows: auto 1fr;
-      grid-template-areas:
-        "sidebar header"
-        "sidebar stack";
-      gap: 20px;
-    }
-    .greeting-header { grid-area: header; }
-    .stack-wrap { grid-area: stack; }
-    .actions-panel {
-      grid-area: sidebar;
-      background: rgba(255,255,255,0.6);
-      border: 1px solid rgba(15,23,42,0.08);
-      border-radius: 24px;
-      padding: 20px 14px;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      overflow-y: auto;
-    }
-    .actions-panel .actions-heading { margin: 0 0 12px 6px; }
-    .actions-panel .actions {
-      flex-direction: column;
-      flex-wrap: nowrap;
-      max-width: none;
-      gap: 10px;
-    }
-    .actions-panel .action-btn {
-      flex: 0 0 auto;
-      width: 100%;
-      flex-direction: row;
-      justify-content: flex-start;
-      min-height: 60px;
-      padding: 12px 14px;
-      gap: 14px;
-      border-radius: 16px;
-    }
-    .actions-panel .action-btn .icon-wrap { width: 42px; height: 42px; }
-    .actions-panel .action-btn .icon-wrap svg { width: 20px; height: 20px; }
-    .actions-panel .action-btn .label-block { align-items: flex-start; }
-    .actions-panel .action-btn .label { font-size: 14px; }
-  }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(8px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
-
-  @keyframes breathe {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(51,193,122,0.45); }
-    50%      { box-shadow: 0 0 0 5px rgba(51,193,122,0); }
-  }
-
-  .greeting-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    width: 100%;
-    padding: 8px clamp(4px, 2vw, 12px);
-    flex-shrink: 0;
-    gap: 16px;
-  }
-
-  .greeting-header h1 { font-weight: 700; line-height: 1.3; min-width: 0; }
-
-  @keyframes wave {
-    0%, 60%, 100% { transform: rotate(0deg); }
-    10%, 30% { transform: rotate(14deg); }
-    20% { transform: rotate(-8deg); }
-    40% { transform: rotate(10deg); }
-    50% { transform: rotate(0deg); }
-  }
-  .wave-emoji {
-    display: inline-block;
-    font-size: larger;
-    transform-origin: 70% 70%;
-    animation: wave 2.4s ease-in-out infinite;
-  }
-
-  .avatar-wrap {
-    position: relative;
-    width: 56px;
-    height: 56px;
-    flex-shrink: 0;
-  }
-  .avatar-ring {
-    position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    background: conic-gradient(from 0deg, #6d5ef0, #5cc8ff, #9b8cff, #6d5ef0);
-    animation: spin 5s linear infinite;
-    transition: filter 0.3s ease;
-  }
-  .avatar {
-    position: absolute;
-    inset: 3px;
-    border-radius: 50%;
-    background: #fff;
-    color: #21232b;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 17px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: transform 0.25s cubic-bezier(.22,1,.36,1);
-  }
-  .avatar-wrap:hover .avatar { transform: scale(1.06); }
-  .avatar-wrap:hover .avatar-ring { filter: brightness(1.15); animation-duration: 2s; }
-  .status-dot {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background: #33c17a;
-    border: 2.5px solid #fff;
-    animation: breathe 2.4s ease-in-out infinite;
-  }
-
-  .logout-pill {
-    position: absolute;
-    top: 62px;
-    right: 0;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    padding: 5px 11px;
-    border-radius: 999px;
-    background: rgba(255,255,255,0.7);
-    border: 1px solid rgba(15,23,42,0.10);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    color: #7a7e8f;
-    font-size: 11px;
-    font-weight: 700;
-    cursor: pointer;
-    white-space: nowrap;
-    opacity: 0;
-    transform: translateY(-4px);
-    pointer-events: none;
-    transition: opacity .2s ease, transform .2s ease, color .2s ease, border-color .2s ease;
-  }
-  .logout-pill svg { width: 12px; height: 12px; }
-  .avatar-wrap:hover .logout-pill,
-  .avatar-wrap:focus-within .logout-pill {
-    opacity: 1;
-    transform: translateY(0);
-    pointer-events: auto;
-  }
-  .logout-pill:hover { color: #0891b2; border-color: rgba(8,145,178,0.35); }
-
-  .swipe-hint {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
-    width: fit-content;
-    max-width: 90vw;
-    margin: 2rem auto;
-    padding: 8px 18px;
-    border-radius: 999px;
-    background: rgba(255,255,255,0.65);
-    border: 1px solid rgba(15,23,42,0.10);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    color: #475569;
-    font-size: 12.5px;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    cursor: pointer;
-    flex-shrink: 0;
-    user-select: none;
-    transition: background .2s ease, color .2s ease, border-color .2s ease, transform .2s ease;
-  }
-  .swipe-hint:hover { background: rgba(8,145,178,0.10); border-color: rgba(8,145,178,0.3); color: #0891b2; }
-  .swipe-hint:active { transform: scale(0.97); }
-  .swipe-hint svg { width: 13px; height: 13px; transition: transform .3s ease; }
-  .swipe-hint.pointing-down svg { transform: rotate(180deg); }
-
-  .stack-wrap {
-    flex: 1 1 auto; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; min-height: 0; position: relative;
-  }
-
-  .card-stack {
-    position: relative;
-    width: 90vw;
-    max-width: 400px;
-    height: min(230px, 27vh);
-    perspective: 1200px;
-    touch-action: none;
-    overflow: visible;
-  }
-
-  .shift-card {
-    position: absolute; inset: 0; border-radius: 22px;
-    background: linear-gradient(135deg, #fef3e2 0%, #fde3b0 50%, #fef3e2 100%);
-    border: 1px solid rgba(15,23,42,0.12);
-    box-shadow:
-      0 1px 0 rgba(255,255,255,0.5) inset,
-      0 22px 45px rgba(15,23,42,0.16);
-    padding: 20px 22px;
-    display: flex; flex-direction: column; justify-content: space-between;
-    transform-style: preserve-3d;
-    will-change: transform, opacity, filter;
-    user-select: none; cursor: grab;
-    overflow: hidden;
-    transition: transform .5s cubic-bezier(.22,.85,.32,1), opacity .5s ease, filter .5s ease,
-                background .3s ease;
-  }
-  .shift-card:active { cursor: grabbing; }
-
-  .shift-card::before {
-    content: "";
-    position: absolute;
-    top: -60%; left: -20%;
-    width: 60%; height: 220%;
-    background: linear-gradient(120deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.08) 40%, transparent 70%);
-    transform: rotate(12deg);
-    pointer-events: none;
-  }
-
-  .shift-card.night { background: linear-gradient(135deg, #eef0ff 0%, #dbe0ff 50%, #eef0ff 100%); }
-  .shift-card.weekoff { background: linear-gradient(135deg, #eafaf0 0%, #c9f0da 50%, #eafaf0 100%); }
-  .shift-card.leave { background: linear-gradient(135deg, #fdeef1 0%, #f9d2dc 50%, #fdeef1 100%); }
-
-  .card-top { display: flex; align-items: flex-start; justify-content: space-between; position: relative; z-index: 1; }
-  .card-day-label { font-size: 11.5px; font-weight: 800; letter-spacing: 0.16em; color: #9c7a3f; }
-  .shift-card.night .card-day-label { color: #6b74b8; }
-  .shift-card.weekoff .card-day-label { color: #2f8f5b; }
-  .shift-card.leave .card-day-label { color: #b0466f; }
-
-  .card-date { font-size: 13.5px; font-weight: 600; color: #7a5f34; margin-top: 4px; }
-  .shift-card.night .card-date { color: #4f5793; }
-  .shift-card.weekoff .card-date { color: #256f47; }
-  .shift-card.leave .card-date { color: #93395c; }
-
-  .shift-badge {
-    width: 46px; height: 46px; border-radius: 13px;
-    display: flex; align-items: center; justify-content: center;
-    background: linear-gradient(135deg, #f2a93a, #f7c65f);
-    box-shadow: 0 6px 16px rgba(242,169,58,0.35);
-    flex-shrink: 0;
-    position: relative;
-  }
-  .shift-badge.night { background: linear-gradient(135deg, #6d7cff, #4c56c9); box-shadow: 0 6px 16px rgba(76,86,201,0.35); }
-  .shift-badge.weekoff { background: linear-gradient(135deg, #34d399, #10b981); box-shadow: 0 6px 16px rgba(16,185,129,0.35); }
-  .shift-badge.leave { background: linear-gradient(135deg, #fb7185, #e11d48); box-shadow: 0 6px 16px rgba(225,29,72,0.35); }
-
-  .shift-badge svg { width: 24px; height: 24px; color: #3a2a10; }
-  .shift-badge.night svg { color: #eef0ff; }
-  .shift-badge.weekoff svg { color: #06281a; }
-  .shift-badge.leave svg { color: #3a0d1a; }
-
-  .shift-badge::after {
-    content: "";
-    position: absolute; inset: -5px;
-    border-radius: 16px;
-    border: 1.5px solid rgba(242,169,58,0.45);
-    animation: pulseRing 2.4s ease-in-out infinite;
-  }
-  .shift-badge.night::after { border-color: rgba(109,124,255,0.45); }
-  .shift-badge.weekoff::after { border-color: rgba(16,185,129,0.45); }
-  .shift-badge.leave::after { border-color: rgba(225,29,72,0.45); }
-  @keyframes pulseRing {
-    0%, 100% { transform: scale(1); opacity: .55; }
-    50%      { transform: scale(1.14); opacity: 0; }
-  }
-
-  .card-mid { position: relative; z-index: 1; }
-  .shift-name { font-size: 24px; font-weight: 800; letter-spacing: 0.01em; color: #4a3510; line-height: 1.15; }
-  .shift-card.night .shift-name { color: #232a5c; }
-  .shift-card.weekoff .shift-name { color: #155c3a; }
-  .shift-card.leave .shift-name { color: #7a2c4c; }
-
-  .card-bottom { display: flex; align-items: flex-end; justify-content: space-between; position: relative; z-index: 1; }
-  .shift-time-block { display: flex; flex-direction: column; gap: 2px; }
-  .shift-time-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: #a3855a; }
-  .shift-card.night .shift-time-label { color: #7c85c9; }
-  .shift-card.weekoff .shift-time-label { color: #3a9868; }
-  .shift-card.leave .shift-time-label { color: #b0466f; }
-
-  .shift-time { font-size: 15px; font-weight: 700; color: #5b431c; letter-spacing: 0.04em; font-variant-numeric: tabular-nums; }
-  .shift-card.night .shift-time { color: #383f7a; }
-  .shift-card.weekoff .shift-time { color: #1f6b45; }
-  .shift-card.leave .shift-time { color: #7a2c4c; }
-
-  .card-chip {
-    width: 38px; height: 28px; border-radius: 6px;
-    background: linear-gradient(135deg, #e2c288, #f4e2ad, #e2c288);
-    position: relative;
-    box-shadow: 0 2px 4px rgba(15,23,42,0.2);
-  }
-  .card-chip::before {
-    content: "";
-    position: absolute; inset: 4px;
-    border: 1px solid rgba(15,23,42,0.22);
-    border-radius: 3px;
-  }
-
-  @media (min-width: 700px) and (min-height: 700px) {
-    .card-stack { width: 340px; max-width: 340px; height: 224px; }
-  }
-
-  @media (max-height: 640px) {
-    .card-stack { height: min(190px, 24vh); }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .shift-card, .page, .shift-badge::after, .avatar-ring, .status-dot { transition: none !important; animation: none !important; }
-  }
-
-  .skel { animation: skelPulse 1.2s ease-in-out infinite; }
-  @keyframes skelPulse {
-    0%, 100% { opacity: .35; }
-    50%      { opacity: .8; }
-  }
-
-  .actions-heading {
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: #9295a6;
-    margin: 4px 0 4px clamp(4px, 2vw, 12px);
-    flex-shrink: 0;
-  }
-
-  .actions {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 12px;
-    flex-shrink: 0;
-    width: 100%;
-    max-width: 480px;
-    margin: 0 auto;
-  }
-
-  .action-btn {
-    --mx: 50%;
-    --my: 50%;
-    position: relative;
-    flex: 0 1 calc((100% - 24px) / 3);
-    min-width: 96px;
-    min-height: 108px;
-    border-radius: 22px;
-    background: #fff;
-    border: 1px solid rgba(15,23,42,0.06);
-    box-shadow: 0 6px 18px rgba(15,23,42,0.06);
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 10px; padding: 18px 10px; cursor: pointer; overflow: hidden;
-    color: #21232b; font-family: inherit;
-    transition: transform .2s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease;
-  }
-
-  .action-btn::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(160px circle at var(--mx) var(--my), rgba(109,94,240,0.14), transparent 68%);
-    opacity: 0;
-    transition: opacity .35s ease;
-    pointer-events: none;
-    z-index: 0;
-  }
-  .action-btn:hover::before,
-  .action-btn:focus-visible::before { opacity: 1; }
-
-  .action-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 26px rgba(15,23,42,0.10);
-    border-color: rgba(109,94,240,0.25);
-  }
-  .action-btn:active { transform: translateY(0) scale(0.98); }
-
-  .action-btn .icon-wrap {
-    width: 52px; height: 52px; border-radius: 50%; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    background: rgba(109,94,240,0.12);
-    color: #6d5ef0;
-    position: relative; z-index: 1;
-  }
-  .action-btn .icon-wrap svg { width: 24px; height: 24px; }
-  .action-btn .label-block { display: flex; flex-direction: column; align-items: center; z-index: 1; position: relative; }
-  .action-btn .label { font-size: 13.5px; font-weight: 700; }
-  .action-btn .sublabel { font-size: 10px; font-weight: 700; color: #94a3b8; margin-top: 1px; }
-
-  .action-btn.vip .icon-wrap {
-    background: linear-gradient(135deg, rgba(124,58,237,0.16), rgba(246,211,101,0.28));
-    color: #7c3aed;
-  }
-  .action-btn.vip::before {
-    background: radial-gradient(160px circle at var(--mx) var(--my), rgba(246,211,101,0.30), transparent 68%);
-  }
-  .action-btn.vip:hover {
-    border-color: rgba(124,58,237,0.35);
-  }
-  .action-btn .lock-badge {
+  .em{
     display: none;
-    position: absolute;
-    bottom: -2px;
-    right: -2px;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: #fff;
-    border: 1px solid rgba(15,23,42,0.12);
+  }
+  form{
+    display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    color: #7c3aed;
-    box-shadow: 0 2px 6px rgba(15,23,42,0.15);
+    flex: 1;
+    background-color: #fff;
   }
-  .action-btn .lock-badge svg { width: 10px; height: 10px; }
-  .action-btn.vip.locked .lock-badge { display: flex; }
-  .action-btn.vip.locked { opacity: .6; cursor: not-allowed; }
-  .action-btn.vip.locked:hover {
-    transform: none;
-    box-shadow: 0 6px 18px rgba(15,23,42,0.06);
-    border-color: rgba(15,23,42,0.06);
+  h3{
+    color: #5f6368;
+    margin: 2rem;
   }
-
-  .toast {
-    position: fixed;
-    left: 50%;
-    bottom: 28px;
-    transform: translate(-50%, 16px);
-    background: rgba(33,35,43,0.94);
-    color: #fff;
-    padding: 10px 18px;
-    border-radius: 999px;
-    font-size: 13px;
-    font-weight: 600;
-    opacity: 0;
+  .inp{
+    position: relative;
+    margin-bottom: 1rem;
+  }
+  input{
+    width: 90vw;
+    max-width: 350px;
+    aspect-ratio: 5/1;
+    border: 2px solid #dadce0;
+    border-radius: 3rem;
+    outline: none;
+    font-size: 1.3rem;
+    text-indent: 1.5rem;
+  }
+  input:focus{
+    border-color: #4070F4;
+  }
+  label{
+    position: absolute;
     pointer-events: none;
-    transition: opacity .25s ease, transform .25s ease;
-    z-index: 60;
-    box-shadow: 0 10px 30px rgba(15,23,42,0.25);
-    max-width: 86vw;
-    text-align: center;
+    top: 50%;
+    left: 1.7rem;
+    translate: 0 -50%;
+    color: #5f6368;
+    background-color: white;
+    padding: .2rem;
+    font-size: 1.3rem;
+    transition: transform 0.2s ease, top 0.2s ease, font-size 0.2s ease, color 0.2s ease;
   }
-  .toast.show { opacity: 1; transform: translate(-50%, 0); }
-
-  @media (min-width: 700px) {
-    .actions { max-width: 640px; gap: 18px; }
-    .action-btn { flex-basis: calc((100% - 36px) / 3); min-height: 120px; }
-    .action-btn .label { font-size: 14.5px; }
+  input:focus ~ label, input:not(:placeholder-shown) ~ label{
+    top: 0;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #5f6368;
   }
-
-  .state-overlay {
-    position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
-    flex-direction: column; gap: 12px; background: rgba(246,247,251,0.85);
-    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
-    color: #21232b; font-weight: 600; font-size: 14px; text-align: center; padding: 24px;
-    z-index: 50;
+  input:focus ~ label{
+    color: #4070F4;
   }
-  .state-overlay.hidden { display: none; }
-  .retry-btn {
-    margin-top: 6px; padding: 9px 20px; border-radius: 999px; border: none;
-    background: linear-gradient(135deg, #5cc8ff, #6d5ef0); color: #fff; font-weight: 700; cursor: pointer;
+  button{
+    position: relative;
+    font-size: 1.1rem;
+    font-weight:bold;
+    border: none;
+    border-radius: 3rem;
+    margin: 1rem 0;
+    padding: 1rem 3rem;
+    cursor: pointer;
+    color: white;
+    background: rgb(0, 100, 224);
   }
+  .ripple{
+    position: absolute;
+    border-radius: 50%;
+    transform: scale(0);
+    background: rgba(255, 255, 255, 0.35);
+    animation: expand-ripple 0.6s linear;
+  }
+  @keyframes expand-ripple{to{transform: scale(4);opacity: 0;}}
+@media (min-width: 600px){
+  section{
+    display: flex;
+    height: 80%;
+    aspect-ratio: 1.5;
+    border-radius: 3rem;
+    overflow: hidden;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    box-shadow:0 10px 30px rgba(0,0,0,.2);
+  }
+  .em{
+    display: initial;
+  }
+}
 </style>
 </head>
 <body>
-
-  <div id="errorOverlay" class="state-overlay hidden">
-    <div id="errorMessage">Something went wrong.</div>
-    <button class="retry-btn" id="retryBtn">Retry</button>
-  </div>
-
-  <div class="page" id="pageContent" style="visibility:hidden;">
-    <div class="greeting-header">
-      <h1><span style="font-size: 1.5rem;">Hello,</span><br><span id="userName">-</span> <span class="wave-emoji">👋</span><br><span style="font-size: large; color: #7a7e8f;">Here's what's happening today.</span></h1>
-      <div class="avatar-wrap" tabindex="0">
-        <div class="avatar-ring"></div>
-        <div class="avatar" id="avatarInitials">--</div>
-        <div class="status-dot"></div>
-        <button class="logout-pill" id="logoutBtn" type="button">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-            <polyline points="16 17 21 12 16 7"/>
-            <line x1="21" y1="12" x2="9" y2="12"/>
-          </svg>
-          Log out
-        </button>
-      </div>
-    </div>
-
-    <div class="stack-wrap">
-      <div class="card-stack" id="cardStack">
-
-        <div class="shift-card" id="card-today" data-key="today">
-          <div class="card-top">
-            <div>
-              <div class="card-day-label">TODAY</div>
-              <div class="card-date" id="date-today"></div>
-            </div>
-            <div class="shift-badge skel" id="badge-today">
-              <div id="icon-today"></div>
-            </div>
-          </div>
-          <div class="card-mid">
-            <div class="shift-name skel" id="name-today">Loading shift…</div>
-          </div>
-          <div class="card-bottom">
-            <div class="shift-time-block">
-              <span class="shift-time-label">SHIFT TIME</span>
-              <span class="shift-time skel" id="time-today">— — : — —</span>
-            </div>
-            <div class="card-chip"></div>
-          </div>
-        </div>
-
-        <div class="shift-card" id="card-tomorrow" data-key="tomorrow">
-          <div class="card-top">
-            <div>
-              <div class="card-day-label">TOMORROW</div>
-              <div class="card-date" id="date-tomorrow"></div>
-            </div>
-            <div class="shift-badge skel" id="badge-tomorrow">
-              <div id="icon-tomorrow"></div>
-            </div>
-          </div>
-          <div class="card-mid">
-            <div class="shift-name skel" id="name-tomorrow">Loading shift…</div>
-          </div>
-          <div class="card-bottom">
-            <div class="shift-time-block">
-              <span class="shift-time-label">SHIFT TIME</span>
-              <span class="shift-time skel" id="time-tomorrow">— — : — —</span>
-            </div>
-            <div class="card-chip"></div>
-          </div>
-        </div>
-
-      </div>
-
-      <div class="swipe-hint" id="swipeHint" role="button" tabindex="0">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="18 15 12 9 6 15"/>
-        </svg>
-        <span id="swipeHintText">Swipe up for tomorrow</span>
-      </div>
-    </div>
-
-    <div class="actions-panel">
-      <div class="actions-heading">Quick actions</div>
-      <div class="actions" id="actionsGrid">
-        <button class="action-btn" data-action="schedules" onclick="window.location.href='/schedule'">
-          <div class="icon-wrap">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
-            </svg>
-          </div>
-          <div class="label-block"><span class="label">Schedules</span></div>
-        </button>
-        <button class="action-btn" data-action="present" onclick="window.location.href='/present'">
-          <div class="icon-wrap">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/>
-            </svg>
-          </div>
-          <div class="label-block"><span class="label">Present</span></div>
-        </button>
-        <button class="action-btn" data-action="forms" onclick="window.location.href='/forms'">
-          <div class="icon-wrap">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
-            </svg>
-          </div>
-          <div class="label-block"><span class="label">Forms</span></div>
-        </button>
-        <button class="action-btn" data-action="payslip" onclick="window.location.href='/payslip'">
-          <div class="icon-wrap">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/>
-            </svg>
-          </div>
-          <div class="label-block"><span class="label">Payslip</span></div>
-        </button>
-        <button class="action-btn vip" id="vipBtn" data-action="vip">
-          <div class="icon-wrap">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7Z"/><path d="M5 20h14"/>
-            </svg>
-            <span class="lock-badge" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>
-              </svg>
-            </span>
-          </div>
-          <div class="label-block">
-            <span class="label">VIP Panel</span>
-            <span class="sublabel" id="vipSubLabel"></span>
-          </div>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <div class="toast" id="toast"></div>
-
+  <section>
+    <img src="assets/login.avif" alt="image" class="em">
+    <form method="post" action="/logins">
+      <h1>Welcome to Arcos</h1>
+      <img src="assets/icon192.png" alt="logo" height="120">
+      <h3>Please login to get started</h3>
+      <div class="inp"><input placeholder="" name="id" required><label>Arcos ID</label></div>
+      <div class="inp"><input placeholder="" name="name" required><label>Name</label></div>
+      <button onclick="const r=this.getBoundingClientRect(),s=Math.max(r.width,r.height);this.querySelector('.ripple')?.remove();let p=document.createElement('span');p.className='ripple';p.style.cssText='width:'+s+'px;height:'+s+'px;left:'+(event.clientX-r.left-s/2)+'px;top:'+(event.clientY-r.top-s/2)+'px;';this.appendChild(p);">Login</button>
+    </form>
+  </section>
 <script>
-  function setAppHeight(){
-    document.documentElement.style.setProperty('--app-height', window.innerHeight + 'px');
-  }
-  setAppHeight();
-  window.addEventListener('resize', setAppHeight);
-  window.addEventListener('orientationchange', setAppHeight);
-
-  if('serviceWorker' in navigator){
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js')
-        .catch(err => console.warn('Service worker registration failed:', err));
-    });
-  }
-
-  const errorOverlay = document.getElementById('errorOverlay');
-  const errorMessage = document.getElementById('errorMessage');
-  const pageContent = document.getElementById('pageContent');
-
-  function showError(msg){
-    errorOverlay.classList.remove('hidden');
-    errorMessage.textContent = msg;
-  }
-  function clearError(){
-    errorOverlay.classList.add('hidden');
-  }
-
-  document.getElementById('retryBtn').addEventListener('click', () => { clearError(); loadShiftData(); });
-
-  function getCookie(name){
-    const match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
-    return match ? decodeURIComponent(match[1]) : null;
-  }
-
-  function renderUser(id, name){
-    document.getElementById('userName').textContent = name;
-    document.getElementById('avatarInitials').textContent = name
-      .split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
-  }
-
-  const cookieId = getCookie('id');
-  const cookieName = getCookie('name');
-
-  if(!cookieId || !cookieName){
-    window.location.href = '/login';
-  } else {
-    renderUser(cookieId, cookieName);
-    pageContent.style.visibility = 'visible';
-  }
-
-  const vipBtn = document.getElementById('vipBtn');
-  const vipSubLabel = document.getElementById('vipSubLabel');
-  const toastEl = document.getElementById('toast');
-  let toastTimer = null;
-
-  function showToast(msg, duration = 2400){
-    if(!toastEl) return;
-    toastEl.textContent = msg;
-    toastEl.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => toastEl.classList.remove('show'), duration);
-  }
-
-  if(vipBtn){
-    const isVip = getCookie('vip') === 'yes';
-    if(!isVip){
-      vipBtn.classList.add('locked');
-      if(vipSubLabel) vipSubLabel.textContent = 'Members only';
-    }
-    vipBtn.addEventListener('click', () => {
-      if(vipBtn.classList.contains('locked')){
-        showToast('VIP Panel is only available for VIP members.');
-      } else {
-        window.location.href = '/vip';
-      }
-    });
-  }
-
-  const sunIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
-  const moonIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
-  const weekOffIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M9 16l2 2 4-4"/></svg>`;
-  const leaveIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1.5 3 1 1 3L8 20l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.3c.4-.2.6-.6.5-1.1L17.8 19.2Z"/></svg>`;
-
-  function formatDate(offset){
-    const d = new Date();
-    d.setDate(d.getDate() + offset);
-    return d.toLocaleDateString('en-US', { weekday:'long', month:'short', day:'numeric' });
-  }
-
-  const SHIFT_TYPES = {
-    'Day Shift':   { time:'09:00 — 18:00', icon:sunIcon,     cls:''        },
-    'Night Shift': { time:'20:00 — 05:00', icon:moonIcon,    cls:'night'   },
-    'Week Off':    { time:'All Day',       icon:weekOffIcon, cls:'weekoff' },
-    'Leave':       { time:'All Day',       icon:leaveIcon,   cls:'leave'   }
-  };
-  const ALL_VARIANT_CLASSES = ['night', 'weekoff', 'leave'];
-
-  function shiftInfoFromLabel(label){
-    const known = SHIFT_TYPES[label];
-    if(!known) return null;
-    return { label, ...known };
-  }
-
-  async function fetchShiftData(retriesLeft = 1){
-    const res = await fetch('/shift', { credentials: 'same-origin' });
-    if(res.status === 401){
-      if(retriesLeft > 0){
-        await new Promise(r => setTimeout(r, 400));
-        return fetchShiftData(retriesLeft - 1);
-      }
-      window.location.href = '/login';
-      return null;
-    }
-    if(!res.ok){
-      let detail = '';
-      try{ detail = (await res.json()).error || ''; }catch(e){}
-      throw new Error(detail || `Request failed (${res.status})`);
-    }
-    return res.json();
-  }
-
-  function populateCard(key, offset, shift){
-    document.getElementById(`date-${key}`).textContent = formatDate(offset);
-    const cardEl = document.getElementById(`card-${key}`);
-    const badgeEl = document.getElementById(`badge-${key}`);
-    const nameEl = document.getElementById(`name-${key}`);
-    const timeEl = document.getElementById(`time-${key}`);
-    const iconEl = document.getElementById(`icon-${key}`);
-
-    nameEl.classList.remove('skel');
-    timeEl.classList.remove('skel');
-    badgeEl.classList.remove('skel', ...ALL_VARIANT_CLASSES);
-    cardEl.classList.remove(...ALL_VARIANT_CLASSES);
-
-    if(!shift){
-      nameEl.textContent = 'No schedule';
-      timeEl.textContent = '—';
-      iconEl.innerHTML = '';
-      return;
-    }
-    nameEl.textContent = shift.label;
-    timeEl.textContent = shift.time;
-    iconEl.innerHTML = shift.icon;
-    if(shift.cls){
-      cardEl.classList.add(shift.cls);
-      badgeEl.classList.add(shift.cls);
-    }
-  }
-
-  async function loadShiftData(){
-    try{
-      const data = await fetchShiftData();
-      if(!data) return;
-      populateCard('today', 0, shiftInfoFromLabel(data.today));
-      populateCard('tomorrow', 1, shiftInfoFromLabel(data.tomorrow));
-    }catch(e){
-      console.error('Shift load failed:', e);
-      showError('Could not load your schedule. Check your connection and try again.');
-    }
-  }
-
-  if(cookieId && cookieName){
-    document.getElementById('date-today').textContent = formatDate(0);
-    document.getElementById('date-tomorrow').textContent = formatDate(1);
-    loadShiftData();
-  }
-
-  document.getElementById('logoutBtn').addEventListener('click', () => {
-    document.cookie = 'id=; Max-Age=0; path=/';
-    document.cookie = 'name=; Max-Age=0; path=/';
-    window.location.href = '/login';
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js');
   });
-
-  const EL = {
-    today:    document.getElementById('card-today'),
-    tomorrow: document.getElementById('card-tomorrow')
-  };
-
-  let slots = { front:'today', back:'tomorrow' };
-  let isAnimating = false;
-
-  const REST = {
-    front:{ y:0,  scale:1,    opacity:1,    blur:0,  z:10 },
-    back: { y:24, scale:0.95, opacity:0.85, blur:0,  z:9  }
-  };
-
-  function applyRest(el, slotName, withTransition){
-    const r = REST[slotName];
-    el.style.transition = withTransition
-      ? 'transform .5s cubic-bezier(.22,.85,.32,1), opacity .5s ease, filter .5s ease'
-      : 'none';
-    el.style.transform = `translateY(${r.y}px) scale(${r.scale}) rotateX(0deg)`;
-    el.style.opacity = r.opacity;
-    el.style.filter = r.blur ? `blur(${r.blur}px)` : 'none';
-    el.style.zIndex = r.z;
-  }
-
-  const swipeHint = document.getElementById('swipeHint');
-  const swipeHintText = document.getElementById('swipeHintText');
-  const HINT_LABEL = { today: 'tomorrow', tomorrow: 'today' };
-
-  function updateSwipeHint(){
-    const otherKey = slots.back;
-    const pointingDown = otherKey === 'today';
-    swipeHint.classList.toggle('pointing-down', pointingDown);
-    swipeHintText.textContent = `Swipe ${pointingDown ? 'down' : 'up'} for ${HINT_LABEL[slots.front]}`;
-  }
-
-  Object.keys(slots).forEach(slotName => applyRest(EL[slots[slotName]], slotName, false));
-  updateSwipeHint();
-
-  const FLIP_MS = 460;
-
-  function flip(direction){
-    if(isAnimating) return;
-    isAnimating = true;
-
-    const outKey = slots.front, inKey = slots.back;
-    const outEl = EL[outKey], inEl = EL[inKey];
-
-    const flyY = direction === 1 ? -60 : 60;
-    const rx = direction === 1 ? -100 : 100;
-
-    outEl.style.transition = `transform ${FLIP_MS/2}ms ease-in, opacity ${FLIP_MS/2}ms ease, filter ${FLIP_MS/2}ms ease`;
-    outEl.style.transform = `translateY(${flyY}px) scale(0.9) rotateX(${rx}deg)`;
-    outEl.style.opacity = '0.12';
-    outEl.style.zIndex = 11;
-
-    applyRest(inEl, 'front', true);
-
-    setTimeout(() => {
-      outEl.style.transition = `transform ${FLIP_MS/2}ms ease-out, opacity ${FLIP_MS/2}ms ease, filter ${FLIP_MS/2}ms ease`;
-      outEl.style.zIndex = REST.back.z;
-      outEl.style.transform = `translateY(${REST.back.y}px) scale(${REST.back.scale}) rotateX(0deg)`;
-      outEl.style.opacity = REST.back.opacity;
-      outEl.style.filter = REST.back.blur ? `blur(${REST.back.blur}px)` : 'none';
-    }, FLIP_MS/2);
-
-    setTimeout(() => {
-      slots = { front:inKey, back:outKey };
-      isAnimating = false;
-      updateSwipeHint();
-    }, FLIP_MS);
-  }
-
-  const rotateUp = () => flip(1);
-  const rotateDown = () => flip(-1);
-
-  function triggerHintFlip(){
-    if(isAnimating) return;
-    slots.back === 'today' ? rotateDown() : rotateUp();
-  }
-  swipeHint.addEventListener('click', triggerHintFlip);
-  swipeHint.addEventListener('keydown', e => {
-    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); triggerHintFlip(); }
-  });
-
-  const stackEl = document.getElementById('cardStack');
-  const COMMIT_THRESHOLD = 65;
-  let startY = null, dragging = false, dragEl = null;
-
-  function dragStart(y){
-    if(isAnimating) return;
-    dragEl = EL[slots.front];
-    startY = y; dragging = true;
-    dragEl.style.transition = 'none';
-  }
-  function dragMove(y){
-    if(!dragging || startY === null || !dragEl) return;
-    const delta = y - startY;
-    dragEl.style.transform = `translateY(${delta * 0.8}px) rotate(${delta * 0.02}deg) scale(1)`;
-  }
-  function dragEnd(y){
-    if(!dragging || startY === null || !dragEl) return;
-    const delta = y - startY;
-    dragging = false;
-    const el = dragEl;
-    dragEl = null; startY = null;
-    if(Math.abs(delta) > COMMIT_THRESHOLD){
-      delta < 0 ? rotateUp() : rotateDown();
-    } else {
-      applyRest(el, 'front', true);
-    }
-  }
-
-  stackEl.addEventListener('mousedown', e => dragStart(e.clientY));
-  window.addEventListener('mousemove', e => dragMove(e.clientY));
-  window.addEventListener('mouseup', e => dragEnd(e.clientY));
-  stackEl.addEventListener('touchstart', e => dragStart(e.touches[0].clientY), {passive:true});
-  stackEl.addEventListener('touchmove', e => dragMove(e.touches[0].clientY), {passive:true});
-  stackEl.addEventListener('touchend', e => dragEnd(e.changedTouches[0].clientY));
-
-  let wheelLock = false;
-  document.querySelector('.stack-wrap').addEventListener('wheel', e => {
-    if(isAnimating || wheelLock) return;
-    if(Math.abs(e.deltaY) < 25) return;
-    wheelLock = true;
-    e.deltaY > 0 ? rotateUp() : rotateDown();
-    setTimeout(() => wheelLock = false, FLIP_MS + 100);
-  }, {passive:true});
-
-  document.addEventListener('keydown', e => {
-    if(e.key === 'ArrowUp') rotateUp();
-    if(e.key === 'ArrowDown') rotateDown();
-  });
-
-  document.querySelectorAll('.action-btn').forEach(btn => {
-    btn.addEventListener('mousemove', e => {
-      const rect = btn.getBoundingClientRect();
-      btn.style.setProperty('--mx', `${e.clientX - rect.left}px`);
-      btn.style.setProperty('--my', `${e.clientY - rect.top}px`);
-    });
-    btn.addEventListener('focus', () => {
-      btn.style.setProperty('--mx', '50%');
-      btn.style.setProperty('--my', '50%');
-    });
-  });
+}
 </script>
-
 </body>
 </html>
