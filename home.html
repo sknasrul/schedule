@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>Schedules</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; }
@@ -58,7 +61,7 @@
       grid-template-columns: minmax(220px, 260px) 1fr;
       grid-template-rows: auto 1fr;
       grid-template-areas:
-        "header header"
+        "sidebar header"
         "sidebar stack";
       gap: 20px;
     }
@@ -540,6 +543,60 @@
   </div>
 
   <div class="page" id="pageContent" style="visibility:hidden;">
+    <div class="actions-panel">
+      <div class="actions-heading">Quick actions</div>
+      <div class="actions" id="actionsGrid">
+        <button class="action-btn" data-action="schedules" onclick="window.location.href='/schedule'">
+          <div class="icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+          </div>
+          <div class="label-block"><span class="label">Schedules</span></div>
+        </button>
+        <button class="action-btn" data-action="present" onclick="window.location.href='/present'">
+          <div class="icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/>
+            </svg>
+          </div>
+          <div class="label-block"><span class="label">Present</span></div>
+        </button>
+        <button class="action-btn" data-action="forms" onclick="window.location.href='/forms'">
+          <div class="icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+            </svg>
+          </div>
+          <div class="label-block"><span class="label">Forms</span></div>
+        </button>
+        <button class="action-btn" data-action="payslip" onclick="window.location.href='/payslip'">
+          <div class="icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/>
+            </svg>
+          </div>
+          <div class="label-block"><span class="label">Payslip</span></div>
+        </button>
+        <button class="action-btn vip" id="vipBtn" data-action="vip">
+          <div class="icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7Z"/><path d="M5 20h14"/>
+            </svg>
+            <span class="lock-badge" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>
+              </svg>
+            </span>
+          </div>
+          <div class="label-block">
+            <span class="label">VIP Panel</span>
+            <span class="sublabel" id="vipSubLabel"></span>
+          </div>
+        </button>
+      </div>
+    </div>
+
     <div class="greeting-header">
       <h1><span style="font-size: 1.5rem;">Hello,</span><br><span id="userName">-</span> <span class="wave-emoji">👋</span><br><span style="font-size: large; color: #7a7e8f;">Here's what's happening today.</span></h1>
       <div class="avatar-wrap" tabindex="0">
@@ -611,60 +668,6 @@
           <polyline points="18 15 12 9 6 15"/>
         </svg>
         <span id="swipeHintText">Swipe up for tomorrow</span>
-      </div>
-    </div>
-
-    <div class="actions-panel">
-      <div class="actions-heading">Quick actions</div>
-      <div class="actions" id="actionsGrid">
-        <button class="action-btn" data-action="schedules" onclick="window.location.href='/schedule'">
-          <div class="icon-wrap">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
-            </svg>
-          </div>
-          <div class="label-block"><span class="label">Schedules</span></div>
-        </button>
-        <button class="action-btn" data-action="present" onclick="window.location.href='/present'">
-          <div class="icon-wrap">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/>
-            </svg>
-          </div>
-          <div class="label-block"><span class="label">Present</span></div>
-        </button>
-        <button class="action-btn" data-action="forms" onclick="window.location.href='/forms'">
-          <div class="icon-wrap">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
-            </svg>
-          </div>
-          <div class="label-block"><span class="label">Forms</span></div>
-        </button>
-        <button class="action-btn" data-action="payslip" onclick="window.location.href='/payslip'">
-          <div class="icon-wrap">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/>
-            </svg>
-          </div>
-          <div class="label-block"><span class="label">Payslip</span></div>
-        </button>
-        <button class="action-btn vip" id="vipBtn" data-action="vip">
-          <div class="icon-wrap">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7Z"/><path d="M5 20h14"/>
-            </svg>
-            <span class="lock-badge" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>
-              </svg>
-            </span>
-          </div>
-          <div class="label-block">
-            <span class="label">VIP Panel</span>
-            <span class="sublabel" id="vipSubLabel"></span>
-          </div>
-        </button>
       </div>
     </div>
   </div>
@@ -774,8 +777,33 @@
     return { label, ...known };
   }
 
+  // Reset the shift cards back to their initial "loading" skeleton state.
+  // This must run on every page load/show (including bfcache restores)
+  // so stale, previously-fetched shift data is never left on screen.
+  function resetCardsToSkeleton(){
+    ['today', 'tomorrow'].forEach(key => {
+      const cardEl = document.getElementById(`card-${key}`);
+      const badgeEl = document.getElementById(`badge-${key}`);
+      const nameEl = document.getElementById(`name-${key}`);
+      const timeEl = document.getElementById(`time-${key}`);
+      const iconEl = document.getElementById(`icon-${key}`);
+
+      cardEl.classList.remove(...ALL_VARIANT_CLASSES);
+      badgeEl.classList.remove(...ALL_VARIANT_CLASSES);
+      badgeEl.classList.add('skel');
+      nameEl.classList.add('skel');
+      timeEl.classList.add('skel');
+
+      nameEl.textContent = 'Loading shift…';
+      timeEl.textContent = '— — : — —';
+      iconEl.innerHTML = '';
+    });
+  }
+
   async function fetchShiftData(retriesLeft = 1){
-    const res = await fetch('/shift', { credentials: 'same-origin' });
+    // no-store ensures the browser never serves a cached /shift response;
+    // shift data is live and must always be re-fetched from the server.
+    const res = await fetch('/shift', { credentials: 'same-origin', cache: 'no-store' });
     if(res.status === 401){
       if(retriesLeft > 0){
         await new Promise(r => setTimeout(r, 400));
@@ -821,6 +849,9 @@
   }
 
   async function loadShiftData(){
+    // Always show the loading skeleton first — never let a previous
+    // render (e.g. from bfcache) linger while fresh data is fetched.
+    resetCardsToSkeleton();
     try{
       const data = await fetchShiftData();
       if(!data) return;
@@ -837,6 +868,26 @@
     document.getElementById('date-tomorrow').textContent = formatDate(1);
     loadShiftData();
   }
+
+  // Guard against the Back/Forward (bfcache) restoring the page with the
+  // previously rendered DOM still showing old shift data. Whenever the
+  // page is shown from bfcache, reset to skeleton and re-fetch live data.
+  window.addEventListener('pageshow', (event) => {
+    if(event.persisted){
+      resetCardsToSkeleton();
+      if(cookieId && cookieName){
+        loadShiftData();
+      }
+    }
+  });
+
+  // Also re-sync when the tab regains visibility/focus, since shift data
+  // can change server-side between visits.
+  document.addEventListener('visibilitychange', () => {
+    if(document.visibilityState === 'visible' && cookieId && cookieName){
+      loadShiftData();
+    }
+  });
 
   document.getElementById('logoutBtn').addEventListener('click', () => {
     document.cookie = 'id=; Max-Age=0; path=/';
