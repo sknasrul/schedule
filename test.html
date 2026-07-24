@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Install</title>
+<style>
+  *{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+    margin: 0;
+  }
+  body{
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    background:
+      radial-gradient(1200px 600px at 10% -10%, oklch(90% .06 275 / .55), transparent 60%),
+      radial-gradient(900px 500px at 100% 10%, oklch(90% .06 200 / .45), transparent 60%),
+      radial-gradient(700px 500px at 50% 110%, oklch(90% .05 320 / .35), transparent 60%),
+      #f6f7fb;
+  }
+  h1{
+    font-size: 3rem;
+    letter-spacing: -1px;
+    text-align: center;
+  }
+  button{
+    background-color: #1A73E8;
+    color: #fff;
+    cursor: pointer;
+    font-size: 2rem;
+    border-radius: 3rem;
+    border: none;
+    padding: .5rem 2rem .7rem 2rem;
+    margin-top: 3rem;
+  }
+  button:hover{
+    background-color: #185abc;
+  }
+</style>
+</head>
+<body>
+  <img src="icon192.png" alt="icon">
+  <h1>All your needs<br> on Arcos</h1>
+  <button id="installBtn" hidden>Install</button>
+<script>
+let deferredPrompt;
+const installBtn = document.getElementById("installBtn");
+
+window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();           // Prevent automatic prompt
+    deferredPrompt = e;           // Save the event
+    installBtn.hidden = false;    // Show Install button
+});
+
+installBtn.addEventListener("click", async () => {
+    if (!deferredPrompt) return;
+
+    deferredPrompt.prompt();      // Show install prompt
+
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log("User choice:", outcome);
+
+    deferredPrompt = null;
+    installBtn.hidden = true;
+});
+
+window.addEventListener("appinstalled", () => {
+    console.log("PWA installed");
+    installBtn.hidden = true;
+});
+</script>
+</body>
+</html>
