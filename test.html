@@ -47,6 +47,15 @@
   <h1>All your needs<br> on Arcos</h1>
   <button id="installBtn">Install</button>
 <script>
+const isPWA =
+  window.matchMedia('(display-mode: standalone)').matches ||
+  window.navigator.standalone === true; // iOS Safari
+
+if (isPWA) {
+  location.replace('/login.html');
+}
+
+  
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js');
