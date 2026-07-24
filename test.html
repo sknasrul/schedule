@@ -46,6 +46,12 @@
   <h1>All your needs<br> on Arcos</h1>
   <button id="installBtn" hidden>Install</button>
 <script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js');
+  });
+}
+  
 let deferredPrompt;
 const installBtn = document.getElementById("installBtn");
 
