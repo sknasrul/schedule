@@ -526,6 +526,76 @@
     .action-btn .label { font-size: 14.5px; }
   }
 
+  .vip-card {
+    position: relative;
+    width: 90vw;
+    max-width: 400px;
+    min-height: min(230px, 27vh);
+    border-radius: 24px;
+    padding: 26px 26px 22px;
+    background: linear-gradient(155deg, #1c1f2e 0%, #10121c 60%, #1c1f2e 100%);
+    border: 1px solid rgba(246,211,101,0.35);
+    box-shadow: 0 24px 50px rgba(10,10,20,0.45), 0 0 0 1px rgba(246,211,101,0.08) inset;
+    color: #f4f0e6;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+  }
+  .vip-card::before {
+    content: "";
+    position: absolute;
+    top: -50%; right: -30%;
+    width: 70%; height: 200%;
+    background: linear-gradient(120deg, rgba(246,211,101,0.10) 0%, transparent 55%);
+    pointer-events: none;
+  }
+  .vip-card-top { display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 1; }
+  .vip-card-chip {
+    font-size: 10.5px; font-weight: 800; letter-spacing: 0.18em;
+    color: #f6d365; border: 1px solid rgba(246,211,101,0.4);
+    padding: 5px 10px; border-radius: 999px;
+  }
+  .vip-card-crest {
+    width: 40px; height: 40px; border-radius: 12px;
+    background: linear-gradient(135deg, rgba(246,211,101,0.22), rgba(246,211,101,0.08));
+    display: flex; align-items: center; justify-content: center;
+    color: #f6d365;
+  }
+  .vip-card-crest svg { width: 20px; height: 20px; }
+  .vip-card-mid { position: relative; z-index: 1; margin: 14px 0; }
+  .vip-card-greeting { font-size: 23px; font-weight: 700; letter-spacing: 0.01em; line-height: 1.25; }
+  .vip-card-date { font-size: 13px; font-weight: 500; color: rgba(244,240,230,0.6); margin-top: 6px; }
+  .vip-card-bottom { position: relative; z-index: 1; }
+  .vip-card-note { font-size: 11.5px; font-weight: 600; letter-spacing: 0.03em; color: rgba(246,211,101,0.75); }
+
+  .vip-mobile-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 14px;
+    background: rgba(15,17,26,0.4);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+  .vip-mobile-overlay.show { display: flex; }
+  .vip-mobile-overlay .action-btn {
+    width: min(78vw, 280px);
+    flex: 0 0 auto;
+    flex-direction: row;
+    justify-content: flex-start;
+    min-height: 64px;
+    padding: 14px 16px;
+    gap: 14px;
+  }
+  @media (min-width: 900px) {
+    .vip-mobile-overlay { display: none !important; }
+  }
+
   .state-overlay {
     position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
     flex-direction: column; gap: 12px; background: rgba(246,247,251,0.85);
@@ -716,8 +786,28 @@
         </svg>
         <span id="swipeHintText">Swipe up for tomorrow</span>
       </div>
+
+      <div class="vip-card" id="vipCard" style="display:none;">
+        <div class="vip-card-top">
+          <span class="vip-card-chip">VIP ACCESS</span>
+          <div class="vip-card-crest">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7Z"/><path d="M5 20h14"/>
+            </svg>
+          </div>
+        </div>
+        <div class="vip-card-mid">
+          <div class="vip-card-greeting" id="vipCardGreeting">Welcome back</div>
+          <div class="vip-card-date" id="vipCardDate"></div>
+        </div>
+        <div class="vip-card-bottom">
+          <span class="vip-card-note">Full-day access · No shift required</span>
+        </div>
+      </div>
     </div>
   </div>
+
+  <div class="vip-mobile-overlay" id="vipMobileOverlay"></div>
 
   <div class="toast" id="toast"></div>
 
@@ -787,7 +877,7 @@
   const vipSubLabel = document.getElementById('vipSubLabel');
   const fcBtn = document.getElementById('fcBtn');
   const mhBtn = document.getElementById('mhBtn');
-  const standardButtons = document.querySelectorAll('.action-btn[data-action="schedules"], .action-btn[data-action="present"], .action-btn[data-action="forms"], .action-btn[data-action="payslip"]');
+  const standardButtons = document.querySelectorAll('.action-btn[data-action="schedules"], .action-btn[data-action="present"], .action-btn[data-action="payslip"]');
 
   if(isVip){
     standardButtons.forEach(btn => btn.classList.add('locked'));
@@ -809,15 +899,50 @@
     });
   });
 
+  const vipMobileOverlay = document.getElementById('vipMobileOverlay');
+  const isMobileViewport = () => window.matchMedia('(max-width: 899px)').matches;
+  let vipExtraOpen = false;
+  let vipExtraHomeParent = null;
+  let vipExtraHomeNextSibling = null;
+
+  function openVipExtra(){
+    vipExtraOpen = true;
+    if(isMobileViewport()){
+      vipExtraHomeParent = fcBtn.parentElement;
+      vipExtraHomeNextSibling = mhBtn.nextSibling;
+      vipMobileOverlay.appendChild(fcBtn);
+      vipMobileOverlay.appendChild(mhBtn);
+      fcBtn.style.display = '';
+      mhBtn.style.display = '';
+      vipMobileOverlay.classList.add('show');
+    } else {
+      fcBtn.style.display = '';
+      mhBtn.style.display = '';
+    }
+  }
+
+  function closeVipExtra(){
+    vipExtraOpen = false;
+    vipMobileOverlay.classList.remove('show');
+    if(vipExtraHomeParent){
+      vipExtraHomeParent.insertBefore(fcBtn, vipExtraHomeNextSibling);
+      vipExtraHomeParent.insertBefore(mhBtn, vipExtraHomeNextSibling);
+    }
+    fcBtn.style.display = 'none';
+    mhBtn.style.display = 'none';
+  }
+
+  vipMobileOverlay.addEventListener('click', (e) => {
+    if(e.target === vipMobileOverlay) closeVipExtra();
+  });
+
   if(vipBtn){
     vipBtn.addEventListener('click', () => {
       if(vipBtn.classList.contains('locked')){
         showToast('VIP Panel is only available for VIP members.');
         return;
       }
-      const showing = fcBtn.style.display !== 'none';
-      fcBtn.style.display = showing ? 'none' : '';
-      mhBtn.style.display = showing ? 'none' : '';
+      vipExtraOpen ? closeVipExtra() : openVipExtra();
     });
   }
 
@@ -827,28 +952,14 @@
   const leaveIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1.5 3 1 1 3L8 20l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.3c.4-.2.6-.6.5-1.1L17.8 19.2Z"/></svg>`;
   const vipIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7Z"/><path d="M5 20h14"/></svg>`;
 
-  function renderVipGreetings(){
+  function showVipCard(){
+    document.getElementById('cardStack').style.display = 'none';
+    document.getElementById('swipeHint').style.display = 'none';
+    const vipCard = document.getElementById('vipCard');
+    vipCard.style.display = 'flex';
     const name = cookieName || 'there';
-    const greetings = {
-      today:    { title: `Welcome, ${name}!`, sub: 'Enjoy your VIP access today' },
-      tomorrow: { title: `See you tomorrow!`, sub: 'Your VIP access continues' }
-    };
-    ['today', 'tomorrow'].forEach(key => {
-      const cardEl = document.getElementById(`card-${key}`);
-      const badgeEl = document.getElementById(`badge-${key}`);
-      const nameEl = document.getElementById(`name-${key}`);
-      const timeEl = document.getElementById(`time-${key}`);
-      const iconEl = document.getElementById(`icon-${key}`);
-
-      cardEl.classList.remove(...ALL_VARIANT_CLASSES);
-      badgeEl.classList.remove('skel', ...ALL_VARIANT_CLASSES);
-      nameEl.classList.remove('skel');
-      timeEl.classList.remove('skel');
-
-      nameEl.textContent = greetings[key].title;
-      timeEl.textContent = greetings[key].sub;
-      iconEl.innerHTML = vipIcon;
-    });
+    document.getElementById('vipCardGreeting').textContent = `Welcome back, ${name}`;
+    document.getElementById('vipCardDate').textContent = new Date().toLocaleDateString('en-US', { weekday:'long', month:'short', day:'numeric' });
   }
 
   function formatDate(offset){
@@ -964,16 +1075,20 @@
 
   function refreshCards(){
     if(isVip){
-      renderVipGreetings();
+      showVipCard();
     } else {
       loadShiftData();
     }
   }
 
   if(cookieId && cookieName){
-    document.getElementById('date-today').textContent = formatDate(0);
-    document.getElementById('date-tomorrow').textContent = formatDate(1);
-    refreshCards();
+    if(isVip){
+      showVipCard();
+    } else {
+      document.getElementById('date-today').textContent = formatDate(0);
+      document.getElementById('date-tomorrow').textContent = formatDate(1);
+      refreshCards();
+    }
   }
 
   // Guard against the Back/Forward (bfcache) restoring the page with the
@@ -1047,7 +1162,7 @@
   const FLIP_MS = 460;
 
   function flip(direction){
-    if(isAnimating) return;
+    if(isAnimating || isVip) return;
     isAnimating = true;
 
     const outKey = slots.front, inKey = slots.back;
@@ -1095,7 +1210,7 @@
   let startY = null, dragging = false, dragEl = null;
 
   function dragStart(y){
-    if(isAnimating) return;
+    if(isAnimating || isVip) return;
     dragEl = EL[slots.front];
     startY = y; dragging = true;
     dragEl.style.transition = 'none';
