@@ -1,21 +1,9 @@
 export async function onRequestPost(context) {
-
     const form = await context.request.formData();
 
     // Get form values
     const id = (form.get("id") || "").trim().toUpperCase();
     const name = (form.get("name") || "").trim();
-
-    // Lookup ID in KV
-    const storedName = await context.env.EMPLOYEE_DB.get(id);
-
-    // ID not found
-    if (storedName === null) {
-        return Response.redirect(
-            new URL("/index.html", context.request.url),
-            302
-        );
-    }
 
     // Normalize names for comparison
     function normalize(str) {
@@ -24,6 +12,25 @@ export async function onRequestPost(context) {
             .replace(/\s+/g, " ")
             .replace(/[\r\n]/g, "")
             .toLowerCase();
+    }
+
+    // First check VIP database
+    let storedName = await context.env.VIP.get(id);
+    let isVip = false;
+
+    if (storedName !== null) {
+        isVip = true;
+    } else {
+        // Not in VIP, fall back to normal EMPLOYEE_DB
+        storedName = await context.env.EMPLOYEE_DB.get(id);
+    }
+
+    // ID not found in either database
+    if (storedName === null) {
+        return Response.redirect(
+            new URL("/index.html", context.request.url),
+            302
+        );
     }
 
     // Name doesn't match
@@ -39,7 +46,6 @@ export async function onRequestPost(context) {
 
     // Delete existing cookies
     const cookieHeader = context.request.headers.get("Cookie") || "";
-
     cookieHeader.split(";").forEach(cookie => {
         const cookieName = cookie.split("=")[0]?.trim();
         if (cookieName) {
@@ -55,11 +61,18 @@ export async function onRequestPost(context) {
         "Set-Cookie",
         `id=${encodeURIComponent(id)}; Path=/; Max-Age=31536000; SameSite=Lax; Secure`
     );
-
     headers.append(
         "Set-Cookie",
         `name=${encodeURIComponent(storedName)}; Path=/; Max-Age=31536000; SameSite=Lax; Secure`
     );
+
+    // If found in VIP DB, set additional cookie
+    if (isVip) {
+        headers.append(
+            "Set-Cookie",
+            `vip=yes; Path=/; Max-Age=31536000; SameSite=Lax; Secure`
+        );
+    }
 
     // Redirect after login
     headers.set("Location", "/home");
@@ -68,5 +81,4 @@ export async function onRequestPost(context) {
         status: 302,
         headers
     });
-
 }
