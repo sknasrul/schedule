@@ -47,45 +47,53 @@
   <h1>All your needs<br> on Arcos</h1>
   <button id="installBtn">Install</button>
 <script>
-const isPWA =
-  window.matchMedia('(display-mode: standalone)').matches ||
-  window.navigator.standalone === true; // iOS Safari
+let deferredPrompt;
 
-if (isPWA) {
-  location.replace('/login.html');
+// Redirect if running as an installed PWA
+function checkPWA() {
+  const isPWA =
+    window.matchMedia('(display-mode: standalone)').matches ||
+    window.navigator.standalone === true; // iOS Safari
+
+  if (isPWA) {
+    location.replace('/login.html');
+  }
 }
 
-  
+// Initial check
+checkPWA();
+
+// Listen for display mode changes
+window.matchMedia('(display-mode: standalone')
+  .addEventListener('change', checkPWA);
+
+// Register Service Worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js');
   });
 }
-  
-let deferredPrompt;
-const installBtn = document.getElementById("installBtn");
 
-window.addEventListener("beforeinstallprompt", (e) => {
-    e.preventDefault();           // Prevent automatic prompt
-    deferredPrompt = e;           // Save the event
-    installBtn.hidden = false;    // Show Install button
+// Capture the install prompt
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  installBtn.style.display = 'inline-block';
 });
 
-installBtn.addEventListener("click", async () => {
-    if (!deferredPrompt) return;
+// Install button
+installBtn.addEventListener('click', async () => {
+  if (!deferredPrompt) return;
 
-    deferredPrompt.prompt();      // Show install prompt
-
-    const { outcome } = await deferredPrompt.userChoice;
-    console.log("User choice:", outcome);
-
-    deferredPrompt = null;
-    installBtn.hidden = true;
+  deferredPrompt.prompt();
+  await deferredPrompt.userChoice;
+  deferredPrompt = null;
 });
 
-window.addEventListener("appinstalled", () => {
-    console.log("PWA installed");
-    installBtn.hidden = true;
+// Hide button after installation
+window.addEventListener('appinstalled', () => {
+  installBtn.style.display = 'none';
+  checkPWA();
 });
 </script>
 </body>
