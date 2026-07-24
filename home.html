@@ -551,7 +551,7 @@
     <div class="actions-panel">
       <div class="actions-heading">Quick actions</div>
       <div class="actions" id="actionsGrid">
-        <button class="action-btn" data-action="schedules" onclick="window.location.href='/schedule'">
+        <button class="action-btn" data-action="schedules" data-href="/schedule">
           <div class="icon-wrap">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
@@ -564,7 +564,7 @@
           </div>
           <div class="label-block"><span class="label">Schedules</span></div>
         </button>
-        <button class="action-btn" data-action="present" onclick="window.location.href='/present'">
+        <button class="action-btn" data-action="present" data-href="/present">
           <div class="icon-wrap">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/>
@@ -577,7 +577,7 @@
           </div>
           <div class="label-block"><span class="label">Present</span></div>
         </button>
-        <button class="action-btn" data-action="forms" onclick="window.location.href='/forms'">
+        <button class="action-btn" data-action="forms" data-href="/forms">
           <div class="icon-wrap">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
@@ -590,7 +590,7 @@
           </div>
           <div class="label-block"><span class="label">Forms</span></div>
         </button>
-        <button class="action-btn" data-action="payslip" onclick="window.location.href='/payslip'">
+        <button class="action-btn" data-action="payslip" data-href="/payslip">
           <div class="icon-wrap">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/>
@@ -617,6 +617,28 @@
           <div class="label-block">
             <span class="label">VIP Panel</span>
             <span class="sublabel" id="vipSubLabel"></span>
+          </div>
+        </button>
+        <button class="action-btn" id="fcBtn" data-action="fc" data-href="/fc.html" style="display:none;">
+          <div class="icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M9 22V12h6v10"/>
+            </svg>
+          </div>
+          <div class="label-block">
+            <span class="label">Fulfillment Center</span>
+            <span class="sublabel">FC</span>
+          </div>
+        </button>
+        <button class="action-btn" id="mhBtn" data-action="mh" data-href="/mh.html" style="display:none;">
+          <div class="icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"/><path d="M12 2v4"/><path d="M12 18v4"/><path d="M4.93 4.93l2.83 2.83"/><path d="M16.24 16.24l2.83 2.83"/><path d="M2 12h4"/><path d="M18 12h4"/><path d="M4.93 19.07l2.83-2.83"/><path d="M16.24 7.76l2.83-2.83"/>
+            </svg>
+          </div>
+          <div class="label-block">
+            <span class="label">Mother Hub</span>
+            <span class="sublabel">MH</span>
           </div>
         </button>
       </div>
@@ -763,29 +785,71 @@
   const isVip = getCookie('vip') === 'yes';
   const vipBtn = document.getElementById('vipBtn');
   const vipSubLabel = document.getElementById('vipSubLabel');
+  const fcBtn = document.getElementById('fcBtn');
+  const mhBtn = document.getElementById('mhBtn');
   const standardButtons = document.querySelectorAll('.action-btn[data-action="schedules"], .action-btn[data-action="present"], .action-btn[data-action="forms"], .action-btn[data-action="payslip"]');
 
   if(isVip){
-    standardButtons.forEach(btn => {
-      btn.classList.add('locked');
-      btn.addEventListener('click', () => showToast('This is only available in the VIP Panel.'));
+    standardButtons.forEach(btn => btn.classList.add('locked'));
+  } else if(vipBtn){
+    vipBtn.classList.add('locked');
+    if(vipSubLabel) vipSubLabel.textContent = 'Members only';
+  }
+
+  // Single click handler per navigable button: always re-checks the
+  // "locked" class at click time, so a locked button can never fall
+  // through to its data-href navigation.
+  document.querySelectorAll('.action-btn[data-href]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if(btn.classList.contains('locked')){
+        showToast('This is only available in the VIP Panel.');
+        return;
+      }
+      window.location.href = btn.dataset.href;
     });
-    if(vipBtn){
-      vipBtn.classList.remove('locked');
-      vipBtn.addEventListener('click', () => window.location.href = '/vip');
-    }
-  } else {
-    if(vipBtn){
-      vipBtn.classList.add('locked');
-      if(vipSubLabel) vipSubLabel.textContent = 'Members only';
-      vipBtn.addEventListener('click', () => showToast('VIP Panel is only available for VIP members.'));
-    }
+  });
+
+  if(vipBtn){
+    vipBtn.addEventListener('click', () => {
+      if(vipBtn.classList.contains('locked')){
+        showToast('VIP Panel is only available for VIP members.');
+        return;
+      }
+      const showing = fcBtn.style.display !== 'none';
+      fcBtn.style.display = showing ? 'none' : '';
+      mhBtn.style.display = showing ? 'none' : '';
+    });
   }
 
   const sunIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
   const moonIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
   const weekOffIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M9 16l2 2 4-4"/></svg>`;
   const leaveIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1.5 3 1 1 3L8 20l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.3c.4-.2.6-.6.5-1.1L17.8 19.2Z"/></svg>`;
+  const vipIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7Z"/><path d="M5 20h14"/></svg>`;
+
+  function renderVipGreetings(){
+    const name = cookieName || 'there';
+    const greetings = {
+      today:    { title: `Welcome, ${name}!`, sub: 'Enjoy your VIP access today' },
+      tomorrow: { title: `See you tomorrow!`, sub: 'Your VIP access continues' }
+    };
+    ['today', 'tomorrow'].forEach(key => {
+      const cardEl = document.getElementById(`card-${key}`);
+      const badgeEl = document.getElementById(`badge-${key}`);
+      const nameEl = document.getElementById(`name-${key}`);
+      const timeEl = document.getElementById(`time-${key}`);
+      const iconEl = document.getElementById(`icon-${key}`);
+
+      cardEl.classList.remove(...ALL_VARIANT_CLASSES);
+      badgeEl.classList.remove('skel', ...ALL_VARIANT_CLASSES);
+      nameEl.classList.remove('skel');
+      timeEl.classList.remove('skel');
+
+      nameEl.textContent = greetings[key].title;
+      timeEl.textContent = greetings[key].sub;
+      iconEl.innerHTML = vipIcon;
+    });
+  }
 
   function formatDate(offset){
     const d = new Date();
@@ -898,10 +962,18 @@
     }
   }
 
+  function refreshCards(){
+    if(isVip){
+      renderVipGreetings();
+    } else {
+      loadShiftData();
+    }
+  }
+
   if(cookieId && cookieName){
     document.getElementById('date-today').textContent = formatDate(0);
     document.getElementById('date-tomorrow').textContent = formatDate(1);
-    loadShiftData();
+    refreshCards();
   }
 
   // Guard against the Back/Forward (bfcache) restoring the page with the
@@ -909,9 +981,9 @@
   // page is shown from bfcache, reset to skeleton and re-fetch live data.
   window.addEventListener('pageshow', (event) => {
     if(event.persisted){
-      resetCardsToSkeleton();
+      if(!isVip) resetCardsToSkeleton();
       if(cookieId && cookieName){
-        loadShiftData();
+        refreshCards();
       }
     }
   });
@@ -920,7 +992,7 @@
   // can change server-side between visits.
   document.addEventListener('visibilitychange', () => {
     if(document.visibilityState === 'visible' && cookieId && cookieName){
-      loadShiftData();
+      refreshCards();
     }
   });
 
