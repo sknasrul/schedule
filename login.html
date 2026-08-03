@@ -4,37 +4,46 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>Login</title>
-  <link rel="manifest" href="manifest.json">
-  <link rel="shortcut icon" href="assets/icon192.png" type="image/x-icon">
-  <link rel="apple-touch-icon" href="assets/icon512.png">
-  <link rel="prefetch" href="/home" as="document">
 <style>
   *{
-    -webkit-tap-highlight-color: transparent;
+    margin: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    -webkit-tap-highlight-color: transparent;
   }
-  .em{
-    display: none;
+  body{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 90vh;
+    background-color: #f7faff;
+  }
+  svg{
+    max-height: 40vh;
+    max-width: 40vw;
+  }
+  section{
+    min-width: 400px;
+    width: 25vw;
+    background-color: #fff;
+    border-radius: 2rem;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    padding: 2rem;
   }
   form{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    flex: 1;
-    background-color: #fff;
-  }
-  h3{
-    color: #5f6368;
-    margin: 2rem;
+    margin-top: 2rem;
+    display: grid;
+    width: 100%;
+    place-items: center;
   }
   .inp{
     position: relative;
+    width: 100%;
+    max-width: 400px;
     margin-bottom: 1rem;
   }
   input{
-    width: 90vw;
-    max-width: 350px;
+    width: 100%;
     aspect-ratio: 5/1;
     border: 2px solid #dadce0;
     border-radius: 3rem;
@@ -43,7 +52,7 @@
     text-indent: 1.5rem;
   }
   input:focus{
-    border-color: #4070F4;
+    border-color: #fac62c;
   }
   label{
     position: absolute;
@@ -64,7 +73,7 @@
     color: #5f6368;
   }
   input:focus ~ label{
-    color: #4070F4;
+    color: #281E01;
   }
   button{
     position: relative;
@@ -75,8 +84,8 @@
     margin: 1rem 0;
     padding: 1rem 3rem;
     cursor: pointer;
-    color: white;
-    background: rgb(0, 100, 224);
+    color: #3C1515;
+    background: #fac62c;
   }
   .ripple{
     position: absolute;
@@ -86,44 +95,28 @@
     animation: expand-ripple 0.6s linear;
   }
   @keyframes expand-ripple{to{transform: scale(4);opacity: 0;}}
-@media (min-width: 600px){
-  section{
-    display: flex;
-    height: 80%;
-    aspect-ratio: 1.5;
-    border-radius: 3rem;
-    overflow: hidden;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    translate: -50% -50%;
-    box-shadow:0 10px 30px rgba(0,0,0,.2);
+@media (orientation: portrait){
+  body{
+    flex-direction: column;
   }
-  .em{
-    display: initial;
+  section{
+    border-top: 2px solid #fac62c;
+    width: 100vw;
+    min-width: 200px;
+    box-shadow: none;
   }
 }
 </style>
 </head>
 <body>
+  <svg viewBox="0 0 150 150"><style>.a{fill:#373435;stroke:#373435;stroke-miterlimit:10}.b{fill:#fff;stroke:#373435;stroke-miterlimit:10}.c{fill:#fac62c}</style><path fill-rule="evenodd" class="a" d="m74.5 112.5c-21 0-38-17-38-38 0-21 17-38 38-38 21 0 38 17 38 38 0 21-17 38-38 38z"/><path fill-rule="evenodd" class="b" d="m75 104c-16 0-29-13-29-29 0-16 13-29 29-29 16 0 29 13 29 29 0 16-13 29-29 29z"/><path fill-rule="evenodd" class="a" d="m113 37v75h-9v-75z"/><path fill-rule="evenodd" class="c" d="m46.6 69.9c59.3-52.2 118.4 26.7 74 71.6 0 0 25.8-40.1-3.7-70.5-27.9-28.8-70.3-1.1-70.3-1.1z"/><path fill-rule="evenodd" class="c" d="m103.1 79.3c-59.3 52.2-118.4-26.7-74-71.6 0 0-25.8 40.1 3.6 70.5 28 28.8 70.4 1.1 70.4 1.1z"/></svg>
   <section>
-    <img src="assets/login.avif" alt="image" class="em">
-    <form method="post" action="/logins">
-      <h1>Welcome to Arcos</h1>
-      
-<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 150" width="150" height="150"><style>.a{fill:#efc747}.b{fill:#fff}.c{stroke:#000;stroke-miterlimit:10}.d{fill:#fff;stroke:#000;stroke-miterlimit:10}</style><path fill-rule="evenodd" class="a" d="m83.8 155.5c-28.1 0-50.8-22.7-50.8-50.7 0-28.1 22.7-50.8 50.8-50.8 28 0 50.7 22.7 50.7 50.8 0 28-22.7 50.7-50.7 50.7z"/><path fill-rule="evenodd" class="b" d="m79.8 158.5c-28.1 0-50.8-22.7-50.8-50.7 0-28.1 22.7-50.8 50.8-50.8 28 0 50.7 22.7 50.7 50.8 0 28-22.7 50.7-50.7 50.7z"/><path fill-rule="evenodd" class="a" d="m59.8-3c28 0 50.7 22.7 50.7 50.8 0 28-22.7 50.7-50.7 50.7-28.1 0-50.8-22.7-50.8-50.7 0-28.1 22.7-50.8 50.8-50.8z"/><path fill-rule="evenodd" class="b" d="m63.8-6c28 0 50.7 22.7 50.7 50.8 0 28-22.7 50.7-50.7 50.7-28.1 0-50.8-22.7-50.8-50.8 0-28 22.7-50.7 50.8-50.7z"/><path fill-rule="evenodd" class="c" d="m112 36v75h-10v-75z"/><path fill-rule="evenodd" class="c" d="m72.5 113c-21.3 0-38.5-17.2-38.5-38.5 0-21.3 17.2-38.5 38.5-38.5 21.3 0 38.5 17.2 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5z"/><path fill-rule="evenodd" class="d" d="m73 104c-16 0-29-13-29-29 0-16 13-29 29-29 16 0 29 13 29 29 0 16-13 29-29 29z"/></svg>
-      <h3>Please login to get started</h3>
-      <div class="inp"><input placeholder="" name="id" required><label>Arcos ID</label></div>
-      <div class="inp"><input placeholder="" name="name" required><label>Name</label></div>
-      <button onclick="const r=this.getBoundingClientRect(),s=Math.max(r.width,r.height);this.querySelector('.ripple')?.remove();let p=document.createElement('span');p.className='ripple';p.style.cssText='width:'+s+'px;height:'+s+'px;left:'+(event.clientX-r.left-s/2)+'px;top:'+(event.clientY-r.top-s/2)+'px;';this.appendChild(p);">Login</button>
+    <h1>Hola <br>Welcome Back,</h1>
+    <form action="/logins" method="POST">
+      <div class="inp"><input placeholder="" name="id" required autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')"><label>Arcos ID</label></div>
+      <div class="inp"><input placeholder="" name="name" required autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="this.value=this.value.replace(/[^a-zA-Z ]/g,'').replace(/\s+/g,' ').replace(/^\s/,'').replace(/\b\w/g,c=>c.toUpperCase()).replace(/\B[A-Z]/g,c=>c.toLowerCase())"><label>Name</label></div>
+      <button type="submit" onclick="const r=this.getBoundingClientRect(),s=Math.max(r.width,r.height);this.querySelector('.ripple')?.remove();let p=document.createElement('span');p.className='ripple';p.style.cssText='width:'+s+'px;height:'+s+'px;left:'+(event.clientX-r.left-s/2)+'px;top:'+(event.clientY-r.top-s/2)+'px;';this.appendChild(p);">Login</button>
     </form>
   </section>
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js');
-  });
-}
-</script>
 </body>
 </html>
