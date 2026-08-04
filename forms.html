@@ -6,7 +6,7 @@
 <title>Forms</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;900&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#f2f2f4;
@@ -34,16 +34,16 @@ body{
   position:sticky;
   top:0;
   z-index:20;
-  height:56px;
+  height:64px;
   background:var(--bg);
 }
 .appbar-inner{
-  max-width:640px;
+  max-width:680px;
   height:100%;
   margin:0 auto;
   display:flex;
   align-items:center;
-  padding:0 10px;
+  padding:0 12px;
 }
 .appbar-topbar::after{
   content:"";
@@ -55,8 +55,8 @@ body{
 }
 .icon-btn{
   position:relative;
-  width:44px;
-  height:44px;
+  width:50px;
+  height:50px;
   border:none;
   background:transparent;
   border-radius:50%;
@@ -68,10 +68,10 @@ body{
   cursor:pointer;
   flex-shrink:0;
 }
-.icon-btn svg{width:24px;height:24px;position:relative;z-index:1;}
+.icon-btn svg{width:27px;height:27px;position:relative;z-index:1;}
 .toolbar-title{
-  margin-left:2px;
-  font-size:17px;
+  margin-left:4px;
+  font-size:19px;
   font-weight:700;
   opacity:var(--p);
   white-space:nowrap;
@@ -79,43 +79,43 @@ body{
 }
 .appbar-spacer{flex:1;}
 .large-title-region{
-  max-width:640px;
+  max-width:680px;
   margin:0 auto;
-  padding:2px 26px 20px;
+  padding:6px 28px 26px;
   position:relative;
   z-index:10;
 }
 .large-title{
   margin:0;
-  font-size:calc(34px - 11px*var(--p));
+  font-size:calc(42px - 14px*var(--p));
   font-weight:900;
-  letter-spacing:-0.6px;
+  letter-spacing:-0.8px;
   opacity:calc(1 - var(--p)*1.15);
   transform-origin:left top;
   transform:translateY(calc(-2px*var(--p)));
   line-height:1.15;
 }
 .subtitle-line{
-  margin:4px 0 0;
-  font-size:14px;
+  margin:6px 0 0;
+  font-size:16.5px;
   color:var(--text-secondary);
   font-weight:500;
   opacity:calc(1 - var(--p)*1.4);
 }
 main{
-  max-width:640px;
+  max-width:680px;
   margin:0 auto;
-  padding:6px 20px 40px;
+  padding:8px 22px 48px;
 }
 .form-item{
   position:relative;
   display:flex;
   align-items:center;
-  gap:14px;
+  gap:18px;
   background:var(--surface);
-  border-radius:18px;
-  padding:14px 16px;
-  margin-bottom:10px;
+  border-radius:22px;
+  padding:18px 20px;
+  margin-bottom:12px;
   overflow:hidden;
   cursor:pointer;
   user-select:none;
@@ -126,34 +126,36 @@ main{
   .icon-btn:hover{background:rgba(0,0,0,0.05);}
 }
 @media (min-width:900px){
-  .appbar-inner,.large-title-region,main{max-width:720px;}
-  .large-title{font-size:calc(38px - 12px*var(--p));}
-  .form-item{padding:16px 18px;}
+  .appbar-inner,.large-title-region,main{max-width:760px;}
+  .large-title{font-size:calc(46px - 15px*var(--p));}
+  .form-item{padding:20px 22px;}
 }
 .form-icon{
-  width:44px;
-  height:44px;
-  border-radius:14px;
+  width:56px;
+  height:56px;
+  border-radius:17px;
   display:flex;
   align-items:center;
   justify-content:center;
   flex-shrink:0;
 }
-.form-icon svg{width:26px;height:26px;}
-.form-icon.leave{background:rgba(21,115,254,0.12);color:var(--accent);}
-.form-icon.shift{background:rgba(255,159,10,0.14);color:var(--shift);}
-.form-icon.resign{background:rgba(255,59,48,0.12);color:var(--resign);}
+.form-icon svg{width:32px;height:32px;}
+.form-icon .size-8{width:32px;height:32px;}
+.form-icon.leave{background:rgba(21,115,254,0.1);color:var(--accent);}
+.form-icon.shift{background:rgba(255,159,10,0.12);color:var(--shift);}
+.form-icon.resign{background:rgba(255,59,48,0.1);color:var(--resign);}
 .form-text{flex:1;min-width:0;}
 .form-name{
-  font-size:16.5px;
+  font-size:20px;
   font-weight:700;
   margin:0;
   color:var(--text-primary);
+  letter-spacing:-0.2px;
 }
 .form-desc{
-  font-size:13px;
+  font-size:15px;
   color:var(--text-secondary);
-  margin:2px 0 0;
+  margin:3px 0 0;
   font-weight:400;
   overflow:hidden;
   text-overflow:ellipsis;
@@ -177,12 +179,12 @@ main{
 <div class="appbar-topbar">
   <div class="appbar-inner">
     <button class="icon-btn ripple-surface" id="backBtn" data-ripple="round" aria-label="Back">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
     </button>
     <span class="toolbar-title">Forms</span>
     <div class="appbar-spacer"></div>
     <button class="icon-btn ripple-surface" data-ripple="round" aria-label="Search">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
     </button>
   </div>
 </div>
@@ -193,14 +195,9 @@ main{
 </div>
 
 <main>
-  <div class="form-item ripple-surface" data-ripple="card">
+  <div class="form-item ripple-surface" data-ripple="card" data-url="https://docs.google.com/forms/d/1ZOX3JUm4gt3heUbnLO03oqCUz17ULAwMzEfun83Adm8/viewform">
     <div class="form-icon leave">
-      <svg viewBox="0 0 24 24" fill="none">
-        <rect x="3" y="5" width="18" height="16" rx="4" fill="currentColor" fill-opacity="0.16"/>
-        <path d="M3 9.5h18" stroke="currentColor" stroke-width="1.8"/>
-        <path d="M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-        <path d="M8.5 14.5l2.2 2.2 4.3-4.4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
+      <svg viewBox="0 0 32 32" fill="none" class="size-8" aria-hidden="true"><rect x="4.5" y="7.5" width="23" height="20" rx="6.5" fill="currentColor" fill-opacity=".16"></rect><rect x="4.5" y="7.5" width="23" height="20" rx="6.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></rect><path d="M4.5 14h23" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M11 4.5v5M21 4.5v5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path><circle cx="16" cy="20.6" r="5" fill="currentColor" fill-opacity=".22"></circle><path d="M13.7 20.7l1.8 1.8 3.1-3.6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path></svg>
     </div>
     <div class="form-text">
       <p class="form-name">Leave</p>
@@ -210,11 +207,7 @@ main{
 
   <div class="form-item ripple-surface" data-ripple="card">
     <div class="form-icon shift">
-      <svg viewBox="0 0 24 24" fill="none">
-        <circle cx="12" cy="12" r="9" fill="currentColor" fill-opacity="0.16"/>
-        <path d="M8 9a4.5 4.5 0 0 1 7.5-1.8M16 6.6V9h-2.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M16 15a4.5 4.5 0 0 1-7.5 1.8M8 17.4V15h2.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
+      <svg viewBox="0 0 32 32" fill="none" class="size-8" aria-hidden="true"><circle cx="16" cy="16" r="11.5" fill="currentColor" fill-opacity=".16"></circle><path d="M25.6 11.9A10.4 10.4 0 0 0 6.6 12.6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path><path d="M25.9 6.4v5.8h-5.6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path><path d="M6.4 20.1a10.4 10.4 0 0 0 19-.7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path><path d="M6.1 25.6v-5.8h5.6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path><path d="M16 11.6V16l2.9 1.8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
     </div>
     <div class="form-text">
       <p class="form-name">Shift Change</p>
@@ -224,11 +217,7 @@ main{
 
   <div class="form-item ripple-surface" data-ripple="card">
     <div class="form-icon resign">
-      <svg viewBox="0 0 24 24" fill="none">
-        <rect x="3" y="3" width="18" height="18" rx="6" fill="currentColor" fill-opacity="0.16"/>
-        <path d="M13 8V6.5a1.5 1.5 0 0 0-1.5-1.5H8A1.5 1.5 0 0 0 6.5 6.5v11A1.5 1.5 0 0 0 8 19h3.5A1.5 1.5 0 0 0 13 17.5V16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M10 12h8m0 0l-2.4-2.4M18 12l-2.4 2.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
+      <svg viewBox="0 0 32 32" fill="none" class="size-8" aria-hidden="true"><path d="M17.5 6.5h-6A3 3 0 0 0 8.5 9.5v13a3 3 0 0 0 3 3h6" fill="currentColor" fill-opacity=".16"></path><path d="M17.5 6.5h-6A3 3 0 0 0 8.5 9.5v13a3 3 0 0 0 3 3h6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path><path d="M14 16h11" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path><path d="M21.4 12.4L25 16l-3.6 3.6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path></svg>
     </div>
     <div class="form-text">
       <p class="form-name">Resignation</p>
@@ -242,6 +231,14 @@ main{
   var backBtn = document.getElementById('backBtn');
   backBtn.addEventListener('click', function(){
     window.history.back();
+  });
+})();
+
+(function(){
+  document.querySelectorAll('.form-item[data-url]').forEach(function(el){
+    el.addEventListener('click', function(){
+      window.open(el.dataset.url, '_blank', 'noopener');
+    });
   });
 })();
 
