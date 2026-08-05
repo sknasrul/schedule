@@ -1,4 +1,4 @@
-// Cloudflare Pages Function: GET /api/schedule
+// Cloudflare Pages Function: GET /api/get-schedule
 //
 // Reads the employee's schedule from the "SCHEDULE" KV namespace.
 // In your Pages project settings, bind that KV namespace with the
