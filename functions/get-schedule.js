@@ -1,9 +1,9 @@
 // Cloudflare Pages Function: GET /api/get-schedule
 //
-// Reads the employee's schedule from the "SCHEDULE" KV namespace.
+// Reads the employee's schedule from the "Schedule" KV namespace.
 // In your Pages project settings, bind that KV namespace with the
-// variable name "schedule" (Settings -> Functions -> KV namespace bindings),
-// so it is available here as env.schedule.
+// variable name "SCHEDULE" (Settings -> Functions -> KV namespace bindings),
+// so it is available here as env.SCHEDULE.
 //
 // The employee's KV key (e.g. "ARL19786") is expected in a cookie
 // named "id", set by login.html. Change EMP_ID_COOKIE below if that
@@ -27,14 +27,14 @@ export async function onRequestGet({ request, env }) {
     });
   }
 
-  if (!env.schedule) {
+  if (!env.SCHEDULE) {
     return new Response(JSON.stringify({ error: 'Schedule KV namespace is not bound to this Pages project.' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
     });
   }
 
-  const value = await env.schedule.get(id);
+  const value = await env.SCHEDULE.get(id);
 
   if (value === null) {
     return new Response(JSON.stringify({ error: 'No schedule found for ID ' + id + '.' }), {
