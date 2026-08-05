@@ -327,6 +327,34 @@ var STATUS_MAP = {
 var WEEKDAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 var MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
+// The SCHEDULE KV value is a compact string of space-separated tokens,
+// one per date: DD + month-letter(a-l, a=Jan...l=Dec) + status-digit, e.g.
+// "01h1 02h0 03h2" = Aug 1 (day present), Aug 2 (week off), Aug 3 (night present).
+var MONTH_LETTERS = ['a','b','c','d','e','f','g','h','i','j','k','l'];
+var CODE_STATUS_MAP = {
+  '0': { cls: 'week-off',    label: 'Week Off' },
+  '1': { cls: 'day-present', label: 'Day Present' },
+  '2': { cls: 'night-shift', label: 'Night Present' },
+  '3': { cls: 'absent',      label: 'Leave' }
+};
+
+function parseCompactSchedule(raw, year){
+  var items = [];
+  var tokens = (raw || '').toString().trim().split(/\s+/);
+  tokens.forEach(function(tok){
+    var m = /^(\d{2})([a-lA-L])([0-3])$/.exec(tok);
+    if (!m) return;
+    var day = parseInt(m[1], 10);
+    var monthIdx = MONTH_LETTERS.indexOf(m[2].toLowerCase());
+    if (monthIdx === -1 || day < 1 || day > 31) return;
+    items.push({
+      date: new Date(year, monthIdx, day),
+      status: CODE_STATUS_MAP[m[3]] || { cls: 'unknown', label: 'Unknown' }
+    });
+  });
+  return items;
+}
+
 function getCookie(name){
   var m = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
   return m ? decodeURIComponent(m[1]) : null;
@@ -490,17 +518,21 @@ async function loadSchedule(){
   showSkeleton();
   try {
     var id = getCookie('id');
-    var url = id ? ('/shift?id=' + encodeURIComponent(id)) : '/shift';
-    var res = await fetch(url, { credentials: 'same-origin' });
+    if (!id){
+      window.location.href = '/login';
+      return;
+    }
+    // get-schedule reads the employee's row straight from the SCHEDULE KV
+    // namespace (keyed by the "id" cookie) and hands back the raw value,
+    // e.g. "01h1 02h0 03h2 ...". Parse that compact format here.
+    var res = await fetch('/api/get-schedule', { credentials: 'same-origin' });
+    if (res.status === 400 || res.status === 401){
+      window.location.href = '/login';
+      return;
+    }
     if (!res.ok) throw new Error('request failed');
     var data = await res.json();
-    var rows = Array.isArray(data) ? data : (data.shifts || data.records || data.data || []);
-    var items = rows.map(function(r){
-      var dateRaw = r.date || r.Date || r.DATE;
-      var statusRaw = r.shift || r.Shift || r.status || r.Status;
-      var d = parseDate(dateRaw);
-      return d ? { date: d, status: resolveStatus(statusRaw) } : null;
-    }).filter(Boolean);
+    var items = parseCompactSchedule(data.value, new Date().getFullYear());
     items.sort(function(a, b){ return b.date - a.date; });
     renderItems(items);
   } catch (err){
