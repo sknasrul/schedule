@@ -1,13 +1,11 @@
-const CACHE_NAME = 'app-cache-v3';
+const CACHE_NAME = 'app-cache-v4';
 const OFFLINE_URL = '/index.html';
-
 const PRECACHE_URLS = [
   '/login',
   '/login.html',
   '/assets/icon192.png',
   '/assets/login.avif'
 ];
-
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -15,7 +13,6 @@ self.addEventListener('install', (event) => {
       .then(() => self.skipWaiting())
   );
 });
-
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((names) =>
@@ -25,9 +22,17 @@ self.addEventListener('activate', (event) => {
     ).then(() => self.clients.claim())
   );
 });
-
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
+
+  const url = new URL(event.request.url);
+
+  // Never cache or intercept API calls -- always go straight to the network.
+  // Letting these fall into the cache-first logic below is what caused
+  // /api/get-schedule to keep returning a stale HTML fallback page.
+  if (url.pathname.startsWith('/api/')) {
+    return;
+  }
 
   if (event.request.mode === 'navigate') {
     event.respondWith(
@@ -35,10 +40,7 @@ self.addEventListener('fetch', (event) => {
     );
     return;
   }
-
-  const url = new URL(event.request.url);
   if (url.origin !== self.location.origin) return;
-
   event.respondWith(
     caches.match(event.request).then((cached) => {
       const networkFetch = fetch(event.request)
