@@ -122,6 +122,22 @@ body{
   padding:6px 28px 26px;
   position:relative;
   z-index:10;
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:14px;
+}
+.title-block{min-width:0;}
+.month-badge{
+  flex-shrink:0;
+  margin-top:10px;
+  font-size:12.5px;
+  font-weight:800;
+  letter-spacing:.6px;
+  text-transform:uppercase;
+  color:var(--text-secondary);
+  white-space:nowrap;
+  opacity:calc(1 - var(--p)*1.4);
 }
 .large-title{
   margin:0;
@@ -145,86 +161,67 @@ main{
   margin:0 auto;
   padding:8px 22px 48px;
 }
+.date-list{
+  background:var(--surface);
+  border-radius:28px;
+  overflow:hidden;
+}
 .date-item{
   position:relative;
   display:flex;
   align-items:center;
-  gap:18px;
-  background:var(--surface);
-  border-radius:22px;
-  padding:18px 20px;
-  margin-bottom:12px;
+  gap:16px;
+  padding:16px 20px;
+  border-bottom:1px solid var(--divider);
 }
+.date-item:last-child{border-bottom:none;}
 @media (min-width:900px){
   .appbar-inner,.large-title-region,main{max-width:760px;}
   .large-title{font-size:calc(46px - 15px*var(--p));}
-  .date-item{padding:20px 22px;}
+  .date-item{padding:18px 22px;}
 }
 .date-icon{
-  width:56px;
-  height:56px;
-  border-radius:17px;
+  width:52px;
+  height:52px;
+  border-radius:50%;
   flex-shrink:0;
+  background:var(--skeleton);
   display:flex;
   flex-direction:column;
-  overflow:hidden;
-}
-.date-icon .di-head{
-  height:18px;
-  display:flex;
   align-items:center;
   justify-content:center;
-  font-size:9.5px;
-  font-weight:700;
-  letter-spacing:.5px;
-  color:#fff;
-  text-transform:uppercase;
 }
 .date-icon .di-num{
-  flex:1;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:21px;
-  font-weight:900;
-  line-height:1;
+  font-size:18px;
+  font-weight:800;
+  line-height:1.1;
+  color:var(--text-primary);
 }
-.date-icon.day-shift{background:rgba(255,159,10,.12);}
-.date-icon.day-shift .di-head{background:var(--shift);}
-.date-icon.day-shift .di-num{color:var(--shift);}
-.date-icon.night-shift{background:rgba(88,86,214,.12);}
-.date-icon.night-shift .di-head{background:var(--night);}
-.date-icon.night-shift .di-num{color:var(--night);}
-.date-icon.week-off{background:rgba(52,199,89,.12);}
-.date-icon.week-off .di-head{background:var(--off);}
-.date-icon.week-off .di-num{color:var(--off);}
-.date-icon.day-present{background:rgba(21,115,254,.1);}
-.date-icon.day-present .di-head{background:var(--accent);}
-.date-icon.day-present .di-num{color:var(--accent);}
-.date-icon.absent{background:rgba(255,59,48,.1);}
-.date-icon.absent .di-head{background:var(--resign);}
-.date-icon.absent .di-num{color:var(--resign);}
-.date-icon.training{background:rgba(175,82,222,.12);}
-.date-icon.training .di-head{background:var(--training);}
-.date-icon.training .di-num{color:var(--training);}
-.date-icon.dl{background:rgba(0,199,190,.12);}
-.date-icon.dl .di-head{background:var(--dl);}
-.date-icon.dl .di-num{color:var(--dl);}
-.date-icon.unknown{background:rgba(108,108,112,.1);}
-.date-icon.unknown .di-head{background:var(--text-secondary);}
-.date-icon.unknown .di-num{color:var(--text-secondary);}
+.date-icon .di-head{
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:.4px;
+  color:var(--text-secondary);
+  text-transform:uppercase;
+  margin-top:1px;
+}
 .date-text{flex:1;min-width:0;}
-.date-title{
-  font-size:18.5px;
+.shift-label{
+  font-size:15.5px;
   font-weight:700;
   margin:0;
-  color:var(--text-primary);
-  letter-spacing:-0.2px;
+  letter-spacing:-0.1px;
   display:flex;
   align-items:center;
-  gap:8px;
+  gap:7px;
   flex-wrap:wrap;
 }
+.shift-label svg{width:17px;height:17px;flex-shrink:0;}
+.shift-label.day-present{color:var(--shift);}
+.shift-label.night-shift{color:var(--night);}
+.shift-label.week-off{color:var(--text-secondary);}
+.shift-label.absent{color:var(--resign);}
+.shift-label.unknown{color:var(--text-secondary);}
 .today-chip{
   font-size:11px;
   font-weight:700;
@@ -234,10 +231,32 @@ main{
   border-radius:20px;
   letter-spacing:.2px;
 }
-.date-status{
-  font-size:15px;
+.date-sub{
+  font-size:14px;
   margin:3px 0 0;
-  font-weight:600;
+  font-weight:500;
+  color:var(--text-secondary);
+}
+.status-pill{
+  flex-shrink:0;
+  font-size:13.5px;
+  font-weight:700;
+  padding:7px 15px;
+  border-radius:20px;
+  white-space:nowrap;
+}
+.status-pill.present{background:rgba(52,199,89,.14);color:#1a9c46;}
+.status-pill.leave{background:rgba(255,59,48,.12);color:var(--resign);}
+.status-pill.off{
+  width:34px;
+  height:34px;
+  padding:0;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(108,108,112,.12);
+  color:var(--text-secondary);
 }
 .skeleton-item{
   display:flex;
@@ -306,8 +325,11 @@ main{
 </div>
 
 <div class="large-title-region">
-  <h1 class="large-title">Schedules</h1>
-  <p class="subtitle-line">Your shift history, at a glance</p>
+  <div class="title-block">
+    <h1 class="large-title">Schedules</h1>
+    <p class="subtitle-line">Your shift history, at a glance</p>
+  </div>
+  <div class="month-badge" id="monthBadge">&nbsp;</div>
 </div>
 
 <main>
@@ -326,16 +348,24 @@ var STATUS_MAP = {
 };
 var WEEKDAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 var MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+var FULL_MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+var SHIFT_ICONS = {
+  sun: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>',
+  moon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>',
+  cup: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v6a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><path d="M6 2v2M10 2v2M14 2v2"/></svg>',
+  calendarOff: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/><path d="M9.5 14.5l5 5m0-5l-5 5"/></svg>'
+};
 
 // The SCHEDULE KV value is a compact string of space-separated tokens,
 // one per date: DD + month-letter(a-l, a=Jan...l=Dec) + status-digit, e.g.
-// "01h1 02h0 03h2" = Aug 1 (day present), Aug 2 (week off), Aug 3 (night present).
+// "01h1 02h0 03h2" = Aug 1 (day shift), Aug 2 (week off), Aug 3 (night shift).
 var MONTH_LETTERS = ['a','b','c','d','e','f','g','h','i','j','k','l'];
 var CODE_STATUS_MAP = {
-  '0': { cls: 'week-off',    label: 'Week Off' },
-  '1': { cls: 'day-present', label: 'Day Present' },
-  '2': { cls: 'night-shift', label: 'Night Present' },
-  '3': { cls: 'absent',      label: 'Leave' }
+  '0': { cls: 'week-off',    label: 'Week Off',    pill: 'off',     icon: SHIFT_ICONS.cup },
+  '1': { cls: 'day-present', label: 'Day Shift',   pill: 'present', icon: SHIFT_ICONS.sun },
+  '2': { cls: 'night-shift', label: 'Night Shift', pill: 'present', icon: SHIFT_ICONS.moon },
+  '3': { cls: 'absent',      label: 'Leave',       pill: 'leave',   icon: SHIFT_ICONS.calendarOff }
 };
 
 function parseCompactSchedule(raw, year){
@@ -391,48 +421,56 @@ function el(tag, className, text){
   return n;
 }
 
+function buildStatusPill(status){
+  if (status.pill === 'off'){
+    return el('div', 'status-pill off', '\u2013');
+  }
+  if (status.pill === 'leave'){
+    return el('div', 'status-pill leave', 'Leave');
+  }
+  return el('div', 'status-pill present', 'Present');
+}
+
 function buildDateItem(item){
   var today = new Date();
   var row = el('div', 'date-item');
 
-  var icon = el('div', 'date-icon ' + item.status.cls);
-  var head = el('div', 'di-head', MONTHS[item.date.getMonth()]);
+  var icon = el('div', 'date-icon');
   var num = el('div', 'di-num', String(item.date.getDate()));
-  icon.appendChild(head);
+  var head = el('div', 'di-head', MONTHS[item.date.getMonth()]);
   icon.appendChild(num);
+  icon.appendChild(head);
 
   var text = el('div', 'date-text');
-  var title = el('p', 'date-title');
-  title.appendChild(document.createTextNode(formatTitle(item.date)));
+
+  var shiftLine = el('p', 'shift-label ' + item.status.cls);
+  shiftLine.innerHTML = (item.status.icon || '') + '<span>' + item.status.label + '</span>';
   if (isSameDay(item.date, today)){
-    title.appendChild(el('span', 'today-chip', 'Today'));
+    shiftLine.appendChild(el('span', 'today-chip', 'Today'));
   }
-  var status = el('p', 'date-status', item.status.label);
-  status.style.color = statusColor(item.status.cls);
-  text.appendChild(title);
-  text.appendChild(status);
+
+  var dateSub = el('p', 'date-sub', formatTitle(item.date));
+
+  text.appendChild(shiftLine);
+  text.appendChild(dateSub);
 
   row.appendChild(icon);
   row.appendChild(text);
+  row.appendChild(buildStatusPill(item.status));
   row.dataset.search = (formatTitle(item.date) + ' ' + item.status.label).toLowerCase();
   return row;
 }
 
-function statusColor(cls){
-  var map = {
-    'day-shift': 'var(--shift)',
-    'night-shift': 'var(--night)',
-    'week-off': 'var(--off)',
-    'day-present': 'var(--accent)',
-    'absent': 'var(--resign)',
-    'training': 'var(--training)',
-    'dl': 'var(--dl)',
-    'unknown': 'var(--text-secondary)'
-  };
-  return map[cls] || 'var(--text-secondary)';
+function updateMonthBadge(latestItem){
+  var badge = document.getElementById('monthBadge');
+  if (!badge) return;
+  if (!latestItem){ badge.innerHTML = '&nbsp;'; return; }
+  var d = latestItem.date;
+  badge.textContent = FULL_MONTHS[d.getMonth()].toUpperCase() + ' ' + d.getFullYear();
 }
 
 function showSkeleton(){
+  updateMonthBadge(null);
   var content = document.getElementById('scheduleContent');
   content.innerHTML = '';
   for (var i = 0; i < 5; i++){
@@ -484,13 +522,16 @@ function renderItems(items){
   currentItems = items;
   var content = document.getElementById('scheduleContent');
   content.innerHTML = '';
+  updateMonthBadge(items[0] || null);
   if (!items.length){
     showEmpty();
     return;
   }
+  var list = el('div', 'date-list');
   items.forEach(function(item){
-    content.appendChild(buildDateItem(item));
+    list.appendChild(buildDateItem(item));
   });
+  content.appendChild(list);
 }
 
 function applyFilter(query){
@@ -509,9 +550,11 @@ function applyFilter(query){
     showNoMatches();
     return;
   }
+  var list = el('div', 'date-list');
   filtered.forEach(function(item){
-    content.appendChild(buildDateItem(item));
+    list.appendChild(buildDateItem(item));
   });
+  content.appendChild(list);
 }
 
 async function loadSchedule(){
