@@ -183,15 +183,29 @@ main{
   .date-item{padding:20px 22px;}
 }
 .date-icon{
+  position:relative;
   width:60px;
   height:60px;
   border-radius:19px;
   flex-shrink:0;
+  overflow:hidden;
   display:flex;
   align-items:center;
   justify-content:center;
 }
+.di-icon-bg{
+  position:absolute;
+  right:-8px;
+  bottom:-8px;
+  width:38px;
+  height:38px;
+  color:rgba(255,255,255,.38);
+  z-index:1;
+}
+.di-icon-bg svg{width:100%;height:100%;}
 .date-icon .di-num{
+  position:relative;
+  z-index:2;
   font-size:24px;
   font-weight:800;
   line-height:1;
@@ -204,16 +218,15 @@ main{
 .date-icon.unknown{background:var(--text-secondary);}
 .date-text{flex:1;min-width:0;}
 .shift-label{
-  font-size:19px;
+  font-size:22px;
   font-weight:800;
   margin:0;
-  letter-spacing:-0.2px;
+  letter-spacing:-0.3px;
   display:flex;
   align-items:center;
   gap:8px;
   flex-wrap:wrap;
 }
-.shift-label svg{width:20px;height:20px;flex-shrink:0;}
 .shift-label.day-present{color:var(--shift);}
 .shift-label.night-shift{color:var(--night);}
 .shift-label.week-off{color:var(--text-secondary);}
@@ -327,10 +340,10 @@ var MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov',
 var FULL_MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
 var SHIFT_ICONS = {
-  sun: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>',
+  sun: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v3M12 20v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M1 12h3M20 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>',
   moon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>',
-  cup: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v6a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><path d="M6 2v2M10 2v2M14 2v2"/></svg>',
-  calendarOff: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/><path d="M9.5 14.5l5 5m0-5l-5 5"/></svg>'
+  cup: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><path d="M6 1v3M10 1v3M14 1v3"/></svg>',
+  briefcase: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>'
 };
 
 // The SCHEDULE KV value is a compact string of space-separated tokens,
@@ -338,10 +351,10 @@ var SHIFT_ICONS = {
 // "01h1 02h0 03h2" = Aug 1 (day shift), Aug 2 (week off), Aug 3 (night shift).
 var MONTH_LETTERS = ['a','b','c','d','e','f','g','h','i','j','k','l'];
 var CODE_STATUS_MAP = {
-  '0': { cls: 'week-off',    label: 'Week Off',    pill: 'off',     icon: SHIFT_ICONS.cup },
-  '1': { cls: 'day-present', label: 'Day Shift',   pill: 'present', icon: SHIFT_ICONS.sun },
-  '2': { cls: 'night-shift', label: 'Night Shift', pill: 'present', icon: SHIFT_ICONS.moon },
-  '3': { cls: 'absent',      label: 'Leave',       pill: 'leave',   icon: SHIFT_ICONS.calendarOff }
+  '0': { cls: 'week-off',    label: 'Week Off',    icon: SHIFT_ICONS.cup },
+  '1': { cls: 'day-present', label: 'Day Shift',   icon: SHIFT_ICONS.sun },
+  '2': { cls: 'night-shift', label: 'Night Shift', icon: SHIFT_ICONS.moon },
+  '3': { cls: 'absent',      label: 'Leave',       icon: SHIFT_ICONS.briefcase }
 };
 
 function parseCompactSchedule(raw, year){
@@ -402,13 +415,15 @@ function buildDateItem(item){
   var row = el('div', 'date-item ripple-surface');
 
   var icon = el('div', 'date-icon ' + item.status.cls);
+  var iconBg = el('div', 'di-icon-bg');
+  iconBg.innerHTML = item.status.icon || '';
   var num = el('div', 'di-num', String(item.date.getDate()));
+  icon.appendChild(iconBg);
   icon.appendChild(num);
 
   var text = el('div', 'date-text');
 
-  var shiftLine = el('p', 'shift-label ' + item.status.cls);
-  shiftLine.innerHTML = (item.status.icon || '') + '<span>' + item.status.label + '</span>';
+  var shiftLine = el('p', 'shift-label ' + item.status.cls, item.status.label);
   if (isSameDay(item.date, today)){
     shiftLine.appendChild(el('span', 'today-chip', 'Today'));
   }
