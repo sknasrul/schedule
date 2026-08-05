@@ -1,196 +1,770 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>My Schedule</title>
-<meta name="navigation-bar-color" content="#f2f2f4">
-<meta name="theme-color" content="#f2f2f4">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;900&display=swap" rel="stylesheet">
-<style>
-:root{
-  --bg:#f2f2f4;
-  --surface:#ffffff;
-  --text-primary:#111112;
-  --text-secondary:#6c6c70;
-  --divider:#e7e7ea;
-  --accent:#1573fe;
-  --shift:#ff9f0a;
-  --resign:#ff3b30;
-  --night:#7c5cff;
-  --off:#8e8e93;
-  --ripple-dark:rgba(0,0,0,0.09);
-  --ripple-light:rgba(255,255,255,0.55);
-  --p:0;
-}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-html,body{margin:0;padding:0;background-color:var(--bg);}
-body{
-  background:var(--bg);
-  color:var(--text-primary);
-  font-family:'Roboto','Segoe UI',-apple-system,BlinkMacSystemFont,sans-serif;
-  overscroll-behavior-y:none;
-  min-height:200vh;
-}
-.appbar-topbar{position:sticky;top:0;z-index:20;height:64px;background:var(--bg);}
-.appbar-inner{max-width:680px;height:100%;margin:0 auto;display:flex;align-items:center;padding:0 12px;}
-.appbar-topbar::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--divider);opacity:var(--p);}
-.icon-btn{position:relative;width:50px;height:50px;border:none;background:transparent;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--text-primary);overflow:hidden;cursor:pointer;flex-shrink:0;}
-.icon-btn:disabled{opacity:0.3;cursor:default;}
-.icon-btn svg{width:27px;height:27px;position:relative;z-index:1;}
-.toolbar-title{margin-left:4px;font-size:19px;font-weight:700;opacity:var(--p);white-space:nowrap;transform:translateX(calc(-6px + 6px*var(--p)));}
-.appbar-spacer{flex:1;}
-.large-title-region{max-width:680px;margin:0 auto;padding:6px 28px 26px;position:relative;z-index:10;}
-.large-title{margin:0;font-size:calc(42px - 14px*var(--p));font-weight:900;letter-spacing:-0.8px;opacity:calc(1 - var(--p)*1.15);transform-origin:left top;transform:translateY(calc(-2px*var(--p)));line-height:1.15;}
-.subtitle-line{margin:6px 0 0;font-size:16.5px;color:var(--text-secondary);font-weight:500;opacity:calc(1 - var(--p)*1.4);}
-main{max-width:680px;margin:0 auto;padding:8px 22px 48px;}
-@media (min-width:900px){.appbar-inner,.large-title-region,main{max-width:760px;}.large-title{font-size:calc(46px - 15px*var(--p));}}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Schedule</title>
+  <style>
+    /* Reset & CSS Variables matching the Form Page design */
+    :root {
+      --primary-color: #3b82f6;
+      --primary-hover: #2563eb;
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --danger-color: #ef4444;
+      --radius: 8px;
+      --shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.05);
+    }
 
-/* status/info card, reused for loading / error / empty states */
-.form-item{position:relative;display:flex;align-items:center;gap:18px;background:var(--surface);border-radius:22px;padding:18px 20px;margin-bottom:12px;overflow:hidden;user-select:none;transition:background-color 120ms ease;}
-.form-icon{width:56px;height:56px;border-radius:17px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.form-icon svg{width:30px;height:30px;}
-.form-icon.info{background:rgba(21,115,254,0.1);color:var(--accent);}
-.form-icon.warn{background:rgba(255,59,48,0.1);color:var(--resign);}
-.form-text{flex:1;min-width:0;}
-.form-name{font-size:18px;font-weight:700;margin:0;color:var(--text-primary);letter-spacing:-0.2px;}
-.form-desc{font-size:14.5px;color:var(--text-secondary);margin:3px 0 0;font-weight:400;}
-.spinner{width:26px;height:26px;border-radius:50%;border:3px solid rgba(21,115,254,0.2);border-top-color:var(--accent);animation:spin 800ms linear infinite;}
-@keyframes spin{to{transform:rotate(360deg);}}
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
 
-/* month navigator */
-.month-nav{display:flex;align-items:center;justify-content:space-between;background:var(--surface);border-radius:22px;padding:6px 8px 6px 20px;margin-bottom:12px;}
-.month-nav-label{font-size:18px;font-weight:700;letter-spacing:-0.2px;}
-.month-nav-arrows{display:flex;gap:2px;}
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      min-height: 100vh;
+    }
 
-/* calendar card */
-.cal-card{background:var(--surface);border-radius:22px;padding:18px 16px 20px;margin-bottom:12px;}
-.cal-weekdays{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:8px;}
-.cal-weekdays span{text-align:center;font-size:12.5px;font-weight:600;color:var(--text-secondary);}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;}
-.cal-cell{aspect-ratio:1/1;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:14.5px;font-weight:600;color:var(--text-secondary);}
-.cal-cell.blank{visibility:hidden;}
-.cal-cell.status-0{background:rgba(142,142,147,0.14);color:var(--off);}
-.cal-cell.status-1{background:rgba(21,115,254,0.14);color:var(--accent);}
-.cal-cell.status-2{background:rgba(124,92,255,0.14);color:var(--night);}
-.cal-cell.status-3{background:rgba(255,59,48,0.12);color:var(--resign);}
-.cal-cell.nodata{background:transparent;border:1.5px dashed var(--divider);color:#c3c3c8;}
-.cal-cell.today{box-shadow:0 0 0 2px var(--text-primary) inset;}
+    /* ---------------- TOP HEADER ---------------- */
+    .top-header {
+      background-color: var(--card-bg);
+      border-bottom: 1px solid var(--border-color);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
 
-/* legend */
-.legend-card{background:var(--surface);border-radius:22px;padding:16px 18px;margin-bottom:12px;display:flex;flex-wrap:wrap;gap:14px 20px;}
-.legend-item{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:500;color:var(--text-primary);}
-.legend-dot{width:12px;height:12px;border-radius:4px;flex-shrink:0;}
-.legend-dot.status-0{background:var(--off);}
-.legend-dot.status-1{background:var(--accent);}
-.legend-dot.status-2{background:var(--night);}
-.legend-dot.status-3{background:var(--resign);}
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: var(--primary-color);
+    }
 
-/* summary stats */
-.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px;}
-.stat-chip{background:var(--surface);border-radius:18px;padding:14px 8px;text-align:center;}
-.stat-num{font-size:22px;font-weight:800;letter-spacing:-0.3px;}
-.stat-label{font-size:11.5px;color:var(--text-secondary);font-weight:600;margin-top:2px;text-transform:uppercase;letter-spacing:0.3px;}
-.stat-chip.status-0 .stat-num{color:var(--off);}
-.stat-chip.status-1 .stat-num{color:var(--accent);}
-.stat-chip.status-2 .stat-num{color:var(--night);}
-.stat-chip.status-3 .stat-num{color:var(--resign);}
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+    }
 
-.hidden{display:none !important;}
-</style>
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--primary-color);
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    /* ---------------- BUTTONS & FORM CONTROLS ---------------- */
+    .btn {
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius);
+      border: 1px solid transparent;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      background-color: #fff;
+      border-color: var(--border-color);
+      color: var(--text-main);
+    }
+
+    .btn-secondary:hover {
+      background-color: #f1f5f9;
+    }
+
+    .btn-danger {
+      background-color: transparent;
+      color: var(--danger-color);
+      border: 1px solid #fecaca;
+    }
+
+    .btn-danger:hover {
+      background-color: #fef2f2;
+    }
+
+    /* ---------------- MAIN SCHEDULE CONTAINER ---------------- */
+    .main-container {
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .page-title-section {
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .page-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .schedule-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* ---------------- DATE FORM CARD (Replaces Calendar) ---------------- */
+    .date-form-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+    }
+
+    .date-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 1.25rem;
+    }
+
+    .date-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    /* Form Fields inside Date Div */
+    .schedule-entry-form {
+      display: grid;
+      grid-template-columns: 1fr 2fr 1.5fr auto;
+      gap: 1rem;
+      align-items: end;
+      margin-bottom: 1rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .form-group label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .form-control {
+      padding: 0.55rem 0.75rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
+
+    .entries-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    @media (max-width: 768px) {
+      .schedule-entry-form {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
-<div class="appbar-topbar">
-  <div class="appbar-inner">
-    <button class="icon-btn ripple-surface" id="backBtn" data-ripple="round" aria-label="Back">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
-    </button>
-    <span class="toolbar-title">My Schedule</span>
-    <div class="appbar-spacer"></div>
-  </div>
-</div>
 
-<div class="large-title-region">
-  <h1 class="large-title">My Schedule</h1>
-  <p class="subtitle-line" id="subtitleLine">Loading your roster&hellip;</p>
-</div>
-
-<main>
-
-  <!-- loading state -->
-  <div class="form-item" id="loadingCard">
-    <div class="spinner"></div>
-    <div class="form-text">
-      <p class="form-name">Fetching your schedule</p>
-      <p class="form-desc">This only takes a moment</p>
+  <!-- Top Header (Kept consistent with the rest of the application) -->
+  <header class="top-header">
+    <div class="brand">
+      <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+      </svg>
+      <span>Scheduler</span>
     </div>
-  </div>
 
-  <!-- error state -->
-  <div class="form-item hidden" id="errorCard">
-    <div class="form-icon warn">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16.2v.1"/></svg>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="form.html">Form</a></li>
+        <li><a href="schedule.html" class="active">Schedule</a></li>
+        <li><a href="settings.html">Settings</a></li>
+      </ul>
+    </nav>
+
+    <div class="header-actions">
+      <button class="btn btn-secondary">Export</button>
+      <button class="btn btn-primary" onclick="addNewDateCard()">+ Add Date</button>
     </div>
-    <div class="form-text">
-      <p class="form-name">Couldn't load your schedule</p>
-      <p class="form-desc" id="errorText">Please try again later.</p>
-    </div>
-  </div>
+  </header>
 
-  <!-- schedule content -->
-  <div id="scheduleContent" class="hidden">
-
-    <div class="month-nav">
-      <span class="month-nav-label" id="monthLabel">&nbsp;</span>
-      <div class="month-nav-arrows">
-        <button class="icon-btn" id="prevMonthBtn" aria-label="Previous month">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
-        </button>
-        <button class="icon-btn" id="nextMonthBtn" aria-label="Next month">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
-        </button>
+  <!-- Main Schedule Page Content -->
+  <main class="main-container">
+    
+    <div class="page-title-section">
+      <div>
+        <h1 class="page-title">Daily Schedule Forms</h1>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Manage schedule entries organized by date cards.</p>
       </div>
+      <button class="btn btn-primary" onclick="addNewDateCard()">+ Add Date Form</button>
     </div>
 
-    <div class="stat-row" id="statRow"></div>
+    <div class="schedule-grid" id="scheduleGrid">
 
-    <div class="cal-card">
-      <div class="cal-weekdays">
-        <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
+      <!-- Form Div for Date 1 -->
+      <div class="date-form-card">
+        <div class="date-card-header">
+          <div class="date-badge">
+            <input type="date" class="form-control" value="2026-08-06" />
+          </div>
+          <button class="btn btn-secondary" onclick="addEntryToCard(this)">+ Add Slot</button>
+        </div>
+
+        <div class="entries-list">
+          <div class="schedule-entry-form">
+            <div class="form-group">
+              <label>Time</label>
+              <input type="time" class="form-control" value="09:00" />
+            </div>
+
+            <div class="form-group">
+              <label>Task / Title</label>
+              <input type="text" class="form-control" placeholder="Task name..." value="Team Sync & Review" />
+            </div>
+
+            <div class="form-group">
+              <label>Category / Shift</label>
+              <select class="form-control">
+                <option selected>Morning Shift</option>
+                <option>Evening Shift</option>
+                <option>Overtime</option>
+              </select>
+            </div>
+
+            <button class="btn btn-danger" onclick="this.parentElement.remove()">Remove</button>
+          </div>
+        </div>
       </div>
-      <div class="cal-grid" id="calGrid"></div>
+
+      <!-- Form Div for Date 2 -->
+      <div class="date-form-card">
+        <div class="date-card-header">
+          <div class="date-badge">
+            <input type="date" class="form-control" value="2026-08-07" />
+          </div>
+          <button class="btn btn-secondary" onclick="addEntryToCard(this)">+ Add Slot</button>
+        </div>
+
+        <div class="entries-list">
+          <div class="schedule-entry-form">
+            <div class="form-group">
+              <label>Time</label>
+              <input type="time" class="form-control" value="14:00" />
+            </div>
+
+            <div class="form-group">
+              <label>Task / Title</label>
+              <input type="text" class="form-control" placeholder="Task name..." value="Project Deployment" />
+            </div>
+
+            <div class="form-group">
+              <label>Category / Shift</label>
+              <select class="form-control">
+                <option>Morning Shift</option>
+                <option selected>Evening Shift</option>
+                <option>Overtime</option>
+              </select>
+            </div>
+
+            <button class="btn btn-danger" onclick="this.parentElement.remove()">Remove</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    // Helper to add a new schedule slot to a date card
+    function addEntryToCard(button) {
+      const entriesList = button.closest('.date-form-card').querySelector('.entries-list');
+      const newEntry = document.createElement('div');
+      newEntry.className = 'schedule-entry-form';
+      newEntry.innerHTML = `
+        <div class="form-group">
+          <label>Time</label>
+          <input type="time" class="form-control" value="10:00" />
+        </div>
+        <div class="form-group">
+          <label>Task / Title</label>
+          <input type="text" class="form-control" placeholder="Task name..." />
+        </div>
+        <div class="form-group">
+          <label>Category / Shift</label>
+          <select class="form-control">
+            <option>Morning Shift</option>
+            <option>Evening Shift</option>
+            <option>Overtime</option>
+          </select>
+        </div>
+        <button class="btn btn-danger" onclick="this.parentElement.remove()">Remove</button>
+      `;
+      entriesList.appendChild(newEntry);
+    }
+
+    // Helper to add a new Date Form Div
+    function addNewDateCard() {
+      const grid = document.getElementById('scheduleGrid');
+      const newCard = document.createElement('div');
+      newCard.className = 'date-form-card';
+      const today = new D<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Schedule</title>
+  <style>
+    /* CSS Variables & Reset */
+    :root {
+      --primary-color: #3b82f6;
+      --primary-hover: #2563eb;
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --danger-color: #ef4444;
+      --radius: 8px;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      min-height: 100vh;
+    }
+
+    /* ---------------- TOP HEADER ---------------- */
+    .top-header {
+      background-color: var(--card-bg);
+      border-bottom: 1px solid var(--border-color);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: var(--primary-color);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--primary-color);
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    /* ---------------- BUTTONS ---------------- */
+    .btn {
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius);
+      border: 1px solid transparent;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.2s, color 0.2s;
+    }
+
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      background-color: #ffffff;
+      border-color: var(--border-color);
+      color: var(--text-main);
+    }
+
+    .btn-secondary:hover {
+      background-color: #f1f5f9;
+    }
+
+    .btn-danger {
+      background-color: transparent;
+      color: var(--danger-color);
+      border: 1px solid #fecaca;
+    }
+
+    .btn-danger:hover {
+      background-color: #fef2f2;
+    }
+
+    /* ---------------- MAIN CONTAINER ---------------- */
+    .main-container {
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .page-title-section {
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .page-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .schedule-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* ---------------- DATE FORM CARDS ---------------- */
+    .date-form-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+    }
+
+    .date-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 1.25rem;
+    }
+
+    .date-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Form Layout Inside Card */
+    .entries-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .schedule-entry-form {
+      display: grid;
+      grid-template-columns: 1fr 2fr 1.5fr auto;
+      gap: 1rem;
+      align-items: end;
+      padding: 0.75rem;
+      background-color: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .form-group label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .form-control {
+      padding: 0.55rem 0.75rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      font-size: 0.95rem;
+      outline: none;
+      background-color: #ffffff;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
+
+    @media (max-width: 768px) {
+      .schedule-entry-form {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header class="top-header">
+    <div class="brand">
+      <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+      </svg>
+      <span>Scheduler</span>
     </div>
 
-    <div class="legend-card">
-      <div class="legend-item"><span class="legend-dot status-1"></span>Day shift</div>
-      <div class="legend-item"><span class="legend-dot status-2"></span>Night shift</div>
-      <div class="legend-item"><span class="legend-dot status-0"></span>Week off</div>
-      <div class="legend-item"><span class="legend-dot status-3"></span>Leave</div>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="form.html">Form</a></li>
+        <li><a href="schedule.html" class="active">Schedule</a></li>
+        <li><a href="settings.html">Settings</a></li>
+      </ul>
+    </nav>
+
+    <div class="header-actions">
+      <button class="btn btn-secondary">Export</button>
+      <button class="btn btn-primary" onclick="addNewDateCard()">+ Add Date</button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-container">
+    
+    <div class="page-title-section">
+      <div>
+        <h1 class="page-title">Daily Schedule Forms</h1>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Manage schedule entries organized by date cards.</p>
+      </div>
+      <button class="btn btn-primary" onclick="addNewDateCard()">+ Add Date Form</button>
     </div>
 
-  </div>
-</main>
+    <div class="schedule-grid" id="scheduleGrid">
 
-<script>
-/* ---------- configuration ----------
-   SCHEDULE_API: endpoint that looks up the KV value server-side.
-   The employee ID cookie itself is only read in functions/api/schedule.js
-   (server-side) -- that's the one place its name needs to be correct.
-   See functions/api/schedule.js for the matching Cloudflare Pages Function,
-   which reads the "SCHEDULE" KV namespace bound as `env.schedule`.
------------------------------------- */
-var SCHEDULE_API = '/api/get-schedule';
+      <!-- Date Card 1 -->
+      <div class="date-form-card">
+        <div class="date-card-header">
+          <div class="date-badge">
+            <input type="date" class="form-control" value="2026-08-06" />
+          </div>
+          <button class="btn btn-secondary" onclick="addEntryToCard(this)">+ Add Slot</button>
+        </div>
 
-var MONTH_LETTERS = ['a','b','c','d','e','f','g','h','i','j','k','l'];
-var MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-var STATUS_LABEL = {0:'Week off',1:'Day shift',2:'Night shift',3:'Leave'};
+        <div class="entries-list">
+          <div class="schedule-entry-form">
+            <div class="form-group">
+              <label>Time / Period</label>
+              <input type="time" class="form-control" value="09:00" />
+            </div>
 
-/* parses "01h1 02h0 03h2 ..." into { 7: { 1: 1, 2: 0, 3: 2, ... }, ... } keyed by month index (0-11) */
+            <div class="form-group">
+              <label>Task / Description</label>
+              <input type="text" class="form-control" placeholder="Task or notes..." value="Day Shift Duties" />
+            </div>
+
+            <div class="form-group">
+              <label>Shift Type</label>
+              <select class="form-control">
+                <option value="Day Shift" selected>Day Shift</option>
+                <option value="Night Shift">Night Shift</option>
+                <option value="Leave">Leave</option>
+                <option value="Week Off">Week Off</option>
+              </select>
+            </div>
+
+            <button class="btn btn-danger" onclick="this.parentElement.remove()">Remove</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Date Card 2 -->
+      <div class="date-form-card">
+        <div class="date-card-header">
+          <div class="date-badge">
+            <input type="date" class="form-control" value="2026-08-07" />
+          </div>
+          <button class="btn btn-secondary" onclick="addEntryToCard(this)">+ Add Slot</button>
+        </div>
+
+        <div class="entries-list">
+          <div class="schedule-entry-form">
+            <div class="form-group">
+              <label>Time / Period</label>
+              <input type="time" class="form-control" value="20:00" />
+            </div>
+
+            <div class="form-group">
+              <label>Task / Description</label>
+              <input type="text" class="form-control" placeholder="Task or notes..." value="Night Operation Monitoring" />
+            </div>
+
+            <div class="form-group">
+              <label>Shift Type</label>
+              <select class="form-control">
+                <option value="Day Shift">Day Shift</option>
+                <option value="Night Shift" selected>Night Shift</option>
+                <option value="Leave">Leave</option>
+                <option value="Week Off">Week Off</option>
+              </select>
+            </div>
+
+            <button class="btn btn-danger" onclick="this.parentElement.remove()">Remove</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    // Dynamic entry creation inside a card
+    function addEntryToCard(button) {
+      const entriesList = button.closest('.date-form-card').querySelector('.entries-list');
+      const newEntry = document.createElement('div');
+      newEntry.className = 'schedule-entry-form';
+      newEntry.innerHTML = `
+        <div class="form-group">
+          <label>Time / Period</label>
+          <input type="time" class="form-control" value="09:00" />
+        </div>
+        <div class="form-group">
+          <label>Task / Description</label>
+          <input type="text" class="form-control" placeholder="Task or notes..." />
+        </div>
+        <div class="form-group">
+          <label>Shift Type</label>
+          <select class="form-control">
+            <option value="Day Shift" selected>Day Shift</option>
+            <option value="Night Shift">Night Shift</option>
+            <option value="Leave">Leave</option>
+            <option value="Week Off">Week Off</option>
+          </select>
+        </div>
+        <button class="btn btn-danger" onclick="this.parentElement.remove()">Remove</button>
+      `;
+      entriesList.appendChild(newEntry);
+    }
+
+    // Dynamic date card creation
+    function addNewDateCard() {
+      const grid = document.getElementById('scheduleGrid');
+      const newCard = document.createElement('div');
+      newCard.className = 'date-form-card';
+      const today = new Date().toISOString().split('T')[0];
+
+      newCard.innerHTML = `
+        <div class="date-card-header">
+          <div class="date-badge">
+            <input type="date" class="form-control" value="${today}" />
+          </div>
+          <button class="btn btn-secondary" onclick="addEntryToCard(this)">+ Add Slot</button>
+        </div>
+        <div class="entries-list">
+          <div class="schedule-entry-form">
+            <div class="form-group">
+              <label>Time / Period</label>
+              <input type="time" class="form-control" value="09:00" />
+            </div>
+            <div class="form-group">
+              <label>Task / Description</label>
+              <input type="text" class="form-control" placeholder="Task or notes..." />
+            </div>
+            <div class="form-group">
+              <label>Shift Type</label>
+              <select class="form-control">
+                <option value="Day Shift" selected>Day Shift</option>
+                <option value="Night Shift">Night Shift</option>
+                <option value="Leave">Leave</option>
+                <option value="Week Off">Week Off</option>
+              </select>
+            </div>
+            <button class="btn btn-danger" onclick="this.parentElement.remove()">Remove</button>
+          </div>
+        </div>
+      `;
+      grid.appendChild(newCard);
+    }
+  </script>
+</body>
+</html>
+ keyed by month index (0-11) */
 function parseSchedule(raw){
   var byMonth = {};
   var tokens = (raw || '').trim().split(/\s+/);
