@@ -1,15 +1,16 @@
-// Cloudflare Pages Function: GET /api/get-schedule
-//
-// Reads the employee's schedule from the "Schedule" KV namespace.
-// In your Pages project settings, bind that KV namespace with the
-// variable name "SCHEDULE" (Settings -> Functions -> KV namespace bindings),
-// so it is available here as env.SCHEDULE.
-//
-// The employee's KV key (e.g. "ARL19786") is expected in a cookie
-// named "id", set by login.html. Change EMP_ID_COOKIE below if that
-// ever changes -- this is the only file that needs to know the name.
-
 const EMP_ID_COOKIE = 'id';
+const ID_PATTERN = /^[A-Z0-9]{3,20}$/;
+
+function jsonResponse(body, status) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: {
+      'Content-Type': 'application/json',
+      'Cache-Control': 'no-store',
+      'X-Content-Type-Options': 'nosniff'
+    }
+  });
+}
 
 function getCookie(request, name) {
   const header = request.headers.get('Cookie') || '';
@@ -18,33 +19,32 @@ function getCookie(request, name) {
 }
 
 export async function onRequestGet({ request, env }) {
-  const id = getCookie(request, EMP_ID_COOKIE);
+  const rawId = getCookie(request, EMP_ID_COOKIE);
 
-  if (!id) {
-    return new Response(JSON.stringify({ error: 'No employee ID cookie found.' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' }
-    });
+  if (!rawId) {
+    return jsonResponse({ error: 'No employee ID cookie found.' }, 401);
+  }
+
+  const id = rawId.trim().toUpperCase();
+
+  if (!ID_PATTERN.test(id)) {
+    return jsonResponse({ error: 'Invalid employee ID.' }, 400);
   }
 
   if (!env.SCHEDULE) {
-    return new Response(JSON.stringify({ error: 'Schedule KV namespace is not bound to this Pages project.' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return jsonResponse({ error: 'Schedule KV namespace is not bound to this Pages project.' }, 500);
   }
 
-  const value = await env.SCHEDULE.get(id);
+  let value;
+  try {
+    value = await env.SCHEDULE.get(id);
+  } catch (err) {
+    return jsonResponse({ error: 'Failed to read schedule.' }, 502);
+  }
 
   if (value === null) {
-    return new Response(JSON.stringify({ error: 'No schedule found for ID ' + id + '.' }), {
-      status: 404,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return jsonResponse({ error: 'No schedule found for ID ' + id + '.' }, 404);
   }
 
-  return new Response(JSON.stringify({ id: id, value: value }), {
-    status: 200,
-    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }
-  });
+  return jsonResponse({ id, value }, 200);
 }
