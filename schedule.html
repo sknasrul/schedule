@@ -31,7 +31,7 @@
   --ripple-light:rgba(255,255,255,0.55);
   --p:0;
 }
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select: none;}
 html,
 body {
   margin: 0;
@@ -43,7 +43,7 @@ body{
   color:var(--text-primary);
   font-family:'Roboto','Segoe UI',-apple-system,BlinkMacSystemFont,sans-serif;
   overscroll-behavior-y:none;
-  min-height:200vh;
+  min-height:100vh;
 }
 .appbar-topbar{
   position:sticky;
@@ -89,7 +89,7 @@ body{
   margin-left:4px;
   font-size:19px;
   font-weight:700;
-  opacity:var(--p);
+  opacity:clamp(0, calc((var(--p) - 0.85) * 6.6667), 1);
   white-space:nowrap;
   transform:translateX(calc(-6px + 6px*var(--p)));
 }
@@ -122,31 +122,15 @@ body{
   padding:6px 28px 26px;
   position:relative;
   z-index:10;
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:14px;
 }
 .title-block{min-width:0;}
-.month-badge{
-  flex-shrink:0;
-  margin-top:10px;
-  font-size:12.5px;
-  font-weight:800;
-  letter-spacing:.6px;
-  text-transform:uppercase;
-  color:var(--text-secondary);
-  white-space:nowrap;
-  opacity:calc(1 - var(--p)*1.4);
-}
 .large-title{
   margin:0;
   font-size:calc(42px - 14px*var(--p));
   font-weight:900;
   letter-spacing:-0.8px;
-  opacity:calc(1 - var(--p)*1.15);
+  opacity:calc(1 - var(--p));
   transform-origin:left top;
-  transform:translateY(calc(-2px*var(--p)));
   line-height:1.15;
 }
 .subtitle-line{
@@ -154,7 +138,7 @@ body{
   font-size:16.5px;
   color:var(--text-secondary);
   font-weight:500;
-  opacity:calc(1 - var(--p)*1.4);
+  opacity:calc(1 - var(--p));
 }
 main{
   max-width:680px;
@@ -199,8 +183,8 @@ main{
   bottom:-8px;
   width:38px;
   height:38px;
-  color:rgba(255,255,255,.38);
   z-index:1;
+  opacity:.55;
 }
 .di-icon-bg svg{width:100%;height:100%;}
 .date-icon .di-num{
@@ -209,13 +193,18 @@ main{
   font-size:24px;
   font-weight:800;
   line-height:1;
-  color:#fff;
+  color:var(--text-primary);
 }
-.date-icon.day-present{background:var(--shift);}
-.date-icon.night-shift{background:var(--night);}
-.date-icon.week-off{background:#8e8e93;}
-.date-icon.absent{background:var(--resign);}
-.date-icon.unknown{background:var(--text-secondary);}
+.date-icon.day-present{background:rgba(255,159,10,0.16);}
+.date-icon.day-present .di-icon-bg{color:var(--shift);}
+.date-icon.night-shift{background:rgba(88,86,214,0.16);}
+.date-icon.night-shift .di-icon-bg{color:var(--night);}
+.date-icon.week-off{background:rgba(142,142,147,0.16);}
+.date-icon.week-off .di-icon-bg{color:#8e8e93;}
+.date-icon.absent{background:rgba(255,59,48,0.16);}
+.date-icon.absent .di-icon-bg{color:var(--resign);}
+.date-icon.unknown{background:rgba(108,108,112,0.16);}
+.date-icon.unknown .di-icon-bg{color:var(--text-secondary);}
 .date-text{flex:1;min-width:0;}
 .shift-label{
   font-size:22px;
@@ -226,12 +215,8 @@ main{
   align-items:center;
   gap:8px;
   flex-wrap:wrap;
+  color:var(--text-primary);
 }
-.shift-label.day-present{color:var(--shift);}
-.shift-label.night-shift{color:var(--night);}
-.shift-label.week-off{color:var(--text-secondary);}
-.shift-label.absent{color:var(--resign);}
-.shift-label.unknown{color:var(--text-secondary);}
 .today-chip{
   font-size:11px;
   font-weight:700;
@@ -318,7 +303,6 @@ main{
     <h1 class="large-title">Schedules</h1>
     <p class="subtitle-line">Your shift history, at a glance</p>
   </div>
-  <div class="month-badge" id="monthBadge">&nbsp;</div>
 </div>
 
 <main>
@@ -423,7 +407,7 @@ function buildDateItem(item){
 
   var text = el('div', 'date-text');
 
-  var shiftLine = el('p', 'shift-label ' + item.status.cls, item.status.label);
+  var shiftLine = el('p', 'shift-label', item.status.label);
   if (isSameDay(item.date, today)){
     shiftLine.appendChild(el('span', 'today-chip', 'Today'));
   }
@@ -440,16 +424,7 @@ function buildDateItem(item){
   return row;
 }
 
-function updateMonthBadge(latestItem){
-  var badge = document.getElementById('monthBadge');
-  if (!badge) return;
-  if (!latestItem){ badge.innerHTML = '&nbsp;'; return; }
-  var d = latestItem.date;
-  badge.textContent = FULL_MONTHS[d.getMonth()].toUpperCase() + ' ' + d.getFullYear();
-}
-
 function showSkeleton(){
-  updateMonthBadge(null);
   var content = document.getElementById('scheduleContent');
   content.innerHTML = '';
   for (var i = 0; i < 5; i++){
@@ -501,7 +476,6 @@ function renderItems(items){
   currentItems = items;
   var content = document.getElementById('scheduleContent');
   content.innerHTML = '';
-  updateMonthBadge(items[0] || null);
   if (!items.length){
     showEmpty();
     return;
