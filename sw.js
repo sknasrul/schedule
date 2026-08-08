@@ -1,5 +1,5 @@
 const CACHE_NAME = 'app-cache-v4';
-const OFFLINE_URL = '/index.html';
+const OFFLINE_URL = '/login.html';
 const PRECACHE_URLS = [
   '/login',
   '/login.html',
