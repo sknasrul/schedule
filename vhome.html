@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>VIP Panel</title>
+<style>
+  :root{
+    --bg-0:#08080b;
+    --bg-1:#0e0e13;
+    --panel:#111116;
+    --panel-border:#26262f;
+    --gold-1:#f6d179;
+    --gold-2:#c9922f;
+    --gold-3:#8a5a12;
+    --text-hi:#f4f2ec;
+    --text-mid:#a6a6b3;
+    --text-low:#6a6a78;
+    --lock:#54545f;
+    --radius-lg:20px;
+    --radius-md:14px;
+    --radius-sm:10px;
+    --font-display:'Sora', 'Segoe UI', sans-serif;
+    --font-body:'Inter', 'Segoe UI', sans-serif;
+    --font-mono:'JetBrains Mono', 'Courier New', monospace;
+  }
+
+  @font-face{
+    font-family:'Sora';
+    src:local('Sora');
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+
+  html,body{
+    height:100%;
+    background:
+      radial-gradient(1200px 600px at 85% -10%, rgba(201,146,47,0.10), transparent 60%),
+      radial-gradient(900px 500px at 10% 110%, rgba(201,146,47,0.06), transparent 55%),
+      var(--bg-0);
+    color:var(--text-hi);
+    font-family:var(--font-body);
+    -webkit-font-smoothing:antialiased;
+  }
+
+  a{color:inherit; text-decoration:none;}
+  button{font-family:inherit; cursor:pointer;}
+
+  ::selection{background:rgba(246,209,121,0.25);}
+
+  /* ---------- Layout ---------- */
+  .app{
+    display:flex;
+    min-height:100vh;
+  }
+
+  /* ---------- Sidebar ---------- */
+  .sidebar{
+    width:280px;
+    flex-shrink:0;
+    background:linear-gradient(180deg, #0c0c10 0%, #0a0a0d 100%);
+    border-right:1px solid var(--panel-border);
+    padding:28px 20px;
+    display:flex;
+    flex-direction:column;
+    gap:26px;
+    position:sticky;
+    top:0;
+    height:100vh;
+    overflow-y:auto;
+  }
+
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:0 6px;
+  }
+
+  .brand-mark{
+    width:38px; height:38px;
+    border-radius:11px;
+    background:linear-gradient(145deg, var(--gold-1), var(--gold-3));
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 4px 14px rgba(201,146,47,0.35);
+    flex-shrink:0;
+  }
+  .brand-mark svg{width:19px; height:19px;}
+
+  .brand-name{
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:17px;
+    letter-spacing:0.2px;
+  }
+
+  nav.nav-list{
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+  }
+
+  .nav-item{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:12px 14px;
+    border-radius:12px;
+    font-size:14.5px;
+    font-weight:600;
+    color:var(--text-mid);
+    border:1px solid transparent;
+    transition:background .18s ease, color .18s ease, transform .12s ease;
+    position:relative;
+  }
+
+  .nav-item svg{width:18px; height:18px; flex-shrink:0;}
+
+  .nav-item .label{flex:1;}
+
+  .nav-item.active{
+    color:#1b1206;
+    background:linear-gradient(100deg, var(--gold-1), var(--gold-2));
+    box-shadow:0 6px 18px rgba(201,146,47,0.28);
+  }
+
+  .nav-item:not(.active):not(.locked):hover{
+    background:rgba(255,255,255,0.045);
+    color:var(--text-hi);
+    transform:translateX(2px);
+  }
+
+  .nav-item.locked{
+    color:var(--text-low);
+    cursor:not-allowed;
+  }
+  .nav-item.locked .lock-icon{
+    margin-left:auto;
+    color:var(--lock);
+  }
+  .nav-item.locked:hover{
+    background:rgba(255,255,255,0.02);
+  }
+
+  .nav-divider{
+    height:1px;
+    background:var(--panel-border);
+    margin:6px 4px;
+  }
+
+  /* Hubs dropdown */
+  .hubs-wrap{
+    margin-top:auto;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+
+  .hubs-toggle{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:13px 16px;
+    border-radius:999px;
+    border:1px solid var(--panel-border);
+    background:var(--panel);
+    color:var(--text-hi);
+    font-size:14px;
+    font-weight:600;
+  }
+  .hubs-toggle svg.chev{
+    width:15px; height:15px;
+    transition:transform .22s ease;
+    color:var(--text-mid);
+  }
+  .hubs-toggle[aria-expanded="true"] svg.chev{
+    transform:rotate(180deg);
+  }
+  .hubs-toggle:hover{ border-color:#3a3a45; }
+
+  .hubs-panel{
+    display:grid;
+    grid-template-rows:0fr;
+    transition:grid-template-rows .28s ease;
+  }
+  .hubs-panel.open{ grid-template-rows:1fr; }
+  .hubs-panel-inner{ overflow:hidden; }
+
+  .hub-list{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    padding-top:8px;
+  }
+
+  .hub-btn{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:11px 14px;
+    border-radius:10px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid var(--panel-border);
+    color:var(--text-mid);
+    font-size:13.5px;
+    font-weight:600;
+    text-align:left;
+  }
+  .hub-btn:hover{
+    color:var(--text-hi);
+    border-color:#3a3a45;
+    background:rgba(255,255,255,0.055);
+  }
+  .hub-btn .tag{
+    font-family:var(--font-mono);
+    font-size:10px;
+    color:var(--gold-1);
+    background:rgba(246,209,121,0.10);
+    padding:2px 6px;
+    border-radius:5px;
+    letter-spacing:0.5px;
+  }
+
+  .hub-actions{
+    display:none;
+    flex-direction:column;
+    gap:6px;
+    padding-top:8px;
+  }
+  .hub-actions.open{ display:flex; }
+  .hub-actions .back-btn{
+    font-size:12px;
+    color:var(--text-low);
+    padding:4px 4px 6px;
+    display:flex; align-items:center; gap:4px;
+  }
+  .hub-actions .back-btn:hover{ color:var(--text-mid); }
+  .hub-action-btn{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:12px 14px;
+    border-radius:10px;
+    background:linear-gradient(100deg, rgba(246,209,121,0.12), rgba(201,146,47,0.06));
+    border:1px solid rgba(201,146,47,0.35);
+    color:var(--text-hi);
+    font-size:13.5px;
+    font-weight:600;
+  }
+  .hub-action-btn:hover{
+    border-color:var(--gold-2);
+    background:linear-gradient(100deg, rgba(246,209,121,0.18), rgba(201,146,47,0.10));
+  }
+  .hub-action-btn svg{width:14px; height:14px; color:var(--gold-1);}
+
+  /* ---------- Main ---------- */
+  .main{
+    flex:1;
+    min-width:0;
+    padding:40px 48px 64px;
+  }
+
+  .topbar{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:20px;
+    margin-bottom:30px;
+    flex-wrap:wrap;
+  }
+
+  .greeting-eyebrow{
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:3px;
+    color:var(--text-low);
+    margin-bottom:10px;
+  }
+
+  .greeting-name{
+    font-family:var(--font-display);
+    font-size:clamp(30px, 4vw, 44px);
+    font-weight:700;
+    display:flex;
+    align-items:center;
+    gap:14px;
+    letter-spacing:-0.5px;
+  }
+
+  .greeting-name .gold-text{
+    background:linear-gradient(100deg, var(--gold-1), var(--gold-2));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+
+  .wave{
+    display:inline-block;
+    font-size:0.75em;
+    transform-origin:70% 70%;
+    animation:wave 2.4s ease-in-out infinite;
+    animation-delay:0.4s;
+  }
+  @keyframes wave{
+    0%{transform:rotate(0deg);}
+    8%{transform:rotate(16deg);}
+    16%{transform:rotate(-8deg);}
+    24%{transform:rotate(16deg);}
+    32%{transform:rotate(-4deg);}
+    40%{transform:rotate(8deg);}
+    48%{transform:rotate(0deg);}
+    100%{transform:rotate(0deg);}
+  }
+
+  .greeting-sub{
+    margin-top:10px;
+    font-size:14.5px;
+    color:var(--text-mid);
+  }
+
+  .profile-chip{
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .profile-text{
+    text-align:right;
+  }
+  .profile-text .p-name{
+    font-size:14.5px;
+    font-weight:700;
+    color:var(--text-hi);
+  }
+  .profile-text .p-role{
+    font-size:11.5px;
+    color:var(--gold-1);
+    font-weight:600;
+    letter-spacing:0.4px;
+  }
+  .avatar{
+    width:46px; height:46px;
+    border-radius:50%;
+    background:linear-gradient(145deg, #1c1c22, #0f0f13);
+    border:1.5px solid var(--gold-2);
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:14px;
+    color:var(--gold-1);
+    flex-shrink:0;
+    box-shadow:0 0 0 4px rgba(201,146,47,0.08);
+  }
+
+  /* ---------- VIP Card ---------- */
+  .vip-card{
+    position:relative;
+    border-radius:var(--radius-lg);
+    padding:34px 38px;
+    background:
+      radial-gradient(650px 300px at 100% 0%, rgba(201,146,47,0.16), transparent 60%),
+      linear-gradient(120deg, #16151a 0%, #100f13 55%, #1d160c 100%);
+    border:1px solid #2b2620;
+    overflow:hidden;
+    margin-bottom:26px;
+  }
+  .vip-card::before{
+    content:'';
+    position:absolute;
+    inset:0;
+    background-image:
+      repeating-linear-gradient(115deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 1px, transparent 1px, transparent 60px);
+    pointer-events:none;
+  }
+
+  .vip-card-top{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:20px;
+    margin-bottom:38px;
+  }
+
+  .vip-access-title{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:19px;
+    color:var(--gold-1);
+    letter-spacing:0.5px;
+  }
+  .vip-access-title svg{width:19px; height:19px;}
+
+  .vip-access-sub{
+    margin-top:6px;
+    font-size:11px;
+    font-weight:600;
+    letter-spacing:2.5px;
+    color:var(--text-low);
+  }
+
+  .chip{
+    width:46px; height:34px;
+    border-radius:7px;
+    background:linear-gradient(145deg, var(--gold-1), var(--gold-3));
+    position:relative;
+    flex-shrink:0;
+    box-shadow:0 3px 10px rgba(201,146,47,0.3);
+  }
+  .chip::after{
+    content:'';
+    position:absolute;
+    inset:6px;
+    border:1px solid rgba(0,0,0,0.25);
+    border-radius:3px;
+  }
+
+  .card-number{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    flex-wrap:wrap;
+    margin-bottom:34px;
+  }
+  .dots-group{
+    display:flex;
+    gap:5px;
+  }
+  .dots-group span{
+    width:7px; height:7px;
+    border-radius:2px;
+    background:var(--text-low);
+  }
+  .dots-group span:nth-child(-n+2){
+    background:var(--gold-2);
+  }
+  .card-year{
+    font-family:var(--font-mono);
+    font-size:22px;
+    letter-spacing:6px;
+    color:var(--text-hi);
+    font-weight:600;
+  }
+
+  .card-meta{
+    display:grid;
+    grid-template-columns:repeat(4, minmax(0,1fr));
+    gap:18px;
+  }
+  .card-meta .item .k{
+    font-size:10.5px;
+    font-weight:700;
+    letter-spacing:1.6px;
+    color:var(--text-low);
+    margin-bottom:6px;
+  }
+  .card-meta .item .v{
+    font-size:15px;
+    font-weight:700;
+    color:var(--text-hi);
+  }
+  .card-meta .item.status .v{ color:#7cd992; }
+
+  /* ---------- Feature tiles ---------- */
+  .tiles{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+  }
+
+  .tile{
+    border-radius:var(--radius-md);
+    padding:26px;
+    background:var(--panel);
+    border:1px solid var(--panel-border);
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+    transition:border-color .18s ease, transform .18s ease, background .18s ease;
+  }
+
+  .tile.active-tile{
+    cursor:pointer;
+  }
+  .tile.active-tile:hover{
+    border-color:var(--gold-2);
+    background:#131217;
+    transform:translateY(-2px);
+  }
+
+  .tile-icon{
+    width:42px; height:42px;
+    border-radius:11px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .tile.active-tile .tile-icon{
+    background:linear-gradient(145deg, rgba(246,209,121,0.16), rgba(201,146,47,0.06));
+    color:var(--gold-1);
+  }
+  .tile:not(.active-tile) .tile-icon{
+    background:rgba(255,255,255,0.03);
+    color:var(--lock);
+  }
+  .tile-icon svg{width:20px; height:20px;}
+
+  .tile h3{
+    font-family:var(--font-display);
+    font-size:16.5px;
+    font-weight:700;
+  }
+  .tile:not(.active-tile) h3{ color:var(--text-mid); }
+
+  .tile p{
+    font-size:13px;
+    color:var(--text-mid);
+    line-height:1.5;
+  }
+  .tile:not(.active-tile) p{ color:var(--text-low); }
+
+  /* ---------- Toast ---------- */
+  .toast{
+    position:fixed;
+    bottom:28px;
+    left:50%;
+    transform:translateX(-50%) translateY(20px);
+    background:#1a1a20;
+    border:1px solid var(--panel-border);
+    color:var(--text-hi);
+    font-size:13.5px;
+    font-weight:600;
+    padding:13px 20px;
+    border-radius:12px;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .22s ease, transform .22s ease;
+    z-index:50;
+    box-shadow:0 10px 30px rgba(0,0,0,0.4);
+  }
+  .toast.show{
+    opacity:1;
+    transform:translateX(-50%) translateY(0);
+  }
+
+  /* ---------- Mobile bottom nav ---------- */
+  .mobile-bar{ display:none; }
+
+  /* =========================================================
+     RESPONSIVE
+     ========================================================= */
+  @media (max-width: 860px){
+    .app{ flex-direction:column; }
+
+    .sidebar{
+      position:fixed;
+      bottom:0; left:0; right:0;
+      top:auto;
+      height:auto;
+      width:100%;
+      flex-direction:row;
+      align-items:center;
+      padding:10px 12px;
+      gap:0;
+      border-right:none;
+      border-top:1px solid var(--panel-border);
+      z-index:40;
+      overflow-x:visible;
+    }
+    .sidebar .brand{ display:none; }
+    .sidebar .nav-divider{ display:none; }
+
+    .sidebar nav.nav-list{
+      flex-direction:row;
+      flex:1;
+      justify-content:space-between;
+      gap:2px;
+    }
+    .nav-item{
+      flex-direction:column;
+      gap:4px;
+      padding:8px 4px;
+      font-size:10.5px;
+      text-align:center;
+      border-radius:12px;
+      flex:1;
+    }
+    .nav-item .label{ flex:none; }
+    .nav-item.locked .lock-icon{
+      margin-left:0;
+      position:absolute;
+      top:2px; right:14%;
+      width:11px; height:11px;
+    }
+    .nav-item.active{ box-shadow:none; }
+
+    .hubs-wrap{
+      margin-top:0;
+      flex-shrink:0;
+      width:auto;
+      position:relative;
+    }
+    .hubs-toggle{
+      padding:10px;
+      border-radius:12px;
+      width:52px; height:52px;
+      justify-content:center;
+    }
+    .hubs-toggle .label-text{ display:none; }
+    .hubs-toggle svg.chev{ display:none; }
+
+    .hubs-panel{
+      position:absolute;
+      bottom:64px;
+      right:0;
+      width:250px;
+      background:var(--panel);
+      border:1px solid var(--panel-border);
+      border-radius:14px;
+      box-shadow:0 -10px 30px rgba(0,0,0,0.45);
+      padding:0 12px;
+    }
+    .hubs-panel.open{ padding:10px 12px; }
+    .hub-list{ padding-top:0; }
+
+    .main{
+      padding:24px 18px 110px;
+    }
+
+    .topbar{
+      flex-direction:column;
+      align-items:flex-start;
+    }
+    .profile-chip{
+      align-self:stretch;
+      justify-content:flex-end;
+    }
+
+    .vip-card{
+      padding:24px 20px;
+      border-radius:16px;
+    }
+    .vip-card-top{ margin-bottom:30px; }
+    .vip-access-title{ font-size:16px; }
+    .card-year{ font-size:17px; letter-spacing:3px; }
+    .card-number{ gap:10px; margin-bottom:26px; }
+    .card-meta{
+      grid-template-columns:1fr 1fr;
+      row-gap:20px;
+    }
+
+    .tiles{
+      grid-template-columns:1fr;
+    }
+  }
+
+  @media (max-width: 400px){
+    .greeting-name{ font-size:26px; }
+    .card-year{ letter-spacing:2px; font-size:15px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .wave{ animation:none; }
+    *{ transition:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#1b1206" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8l4 3 6-7 6 7 4-3-2 11H4L2 8z"/></svg>
+      </div>
+      <div class="brand-name">VIP Panel</div>
+    </div>
+
+    <nav class="nav-list">
+      <a class="nav-item active" href="#" data-nav="vip">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8l4 3 6-7 6 7 4-3-2 11H4L2 8z"/></svg>
+        <span class="label">VIP Panel</span>
+      </a>
+      <a class="nav-item" href="/forms" data-nav="forms">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h6"/></svg>
+        <span class="label">Forms</span>
+      </a>
+      <a class="nav-item locked" href="#" data-locked="Schedules">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        <span class="label">Schedules</span>
+        <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+      </a>
+      <a class="nav-item locked" href="#" data-locked="Presents">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4"/><path d="M12 8v13M19 8v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V8"/><path d="M12 8c-1.5-4-6-4-6-1.5S9 8 12 8Zm0 0c1.5-4 6-4 6-1.5S15 8 12 8Z"/></svg>
+        <span class="label">Presents</span>
+        <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+      </a>
+      <a class="nav-item locked" href="#" data-locked="Payslip">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M2 10h20"/></svg>
+        <span class="label">Payslip</span>
+        <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+      </a>
+    </nav>
+
+    <div class="hubs-wrap">
+      <button class="hubs-toggle" id="hubsToggle" aria-expanded="false">
+        <span class="label-text">Hubs</span>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+
+      <div class="hubs-panel" id="hubsPanel">
+        <div class="hubs-panel-inner">
+
+          <div class="hub-list" id="hubList">
+            <button class="hub-btn" id="fcBtn">
+              <span class="tag">FC</span>
+              <span>Fulfilment Center</span>
+            </button>
+            <button class="hub-btn" id="mhBtn">
+              <span class="tag">MH</span>
+              <span>Mother Hub</span>
+            </button>
+          </div>
+
+          <div class="hub-actions" id="fcActions">
+            <button class="back-btn" id="fcBack">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+              Back to Hubs
+            </button>
+            <a class="hub-action-btn" href="/fc">
+              Attendance Report
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+            </a>
+            <a class="hub-action-btn" href="/fcreport">
+              FC Report
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+            </a>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main">
+
+    <div class="topbar">
+      <div>
+        <div class="greeting-eyebrow">WELCOME BACK</div>
+        <div class="greeting-name">
+          <span class="gold-text" id="greetName">Guest</span>
+          <span class="wave">👋</span>
+        </div>
+        <div class="greeting-sub">Your premium workspace is ready.</div>
+      </div>
+
+      <div class="profile-chip">
+        <div class="profile-text">
+          <div class="p-name" id="profileName">Guest</div>
+          <div class="p-role">VIP Member</div>
+        </div>
+        <div class="avatar" id="avatarInitials">--</div>
+      </div>
+    </div>
+
+    <section class="vip-card">
+      <div class="vip-card-top">
+        <div>
+          <div class="vip-access-title">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 8l4 3 6-7 6 7 4-3-2 11H4L2 8z"/></svg>
+            VIP ACCESS
+          </div>
+          <div class="vip-access-sub">PREMIUM ACCESS GRANTED</div>
+        </div>
+        <div class="chip"></div>
+      </div>
+
+      <div class="card-number">
+        <div class="dots-group"><span></span><span></span><span></span><span></span><span></span></div>
+        <div class="dots-group"><span></span><span></span><span></span><span></span></div>
+        <div class="dots-group"><span></span><span></span><span></span><span></span><span></span></div>
+        <div class="card-year">2026</div>
+      </div>
+
+      <div class="card-meta">
+        <div class="item">
+          <div class="k">CARD HOLDER</div>
+          <div class="v" id="cardHolder">—</div>
+        </div>
+        <div class="item">
+          <div class="k">MEMBER SINCE</div>
+          <div class="v">08/26</div>
+        </div>
+        <div class="item">
+          <div class="k">TIER</div>
+          <div class="v">Platinum</div>
+        </div>
+        <div class="item status">
+          <div class="k">STATUS</div>
+          <div class="v">Active</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="tiles">
+      <a class="tile active-tile" href="/forms">
+        <div class="tile-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h6"/></svg>
+        </div>
+        <h3>Forms</h3>
+        <p>Submit and track your entries.</p>
+      </a>
+
+      <div class="tile">
+        <div class="tile-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+        </div>
+        <h3>More coming soon</h3>
+        <p>Schedules, Presents and Payslip unlock later.</p>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // ---------- Cookie helper ----------
+  function getCookie(name){
+    const match = document.cookie.match(new RegExp('(?:^|; )' + name.replace(/([.$?*|{}()[\]\\/+^])/g,'\\$1') + '=([^;]*)'));
+    return match ? decodeURIComponent(match[1]) : null;
+  }
+
+  function setCookie(name, value, days){
+    const d = new Date();
+    d.setTime(d.getTime() + days*24*60*60*1000);
+    document.cookie = name + '=' + encodeURIComponent(value) + ';expires=' + d.toUTCString() + ';path=/';
+  }
+
+  function getInitials(fullName){
+    return fullName
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0,2)
+      .map(w => w[0].toUpperCase())
+      .join('');
+  }
+
+  // Demo fallback so the page is populated on first load / file:// preview.
+  let userName = getCookie('name');
+  if(!userName){
+    userName = 'Maidul Mir';
+    setCookie('name', userName, 30);
+  }
+
+  document.getElementById('greetName').textContent = userName;
+  document.getElementById('profileName').textContent = userName;
+  document.getElementById('cardHolder').textContent = userName;
+  document.getElementById('avatarInitials').textContent = getInitials(userName);
+  document.title = userName + ' · VIP Panel';
+
+  // ---------- Locked nav toast ----------
+  const toastEl = document.getElementById('toast');
+  let toastTimer;
+  function showToast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(()=> toastEl.classList.remove('show'), 2200);
+  }
+
+  document.querySelectorAll('.nav-item.locked').forEach(el=>{
+    el.addEventListener('click', e=>{
+      e.preventDefault();
+      showToast(el.dataset.locked + ' unlocks soon for VIP members.');
+    });
+  });
+
+  // ---------- Hubs dropdown ----------
+  const hubsToggle = document.getElementById('hubsToggle');
+  const hubsPanel = document.getElementById('hubsPanel');
+  const hubList = document.getElementById('hubList');
+  const fcActions = document.getElementById('fcActions');
+  const fcBtn = document.getElementById('fcBtn');
+  const mhBtn = document.getElementById('mhBtn');
+  const fcBack = document.getElementById('fcBack');
+
+  hubsToggle.addEventListener('click', ()=>{
+    const isOpen = hubsPanel.classList.toggle('open');
+    hubsToggle.setAttribute('aria-expanded', isOpen);
+    if(!isOpen){
+      // reset to hub list view when closing
+      fcActions.classList.remove('open');
+      hubList.style.display = 'flex';
+    }
+  });
+
+  fcBtn.addEventListener('click', ()=>{
+    hubList.style.display = 'none';
+    fcActions.classList.add('open');
+  });
+
+  fcBack.addEventListener('click', ()=>{
+    fcActions.classList.remove('open');
+    hubList.style.display = 'flex';
+  });
+
+  mhBtn.addEventListener('click', ()=>{
+    showToast('Mother Hub — coming soon.');
+  });
+
+  // Close hubs panel on outside click
+  document.addEventListener('click', (e)=>{
+    if(!e.target.closest('.hubs-wrap')){
+      hubsPanel.classList.remove('open');
+      hubsToggle.setAttribute('aria-expanded','false');
+    }
+  });
+</script>
+
+</body>
+</html>
